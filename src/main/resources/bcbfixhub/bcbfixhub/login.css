@@ -1,0 +1,14 @@
+#test {
+    -fx-background-color:bisque;
+}
+
+.button {
+    -fx-background-color:firebrick;
+    -fx-text-fill:white;
+    transition-property: -fx-opacity;
+    transition-duration: 0.5s;
+}
+
+.button:hover {
+    -fx-opacity:0.65;
+}

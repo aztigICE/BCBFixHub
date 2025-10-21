@@ -5,6 +5,9 @@ module bcbfixhub.bcbfixhub {
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
+    requires org.mongodb.driver.core;
+    requires org.mongodb.bson;
+    requires org.mongodb.driver.sync.client;
 
     opens bcbfixhub.bcbfixhub to javafx.fxml;
     exports bcbfixhub.bcbfixhub;
