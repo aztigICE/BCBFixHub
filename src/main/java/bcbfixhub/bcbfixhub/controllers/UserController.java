@@ -1,18 +1,23 @@
 package bcbfixhub.bcbfixhub.controllers;
-
+import bcbfixhub.bcbfixhub.UserApplication;
 import bcbfixhub.bcbfixhub.models.User;
 import bcbfixhub.bcbfixhub.models.UserDAO;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.util.Objects;
 
 public class UserController {
+
     @FXML
     private TextField emailField;
 
@@ -55,20 +60,16 @@ public class UserController {
     }
 
     @FXML
-    protected void onRegister() {
-        boolean success = userDAO.createUser(user.getEmail(), user.getPassword());
-
-        if (success) {
-            alert.setAlertType(Alert.AlertType.INFORMATION);
-            alert.setHeaderText("User Registered Successfully!");
-        } else {
-            alert.setAlertType(Alert.AlertType.WARNING);
-            alert.setHeaderText("Email already exists.");
-        }
-
-        alert.showAndWait();
-        user.setEmail("");
-        user.setPassword("");
+    //register button
+    protected void onRegister(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(UserApplication.class.getResource("register.fxml"));
+        Scene scene = new Scene(loader.load());
+        scene.getStylesheets().add(Objects.requireNonNull(UserApplication.
+                class.getResource("login.css")).toExternalForm());
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setTitle("Register");
+        stage.setScene(scene);
+        stage.show();
     }
 
 
