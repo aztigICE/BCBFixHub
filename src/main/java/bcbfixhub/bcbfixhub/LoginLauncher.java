@@ -2,8 +2,7 @@ package bcbfixhub.bcbfixhub;
 
 import javafx.application.Application;
 
-public class Launcher {
+public class LoginLauncher {
     public static void main(String[] args) {
-        Application.launch(HelloApplication.class, args);
-    }
+        Application.launch(UserApplication.class, args);}
 }

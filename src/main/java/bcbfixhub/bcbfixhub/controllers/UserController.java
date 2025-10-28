@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -14,6 +15,9 @@ import javafx.stage.Stage;
 public class UserController {
     @FXML
     private TextField emailField;
+
+    @FXML
+    private Label emailLabel;
 
     @FXML
     private PasswordField passwordField;
@@ -37,6 +41,9 @@ public class UserController {
         if (isAuthenticated) {
             this.alert.setAlertType(Alert.AlertType.INFORMATION);
             this.alert.setHeaderText("Login Success");
+
+            // ✅ Display the logged-in email in the label
+            emailLabel.setText("Logged in as: " + user.getEmail());
         } else {
             this.alert.setAlertType(Alert.AlertType.ERROR);
             this.alert.setHeaderText("Login Failed");

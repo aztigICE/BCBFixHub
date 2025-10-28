@@ -11,7 +11,7 @@ public class UserDAO {
 
     public UserDAO() {
         MongoDatabase database = MongoDBConnection.getDatabase();
-        collection = database.getCollection("user");
+        collection = database.getCollection("users");
     }
 
     public boolean authenticate(String email, String password) {

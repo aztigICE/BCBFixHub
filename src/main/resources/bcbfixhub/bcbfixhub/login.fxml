@@ -11,7 +11,7 @@
 <VBox fx:id="test"
       alignment="CENTER"
       spacing="20.0"
-      xmlns="http://javafx.com/javafx/25"
+      xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bcbfixhub.bcbfixhub.controllers.UserController">
 
@@ -21,6 +21,7 @@
 
     <TextField fx:id="emailField" promptText="Email" />
     <PasswordField fx:id="passwordField" promptText="password" />
+    <Label fx:id="emailLabel" text=""/>
 
     <ButtonBar>
         <buttons>
