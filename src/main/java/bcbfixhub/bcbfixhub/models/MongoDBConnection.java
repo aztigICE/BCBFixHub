@@ -6,7 +6,7 @@ import com.mongodb.client.MongoDatabase;
 
 public class MongoDBConnection {
     private static final String CONNECTION_STRING = "mongodb+srv://njbermoy_db_user:vhjSWDXGMS6dJ8dy@bcbfixhub-cluster.ezoyndh.mongodb.net/?appName=BCBFixhub-Cluster";
-    private static final String DATABASE_NAME = "User-Details"; // new db
+    private static final String DATABASE_NAME = "User-Details"; // new db NAME
 
     private static MongoClient mongoClient = null;
 
