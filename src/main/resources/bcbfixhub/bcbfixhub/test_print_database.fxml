@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+
+<VBox   fx:id="test"
+        alignment="CENTER"
+        spacing="20.0"
+        fx:controller="bcbfixhub.bcbfixhub.controllers.DBprinterController"
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        prefHeight="400.0" prefWidth="600.0"
+>
+
+    <padding>
+        <Insets top="20.0" bottom="20.0" left="20.0" right="20.0"/>
+    </padding>
+
+    <TabPane>
+        <Tab text="Tab One" fx:id="tabOne">
+            <Label text="hi"/>
+        </Tab>
+        <Tab text="Tab two" fx:id="tabTwo">
+            <Label text="hello"/>
+        </Tab>
+    </TabPane>
+
+</VBox>
