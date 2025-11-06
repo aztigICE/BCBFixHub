@@ -32,6 +32,9 @@ public class ScenesApplication extends Application {
         // Dimensions from payment-view.fxml (prefWidth="950.0" prefHeight="650.0")
         addScene("payment", "payment-view.fxml", 950, 650);
 
+        // MODIFIED SCENE: Updated dimensions
+        addScene("account", "account-view.fxml", 1000, 700);
+
         switchTo("login");
         stage.show();
         stage.centerOnScreen();
@@ -70,6 +73,7 @@ public class ScenesApplication extends Application {
         if (controller instanceof ScenesController) {
             ((ScenesController) controller).setApplication(this);
         } else {
+            // Optional: Handle controllers that don't need the application instance
             System.out.println("Warning: Controller " + controller.getClass().getName() + " does not extend ScenesController.");
         }
 
