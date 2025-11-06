@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="@bcbfixhub-cluster.ezoyndh.mongodb.net" uuid="c628956a-a3d4-4c96-9b83-302200121dd5">
+    <data-source source="LOCAL" name="@testdb.z8dbuui.mongodb.net" uuid="c628956a-a3d4-4c96-9b83-302200121dd5">
       <driver-ref>mongo.4</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>

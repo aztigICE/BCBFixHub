@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<VBox fx:id="register"
+      alignment="CENTER"
+      spacing="20.0"
+      xmlns="http://javafx.com/javafx/25"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="bcbfixhub.bcbfixhub.controllers.AdminController">
+
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <VBox alignment="CENTER" spacing="45">
+        <Button onAction="#onProducts" text="Products" prefWidth="300"/>
+        <Button onAction="#onOrder" text="Orders" prefWidth="300"/>
+        <Button onAction="#onUser" text="Users" prefWidth="300"/>
+        <Button onAction="#onLogin" text="Log Out" prefWidth="300"/>
+    </VBox>
+
+</VBox>
+
