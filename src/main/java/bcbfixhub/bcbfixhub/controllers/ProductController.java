@@ -277,6 +277,48 @@ public class ProductController extends ScenesController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+    @FXML
+    private void handleDeleteProduct() {
+        Product selectedProduct = getSelectedProduct();
+        if (selectedProduct == null) {
+            showAlert("No Selection", "Please select a product to delete.");
+            return;
+        }
+
+        // Confirm deletion
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Delete Confirmation");
+        confirm.setHeaderText(null);
+        confirm.setContentText("Are you sure you want to delete \"" + selectedProduct.getModel() + "\"?");
+
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    String activeCollection = getActiveCollectionName();
+                    MongoCollection<Document> collection = ProductDBConnection.getDatabase().getCollection(activeCollection);
+
+                    // Delete from MongoDB using model as unique identifier
+                    Document filter = new Document("model", selectedProduct.getModel());
+                    collection.deleteOne(filter);
+
+                    // Remove from TableView
+                    switch (activeCollection) {
+                        case "keyboard" -> tableView.getItems().remove(selectedProduct);
+                        case "mouse" -> tableView1.getItems().remove(selectedProduct);
+                        case "storage" -> tableView21.getItems().remove(selectedProduct);
+                        case "memory" -> tableView211.getItems().remove(selectedProduct);
+                        case "monitor" -> tableView2111.getItems().remove(selectedProduct);
+                    }
+
+                    showAlert("Success", "Product deleted successfully!");
+                } catch (Exception e) {
+                    showAlert("Error", "Failed to delete product: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
 
     private Product getSelectedProduct() {
         String tabName = tabPane.getSelectionModel().getSelectedItem().getText().toLowerCase();

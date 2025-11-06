@@ -20,7 +20,7 @@
                                            <!-- Table for displaying products -->
                       <TableView fx:id="tableView" layoutY="-1.0" prefHeight="370.0" prefWidth="600.0">
                           <columns>
-                              <TableColumn fx:id="collectionColumn" prefWidth="135.0" text="Stock" />
+                              <TableColumn fx:id="stockColumn" prefWidth="135.0" text="Stock" />
                               <TableColumn fx:id="brandColumn" prefWidth="145.0" text="Product Brand" />
                               <TableColumn fx:id="modelColumn" prefWidth="230.0" text="Product Model" />
                               <TableColumn fx:id="priceColumn" prefWidth="90.0" text="Price(PHP)" />
@@ -29,13 +29,13 @@
                   
                       <!-- Input fields and Add button -->
                       <HBox layoutX="22.0" layoutY="381.0" prefHeight="25.0" prefWidth="556.0" spacing="10">
-                          <TextField fx:id="collectionField" prefWidth="60.0" promptText="Stock" />
+                          <TextField fx:id="stockField" prefWidth="60.0" promptText="Stock" />
                           <TextField fx:id="brandField" prefWidth="75.0" promptText="Brand" />
                           <TextField fx:id="modelField" prefWidth="130.0" promptText="Model" />
                           <TextField fx:id="priceField" prefWidth="60.0" promptText="Price" />
                           <Button onAction="#handleAddProduct" text="Add Product" />
                         <Button onAction="#handleEditProduct" text="Edit" />
-                        <Button onAction="#handleAddProduct" text="Delete" />
+                        <Button onAction="#handleDeleteProduct" text="Delete" />
                       </HBox>
                   </children>
                </AnchorPane>
@@ -47,7 +47,7 @@
                   <children>
                      <TableView fx:id="tableView1" prefHeight="370.0" prefWidth="600.0">
                         <columns>
-                           <TableColumn fx:id="collectionColumn1" prefWidth="135.0" text="Stock" />
+                           <TableColumn fx:id="stockColumn1" prefWidth="135.0" text="Stock" />
                            <TableColumn fx:id="brandColumn1" prefWidth="145.0" text="Product Brand" />
                            <TableColumn fx:id="modelColumn1" prefWidth="230.0" text="Product Model" />
                            <TableColumn fx:id="priceColumn1" prefWidth="90.0" text="Price(PHP)" />
@@ -55,13 +55,13 @@
                      </TableView>
                      <HBox layoutX="22.0" layoutY="381.0" prefHeight="25.0" prefWidth="556.0" spacing="10">
                         <children>
-                           <TextField fx:id="collectionField1" prefWidth="60.0" promptText="Stock" />
+                           <TextField fx:id="stockField1" prefWidth="60.0" promptText="Stock" />
                            <TextField fx:id="brandField1" prefWidth="75.0" promptText="Brand" />
                            <TextField fx:id="modelField1" prefWidth="130.0" promptText="Model" />
                            <TextField fx:id="priceField1" prefWidth="60.0" promptText="Price" />
                            <Button onAction="#handleAddProduct" text="Add Product" />
                            <Button onAction="#handleEditProduct" text="Edit" />
-                           <Button onAction="#handleAddProduct" text="Delete" />
+                           <Button onAction="#handleDeleteProduct" text="Delete" />
                         </children>
                      </HBox>
                   </children>
@@ -74,7 +74,7 @@
                   <children>
                      <TableView fx:id="tableView21" prefHeight="370.0" prefWidth="600.0">
                         <columns>
-                           <TableColumn fx:id="collectionColumn21" prefWidth="135.0" text="Stock" />
+                           <TableColumn fx:id="stockColumn21" prefWidth="135.0" text="Stock" />
                            <TableColumn fx:id="brandColumn21" prefWidth="145.0" text="Product Brand" />
                            <TableColumn fx:id="modelColumn21" prefWidth="230.0" text="Product Model" />
                            <TableColumn fx:id="priceColumn21" prefWidth="90.0" text="Price(PHP)" />
@@ -82,13 +82,13 @@
                      </TableView>
                      <HBox layoutX="22.0" layoutY="381.0" prefHeight="25.0" prefWidth="556.0" spacing="10">
                         <children>
-                           <TextField fx:id="collectionField2" prefWidth="60.0" promptText="Stock" />
+                           <TextField fx:id="stockField2" prefWidth="60.0" promptText="Stock" />
                            <TextField fx:id="brandField2" prefWidth="75.0" promptText="Brand" />
                            <TextField fx:id="modelField2" prefWidth="130.0" promptText="Model" />
                            <TextField fx:id="priceField2" prefWidth="60.0" promptText="Price" />
                            <Button onAction="#handleAddProduct" text="Add Product" />
                            <Button layoutX="505.0" layoutY="10.0" onAction="#handleEditProduct" text="Edit" />
-                           <Button layoutX="539.0" layoutY="10.0" onAction="#handleAddProduct" text="Delete" />
+                           <Button layoutX="539.0" layoutY="10.0" onAction="#handleDeleteProduct" text="Delete" />
                         </children>
                      </HBox>
                   </children>
@@ -101,7 +101,7 @@
                   <children>
                      <TableView fx:id="tableView211" prefHeight="370.0" prefWidth="600.0">
                         <columns>
-                           <TableColumn fx:id="collectionColumn211" prefWidth="135.0" text="Stock" />
+                           <TableColumn fx:id="stockColumn211" prefWidth="135.0" text="Stock" />
                            <TableColumn fx:id="brandColumn211" prefWidth="145.0" text="Product Brand" />
                            <TableColumn fx:id="modelColumn211" prefWidth="230.0" text="Product Model" />
                            <TableColumn fx:id="priceColumn211" prefWidth="90.0" text="Price(PHP)" />
@@ -109,13 +109,13 @@
                      </TableView>
                      <HBox layoutX="22.0" layoutY="381.0" prefHeight="25.0" prefWidth="556.0" spacing="10">
                         <children>
-                           <TextField fx:id="collectionField211" prefWidth="60.0" promptText="Stock" />
+                           <TextField fx:id="stockField211" prefWidth="60.0" promptText="Stock" />
                            <TextField fx:id="brandField211" prefWidth="75.0" promptText="Brand" />
                            <TextField fx:id="modelField211" prefWidth="130.0" promptText="Model" />
                            <TextField fx:id="priceField211" prefWidth="60.0" promptText="Price" />
                             <Button onAction="#handleAddProduct" text="Add Product" />
                            <Button onAction="#handleEditProduct" text="Edit" />
-                           <Button onAction="#handleAddProduct" text="Delete" />
+                           <Button onAction="#handleDeleteProduct" text="Delete" />
                         </children>
                      </HBox>
                   </children>
@@ -128,7 +128,7 @@
                   <children>
                      <TableView fx:id="tableView2111" prefHeight="370.0" prefWidth="600.0">
                         <columns>
-                           <TableColumn fx:id="collectionColumn2111" prefWidth="135.0" text="Stock" />
+                           <TableColumn fx:id="stockColumn2111" prefWidth="135.0" text="Stock" />
                            <TableColumn fx:id="brandColumn2111" prefWidth="145.0" text="Product Brand" />
                            <TableColumn fx:id="modelColumn2111" prefWidth="230.0" text="Product Model" />
                            <TableColumn fx:id="priceColumn2111" prefWidth="90.0" text="Price(PHP)" />
@@ -136,13 +136,13 @@
                      </TableView>
                      <HBox layoutX="22.0" layoutY="381.0" prefHeight="25.0" prefWidth="556.0" spacing="10">
                         <children>
-                           <TextField fx:id="collectionField2111" prefHeight="25.0" prefWidth="60.0" promptText="Stock" />
+                           <TextField fx:id="stockField2111" prefHeight="25.0" prefWidth="60.0" promptText="Stock" />
                            <TextField fx:id="brandField2111" prefHeight="25.0" prefWidth="75.0" promptText="Brand" />
                            <TextField fx:id="modelField2111" prefHeight="25.0" prefWidth="130.0" promptText="Model" />
                            <TextField fx:id="priceField2111" prefHeight="25.0" prefWidth="60.0" promptText="Price" />
                            <Button onAction="#handleAddProduct" text="Add Product" />
                            <Button layoutX="480.0" layoutY="10.0" onAction="#handleEditProduct" text="Edit" />
-                           <Button layoutX="533.0" layoutY="10.0" onAction="#handleAddProduct" text="Delete" />
+                           <Button layoutX="533.0" layoutY="10.0" onAction="#handleDeleteProduct" text="Delete" />
                         </children>
                      </HBox>
                   </children>
