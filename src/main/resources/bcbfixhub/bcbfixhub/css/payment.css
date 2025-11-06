@@ -1,0 +1,110 @@
+/* Root container */
+.root {
+    -fx-background-color: #FFFFFF; /* Changed to white */
+}
+
+/* Main title "Payment Method" */
+.title-label {
+    -fx-text-fill: #363636; /* Changed to dark text */
+}
+
+/* Box containing the payment toggles */
+.toggle-box {
+    -fx-background-color: #EFEFEF; /* Changed to light grey */
+    -fx-border-color: #DDDDDD; /* Changed to light grey border */
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+/* Individual payment toggle buttons */
+.payment-toggle-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 15px;
+    -fx-text-fill: #363636; /* Changed to dark text */
+}
+
+/* Titles for details sections (e.g., "GCash Details") */
+.details-title {
+    -fx-font-weight: bold;
+    -fx-text-fill: #363636; /* Changed to dark text */
+}
+
+/* Labels for text fields (e.g., "GCash Number:") */
+.details-label {
+    -fx-text-fill: #363636; /* Changed to dark text */
+}
+
+/* All text fields */
+.text-field {
+    -fx-background-radius: 5;
+    -fx-background-color: #FFFFFF; /* Changed to white */
+    -fx-border-color: #AAAAAA; /* Added border */
+    -fx-text-fill: #363636; /* Changed to dark text */
+    -fx-prompt-text-fill: #888888; /* Darkened prompt text */
+}
+
+/* The main checkout button */
+#checkoutButton {
+    -fx-background-color: #FFD000;
+    -fx-text-fill: #363636;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+}
+
+/* Darken button on hover */
+#checkoutButton:hover {
+    -fx-background-color: #E6BB00; /* A darker yellow */
+    -fx-cursor: hand; /* Show hand cursor on hover */
+}
+
+/* The right-hand summary box */
+.summary-box {
+    -fx-background-color: #FAEBCD; /* Changed to new color */
+    -fx-background-radius: 10;
+    -fx-border-color: #E0CBAF; /* Border to match new color */
+    -fx-border-radius: 10;
+}
+
+/* Title in the summary box ("Designer Package") */
+.summary-title {
+    -fx-text-fill: #363636; /* Changed to dark text */
+}
+
+/* Subtitle in the summary box */
+.summary-subtitle {
+    -fx-text-fill: #555555; /* Changed to dark gray text */
+}
+
+/* Default label style within the summary grid panes */
+.summary-box .grid-pane .label {
+    -fx-text-fill: #363636; /* Changed to dark text */
+}
+
+/* Headers in the summary grid ("PRODUCT", "PRICE") */
+.grid-header {
+    -fx-font-weight: bold;
+    -fx-text-fill: #000000; /* Changed to black */
+}
+
+/* Total labels in the summary grid ("TOTAL", "$50") */
+.grid-total {
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-text-fill: #000000; /* Changed to black */
+}
+
+/* Make separators visible in light mode */
+.toggle-box .separator .line {
+    -fx-border-color: #DDDDDD; /* Changed to light grey */
+    -fx-border-width: 1px;
+}
+
+/* Separators for the new light summary box */
+.summary-box .separator .line {
+    -fx-border-color: #E0CBAF; /* Changed to match summary box */
+    -fx-border-width: 1px;
+}
