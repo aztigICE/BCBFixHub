@@ -1,6 +1,6 @@
 package bcbfixhub.bcbfixhub.controllers;
 
-import bcbfixhub.bcbfixhub.UserApplication;
+import bcbfixhub.bcbfixhub.ScenesApplication;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,7 +26,7 @@ public class AdminController extends ScenesController
 
     @FXML
     public void onOrder(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(UserApplication.class.getResource("order.fxml"));
+        FXMLLoader loader = new FXMLLoader(ScenesController.class.getResource("order.fxml"));
         Scene scene = new Scene(loader.load());
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setTitle("Register");
@@ -41,7 +41,7 @@ public class AdminController extends ScenesController
 
     @FXML
     public void onUser(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(UserApplication.class.getResource("users.fxml"));
+        FXMLLoader loader = new FXMLLoader(ScenesController.class.getResource("users.fxml"));
         Scene scene = new Scene(loader.load());
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setTitle("Register");

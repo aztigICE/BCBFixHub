@@ -2,7 +2,7 @@ plugins {
     java
     application
     id("org.javamodularity.moduleplugin") version "1.8.15"
-    id("org.openjfx.javafxplugin") version "0.0.13"
+    id("org.openjfx.javafxplugin") version "0.0.14"
     id("org.beryx.jlink") version "2.25.0"
 }
 
@@ -17,7 +17,7 @@ val junitVersion = "5.12.1"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(23)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -27,11 +27,18 @@ tasks.withType<JavaCompile> {
 
 application {
     mainModule.set("bcbfixhub.bcbfixhub")
-    mainClass.set("bcbfixhub.bcbfixhub.HelloApplication")
+    mainClass.set("bcbfixhub.bcbfixhub.AppLauncher")
+}
+
+tasks.named<JavaExec>("run") {
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--enable-native-access=ALL-UNNAMED"
+    )
 }
 
 javafx {
-    version = "21.0.6"
+    version = "25"
     modules = listOf("javafx.controls", "javafx.fxml")
 }
 
