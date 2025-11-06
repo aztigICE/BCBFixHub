@@ -12,7 +12,7 @@ import java.util.Objects;
 public class UserApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(UserApplication.class.getResource("login.fxml"));
+        FXMLLoader loader = new FXMLLoader(UserApplication.class.getResource("login-view.fxml"));
         Scene scene = new Scene(loader.load());
         scene.getStylesheets().add(Objects.requireNonNull(UserApplication.
                 class.getResource("login.css")).toExternalForm());

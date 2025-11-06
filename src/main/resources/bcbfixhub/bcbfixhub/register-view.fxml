@@ -10,7 +10,7 @@
 <VBox fx:id="register"
       alignment="CENTER"
       spacing="20.0"
-      xmlns="http://javafx.com/javafx/25"
+      xmlns="http://javafx.com/javafx/21.0.6"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="bcbfixhub.bcbfixhub.controllers.RegisterController">
 

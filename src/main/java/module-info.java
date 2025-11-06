@@ -9,6 +9,7 @@ module bcbfixhub.bcbfixhub {
     requires org.mongodb.bson;
     requires org.mongodb.driver.sync.client;
     requires javafx.graphics;
+    requires jbcrypt;
 
     opens bcbfixhub.bcbfixhub to javafx.fxml;
     exports bcbfixhub.bcbfixhub;
