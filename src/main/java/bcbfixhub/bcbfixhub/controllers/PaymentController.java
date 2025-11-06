@@ -1,37 +1,24 @@
 package bcbfixhub.bcbfixhub.controllers;
 
-import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label; // Import Label
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality; // Import Modality
-import javafx.stage.Stage; // Import Stage
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.geometry.Insets;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class PaymentController implements Initializable {
 
-    // Removed ChoiceBox
-    // @FXML private ChoiceBox<String> PaymentChoiceBox;
-
-    // FXML references for the payment method boxes
-    @FXML
-    private VBox gcashBox;
-    @FXML
-    private VBox paypalBox;
-    @FXML
-    private VBox creditDebitBox;
-
-    // FXML references for the new ToggleButtons
+    // --- FXML References for Toggles and Boxes ---
     @FXML
     private ToggleGroup paymentToggleGroup;
     @FXML
@@ -40,81 +27,84 @@ public class PaymentController implements Initializable {
     private ToggleButton paypalToggle;
     @FXML
     private ToggleButton creditDebitToggle;
+    @FXML
+    private VBox gcashBox;
+    @FXML
+    private VBox paypalBox;
+    @FXML
+    private VBox creditDebitBox;
 
-    // FXML references for the text fields
-    @FXML private TextField gcashNumberField;
-    @FXML private TextField gcashNameField;
-    @FXML private TextField paypalEmailField;
-    @FXML private TextField cardNumberField;
-    @FXML private TextField expiryDateField;
-    @FXML private TextField cvvField;
+    // --- FXML References for GCash Fields ---
+    @FXML
+    private TextField gcashNumberField;
+    @FXML
+    private TextField gcashNameField;
 
-    // FXML reference for the button
-    @FXML private Button checkoutButton;
+    // --- FXML References for Paypal Fields ---
+    @FXML
+    private TextField paypalEmailField;
 
+    // --- FXML References for Credit/Debit Fields ---
+    @FXML
+    private TextField cardNumberField;
+    @FXML
+    private TextField expiryDateField;
+    @FXML
+    private TextField cvvField;
+
+    // --- FXML Reference for Checkout Button ---
+    @FXML
+    private Button checkoutButton;
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Add listeners to toggle buttons
+        paymentToggleGroup.selectedToggleProperty().addListener((observable, oldToggle, newToggle) -> {
+            handlePaymentMethodChange(newToggle);
+        });
 
-        // Ensure all boxes are hidden initially
-        if (gcashBox != null) gcashBox.setVisible(false);
-        if (paypalBox != null) paypalBox.setVisible(false);
-        if (creditDebitBox != null) creditDebitBox.setVisible(false);
+        // Set default selection (optional, but good practice)
+        // gcashToggle.setSelected(true);
 
-        // Add a listener to the ToggleGroup to show/hide payment fields
-        if (paymentToggleGroup != null) {
-            paymentToggleGroup.selectedToggleProperty().addListener(
-                    (observable, oldToggle, newToggle) -> handlePaymentOptionChange(newToggle)
-            );
-        }
-
-        // You can add an action for the checkout button here
-        if (checkoutButton != null) {
-            checkoutButton.setOnAction(event -> handleCheckout());
-        }
+        // Set action for the checkout button
+        checkoutButton.setOnAction(event -> handleCheckout());
     }
 
     /**
-     * Shows the correct VBox based on the payment option selected and hides the others.
-     * @param selectedToggle The Toggle that was selected in the ToggleGroup.
+     * Handles the logic for showing/hiding payment detail boxes
+     * based on the selected toggle button.
+     * @param selectedToggle The toggle button that was just selected.
      */
-    private void handlePaymentOptionChange(Toggle selectedToggle) {
-        // Hide all payment boxes first
-        if (gcashBox != null) gcashBox.setVisible(false);
-        if (paypalBox != null) paypalBox.setVisible(false);
-        if (creditDebitBox != null) creditDebitBox.setVisible(false);
+    private void handlePaymentMethodChange(Toggle selectedToggle) {
+        // Hide all boxes first
+        gcashBox.setVisible(false);
+        paypalBox.setVisible(false);
+        creditDebitBox.setVisible(false);
 
-        // Show the relevant box
+        // Show the correct box
         if (selectedToggle == gcashToggle) {
-            if (gcashBox != null) gcashBox.setVisible(true);
+            gcashBox.setVisible(true);
         } else if (selectedToggle == paypalToggle) {
-            if (paypalBox != null) paypalBox.setVisible(true);
+            paypalBox.setVisible(true);
         } else if (selectedToggle == creditDebitToggle) {
-            if (creditDebitBox != null) creditDebitBox.setVisible(true);
+            creditDebitBox.setVisible(true);
         }
     }
 
     /**
      * Handles the checkout button click.
-     * Validates input and shows confirmation or error.
+     * Validates inputs and shows a confirmation popup.
      */
+    @FXML
     private void handleCheckout() {
-        String validationError = validateInputs();
+        String errorMessage = validateInputs();
 
-        if (validationError == null) {
-            // No errors, proceed to payment logic
-            System.out.println("Validation successful. Processing payment...");
-
-            // Show confirmation popup
+        if (errorMessage == null) {
+            // All good, show confirmation
             showConfirmationPopup();
-
-            // Close the payment window
-            Stage stage = (Stage) checkoutButton.getScene().getWindow();
-            stage.close();
-
         } else {
-            // Show validation error
-            showErrorPopup(validationError);
+            // Show error message
+            showErrorPopup(errorMessage);
         }
     }
 
@@ -147,7 +137,7 @@ public class PaymentController implements Initializable {
     }
 
     /**
-     * Creates and displays a modal error popup.
+     * Displays a simple modal popup for error messages.
      * @param message The error message to display.
      */
     private void showErrorPopup(String message) {
@@ -159,38 +149,58 @@ public class PaymentController implements Initializable {
         Button okButton = new Button("OK");
         okButton.setOnAction(e -> popupStage.close());
 
-        VBox vbox = new VBox(label, okButton);
-        vbox.setAlignment(Pos.CENTER);
-        vbox.setSpacing(15);
-        vbox.setPadding(new Insets(20));
-        vbox.setStyle("-fx-background-color: #FFFFFF;"); // Match light theme
+        VBox layout = new VBox(20, label, okButton);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
+        layout.setStyle("-fx-background-color: #FFFFFF;");
 
-        Scene scene = new Scene(vbox, 300, 150);
+        Scene scene = new Scene(layout, 300, 150);
         popupStage.setScene(scene);
         popupStage.showAndWait();
     }
 
     /**
-     * Creates and displays a modal confirmation popup.
+     * Displays a confirmation popup and handles redirection.
      */
     private void showConfirmationPopup() {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Success");
+        popupStage.setTitle("Confirmation");
 
         Label label = new Label("Order Confirmed!");
-        label.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-
         Button okButton = new Button("OK");
-        okButton.setOnAction(e -> popupStage.close());
 
-        VBox vbox = new VBox(label, okButton);
-        vbox.setAlignment(Pos.CENTER);
-        vbox.setSpacing(15);
-        vbox.setPadding(new Insets(20));
-        vbox.setStyle("-fx-background-color: #FFFFFF;");
+        okButton.setOnAction(e -> {
+            // 1. Close the popup
+            popupStage.close();
 
-        Scene scene = new Scene(vbox, 300, 150);
+            // 2. Redirect to the main screen
+            try {
+                // Use absolute path from resources root
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/bcbfixhub/bcbfixhub/main.fxml"));
+                Parent root = loader.load();
+
+                // Get the current scene from the checkout button and set its root to the new one
+                Scene scene = checkoutButton.getScene();
+                scene.setRoot(root);
+
+            } catch (IOException ioException) {
+                System.err.println("Failed to load main.fxml:");
+                ioException.printStackTrace();
+                // Show an error popup if loading fails
+                showErrorPopup("Failed to load the main screen.");
+            } catch (Exception ex) {
+                System.err.println("An unexpected error occurred during redirection:");
+                ex.printStackTrace();
+            }
+        });
+
+        VBox layout = new VBox(20, label, okButton);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
+        layout.setStyle("-fx-background-color: #FFFFFF;");
+
+        Scene scene = new Scene(layout, 300, 150);
         popupStage.setScene(scene);
         popupStage.showAndWait();
     }

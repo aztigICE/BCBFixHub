@@ -43,13 +43,16 @@ public class ScenesApplication extends Application {
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
         Scene scene = new Scene(loader.load(), width, height);
 
-        // Optional CSS
-        URL cssUrl = getClass().getResource("/bcbfixhub/bcbfixhub/" + name + ".css");
+        // Optional CSS (fix: add missing slash)
+        URL cssUrl = getClass().getResource("/bcbfixhub/bcbfixhub/css/" + name + ".css");
         if (cssUrl == null) {
-            cssUrl = getClass().getResource("/bcbfixhub.bcbfixhub/" + name + ".css");
+            cssUrl = getClass().getResource("/bcbfixhub.bcbfixhub/css/" + name + ".css");
         }
         if (cssUrl != null) {
             scene.getStylesheets().add(cssUrl.toExternalForm());
+            System.out.println("Loaded CSS for scene: " + name + " -> " + cssUrl);
+        } else {
+            System.out.println("No CSS found for scene: " + name);
         }
 
         // Set controller link
@@ -59,7 +62,6 @@ public class ScenesApplication extends Application {
         // Store scene
         scenes.put(name, scene);
 
-        // Debug info
         System.out.println("Loaded scene: " + name + " from " + fxmlUrl);
     }
 

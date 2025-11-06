@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+  Root BorderPane for the main storefront.
+  Uses main.css for styling.
+-->
+<BorderPane prefHeight="700.0" prefWidth="1000.0" styleClass="root" stylesheets="@css/main.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bcbfixhub.bcbfixhub.controllers.MainController">
+    <top>
+        <!-- Top bar for filters -->
+        <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="filter-bar">
+            <padding>
+                <Insets top="15.0" right="30.0" bottom="15.0" left="30.0" />
+            </padding>
+            <children>
+                <Label styleClass="store-title" text="Store Catalog" />
+                <VBox HBox.hgrow="ALWAYS" /> <!-- Spacer -->
+                <Label text="Category:" />
+                <ChoiceBox fx:id="categoryChoiceBox" prefWidth="150.0" />
+                <TextField fx:id="searchBar" promptText="Search products..." prefWidth="250.0" />
+                <Button fx:id="cartButton" mnemonicParsing="false" text="Cart" styleClass="cart-button" onAction="#handleGoToCart"/>
+            </children>
+        </HBox>
+    </top>
+    <center>
+        <!-- Scrollable area for the product catalog -->
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="scroll-pane">
+            <content>
+                <!-- TilePane to hold product cards -->
+                <TilePane fx:id="catalogTilePane" hgap="20.0" vgap="20.0">
+                    <padding>
+                        <Insets top="20.0" right="30.0" bottom="20.0" left="30.0" />
+                    </padding>
+                </TilePane>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>
