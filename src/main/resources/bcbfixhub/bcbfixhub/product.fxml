@@ -34,7 +34,7 @@
                           <TextField fx:id="modelField" prefWidth="130.0" promptText="Model" />
                           <TextField fx:id="priceField" prefWidth="60.0" promptText="Price" />
                           <Button onAction="#handleAddProduct" text="Add Product" />
-                        <Button onAction="#handleAddProduct" text="Edit" />
+                        <Button onAction="#handleEditProduct" text="Edit" />
                         <Button onAction="#handleAddProduct" text="Delete" />
                       </HBox>
                   </children>
@@ -60,7 +60,7 @@
                            <TextField fx:id="modelField1" prefWidth="130.0" promptText="Model" />
                            <TextField fx:id="priceField1" prefWidth="60.0" promptText="Price" />
                            <Button onAction="#handleAddProduct" text="Add Product" />
-                           <Button onAction="#handleAddProduct" text="Edit" />
+                           <Button onAction="#handleEditProduct" text="Edit" />
                            <Button onAction="#handleAddProduct" text="Delete" />
                         </children>
                      </HBox>
@@ -87,7 +87,7 @@
                            <TextField fx:id="modelField2" prefWidth="130.0" promptText="Model" />
                            <TextField fx:id="priceField2" prefWidth="60.0" promptText="Price" />
                            <Button onAction="#handleAddProduct" text="Add Product" />
-                           <Button layoutX="505.0" layoutY="10.0" onAction="#handleAddProduct" text="Edit" />
+                           <Button layoutX="505.0" layoutY="10.0" onAction="#handleEditProduct" text="Edit" />
                            <Button layoutX="539.0" layoutY="10.0" onAction="#handleAddProduct" text="Delete" />
                         </children>
                      </HBox>
@@ -114,7 +114,7 @@
                            <TextField fx:id="modelField211" prefWidth="130.0" promptText="Model" />
                            <TextField fx:id="priceField211" prefWidth="60.0" promptText="Price" />
                             <Button onAction="#handleAddProduct" text="Add Product" />
-                           <Button onAction="#handleAddProduct" text="Edit" />
+                           <Button onAction="#handleEditProduct" text="Edit" />
                            <Button onAction="#handleAddProduct" text="Delete" />
                         </children>
                      </HBox>
@@ -141,7 +141,7 @@
                            <TextField fx:id="modelField2111" prefHeight="25.0" prefWidth="130.0" promptText="Model" />
                            <TextField fx:id="priceField2111" prefHeight="25.0" prefWidth="60.0" promptText="Price" />
                            <Button onAction="#handleAddProduct" text="Add Product" />
-                           <Button layoutX="480.0" layoutY="10.0" onAction="#handleAddProduct" text="Edit" />
+                           <Button layoutX="480.0" layoutY="10.0" onAction="#handleEditProduct" text="Edit" />
                            <Button layoutX="533.0" layoutY="10.0" onAction="#handleAddProduct" text="Delete" />
                         </children>
                      </HBox>

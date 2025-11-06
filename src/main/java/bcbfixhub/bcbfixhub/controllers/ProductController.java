@@ -7,6 +7,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.bson.Document;
+import javafx.scene.layout.GridPane;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -185,6 +187,120 @@ public class ProductController {
         }
     }
 
+    @FXML
+    private void handleEditProduct() {
+        Product selectedProduct = getSelectedProduct();
+        if (selectedProduct == null) {
+            showAlert("No Selection", "Please select a product to edit.");
+            return;
+        }
+
+        // Create text fields pre-filled with existing data
+        TextField collectionField = new TextField(selectedProduct.getCollection());
+        TextField brandField = new TextField(selectedProduct.getBrand());
+        TextField modelField = new TextField(selectedProduct.getModel());
+        TextField priceField = new TextField(String.valueOf(selectedProduct.getPrice()));
+
+        // Create a GridPane layout
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new javafx.geometry.Insets(20, 20, 10, 20));
+        grid.addRow(0, new Label("Collection:"), collectionField);
+        grid.addRow(1, new Label("Brand:"), brandField);
+        grid.addRow(2, new Label("Model:"), modelField);
+        grid.addRow(3, new Label("Price:"), priceField);
+
+        // Create and configure dialog
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Edit Product");
+        dialog.getDialogPane().setContent(grid);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        dialog.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    // Get updated values
+                    String newCollection = collectionField.getText().trim();
+                    String newBrand = brandField.getText().trim();
+                    String newModel = modelField.getText().trim();
+                    double newPrice = Double.parseDouble(priceField.getText().trim());
+
+                    // Validate inputs
+                    if (newCollection.isEmpty() || newBrand.isEmpty() || newModel.isEmpty()) {
+                        showAlert("Validation Error", "All fields must be filled!");
+                        return;
+                    }
+
+                    // Update MongoDB
+                    String activeCollection = getActiveCollectionName();
+                    MongoCollection<Document> collection = ProductDBConnection.getDatabase().getCollection(activeCollection);
+                    Document filter = new Document("model", selectedProduct.getModel());
+                    Document update = new Document("$set", new Document("collection", newCollection)
+                            .append("brand", newBrand)
+                            .append("model", newModel)
+                            .append("price", newPrice));
+                    collection.updateOne(filter, update);
+
+                    // Update TableView
+                    selectedProduct.setCollection(newCollection);
+                    selectedProduct.setBrand(newBrand);
+                    selectedProduct.setModel(newModel);
+                    selectedProduct.setPrice(newPrice);
+
+                    // Refresh the current table
+                    switch (activeCollection) {
+                        case "keyboard" -> tableView.refresh();
+                        case "mouse" -> tableView1.refresh();
+                        case "storage" -> tableView21.refresh();
+                        case "memory" -> tableView211.refresh();
+                        case "monitor" -> tableView2111.refresh();
+                    }
+
+                    showAlert("Success", "Product updated successfully!");
+
+                } catch (NumberFormatException e) {
+                    showAlert("Error", "Price must be a valid number!");
+                } catch (Exception e) {
+                    showAlert("Error", "Database update failed: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private Product getSelectedProduct() {
+        String tabName = tabPane.getSelectionModel().getSelectedItem().getText().toLowerCase();
+        return switch (tabName) {
+            case "keyboard" -> tableView.getSelectionModel().getSelectedItem();
+            case "mouse" -> tableView1.getSelectionModel().getSelectedItem();
+            case "storage" -> tableView21.getSelectionModel().getSelectedItem();
+            case "memory" -> tableView211.getSelectionModel().getSelectedItem();
+            case "monitor" -> tableView2111.getSelectionModel().getSelectedItem();
+            default -> null;
+        };
+    }
+
+
+    private String getActiveCollectionName() {
+        if (tabPane == null || tabPane.getSelectionModel().getSelectedItem() == null)
+            return "Product"; // fallback
+
+        return tabPane.getSelectionModel().getSelectedItem().getText().toLowerCase();
+    }
+
+
+
+
     // === Alerts ===
     private void showAlert(Alert.AlertType type, String message) {
         Alert alert = new Alert(type);
@@ -195,10 +311,10 @@ public class ProductController {
 
     // === Inner Product Class ===
     public static class Product {
-        private final String collection;
-        private final String brand;
-        private final String model;
-        private final Double price;
+        private String collection;
+        private String brand;
+        private String model;
+        private Double price;
 
         public Product(String collection, String brand, String model, Double price) {
             this.collection = collection;
@@ -211,5 +327,11 @@ public class ProductController {
         public String getBrand() { return brand; }
         public String getModel() { return model; }
         public Double getPrice() { return price; }
+
+        public void setCollection(String collection) { this.collection = collection; }
+        public void setBrand(String brand) { this.brand = brand; }
+        public void setModel(String model) { this.model = model; }
+        public void setPrice(Double price) { this.price = price; }
     }
+
 }
