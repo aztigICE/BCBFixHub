@@ -22,7 +22,7 @@
         <Button onAction="#onProducts" text="Products" prefWidth="300"/>
         <Button onAction="#onOrder" text="Orders" prefWidth="300"/>
         <Button onAction="#onUser" text="Users" prefWidth="300"/>
-        <Button onAction="#onLogin" text="Log Out" prefWidth="300"/>
+        <Button onAction="#onLogOut" text="Log Out" prefWidth="300"/>
     </VBox>
 
 </VBox>

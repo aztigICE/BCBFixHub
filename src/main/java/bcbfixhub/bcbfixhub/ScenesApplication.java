@@ -23,10 +23,14 @@ public class ScenesApplication extends Application {
         // Preload initial scenes
         addScene("login", "login-view.fxml", 400, 300);
         addScene("register", "register-view.fxml", 400, 300);
-        addScene("admin", "admin.fxml",  400, 300);
+        addScene("admin", "admin-view.fxml",  400, 300);
+        addScene("user-dashboard", "user-main-view.fxml", 1000, 700);
+        addScene("product", "product-view.fxml", 600, 450);
 
         switchTo("login");
         stage.show();
+        stage.centerOnScreen();
+
     }
 
     private void addScene(String name, String fxml, int width, int height) throws IOException {
@@ -79,6 +83,7 @@ public class ScenesApplication extends Application {
 
         mainStage.setScene(scene);
         mainStage.setTitle(capitalize(name));
+        mainStage.centerOnScreen();
     }
 
     private String capitalize(String s) {

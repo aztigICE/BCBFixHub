@@ -15,7 +15,7 @@ import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class MainController implements Initializable {
+public class MainController extends ScenesController implements Initializable {
 
     @FXML
     private ChoiceBox<String> categoryChoiceBox;

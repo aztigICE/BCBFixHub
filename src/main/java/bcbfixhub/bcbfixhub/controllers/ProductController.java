@@ -13,7 +13,7 @@ import javafx.scene.layout.GridPane;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductController {
+public class ProductController extends ScenesController {
 
     // ✅ Must match fx:id="tabPane" in FXML
     @FXML private TabPane tabPane;

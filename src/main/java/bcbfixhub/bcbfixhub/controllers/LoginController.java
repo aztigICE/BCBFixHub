@@ -7,7 +7,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-public class UserController extends ScenesController {
+public class LoginController extends ScenesController {
 
     @FXML
     private TextField emailField;
@@ -43,14 +43,12 @@ public class UserController extends ScenesController {
 
         if (isAuthenticated) {
             showAlert(Alert.AlertType.INFORMATION, "Login Success", "Welcome, " + enteredEmail + ".");
-            app.switchTo("dashboard");
+            app.switchTo("user-dashboard");
         } else {
             showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid credentials.");
         }
-
-        System.out.println("Before clear: " + emailField.getText());
         clearFields();
-        System.out.println("After clear: " + emailField.getText());
+
 
     }
 
