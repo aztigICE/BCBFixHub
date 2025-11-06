@@ -177,7 +177,7 @@ public class PaymentController implements Initializable {
             // 2. Redirect to the main screen
             try {
                 // Use absolute path from resources root
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/bcbfixhub/bcbfixhub/main.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/bcbfixhub/bcbfixhub/user-main-view.fxml"));
                 Parent root = loader.load();
 
                 // Get the current scene from the checkout button and set its root to the new one
@@ -185,7 +185,7 @@ public class PaymentController implements Initializable {
                 scene.setRoot(root);
 
             } catch (IOException ioException) {
-                System.err.println("Failed to load main.fxml:");
+                System.err.println("Failed to load user-main-view.fxml:");
                 ioException.printStackTrace();
                 // Show an error popup if loading fails
                 showErrorPopup("Failed to load the main screen.");
