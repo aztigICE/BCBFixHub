@@ -1,8 +1,7 @@
 package bcbfixhub.bcbfixhub.controllers;
 
-import bcbfixhub.bcbfixhub.models.ProductDBConnection;
+import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -32,8 +31,9 @@ public class MainController extends ScenesController implements Initializable {
 
     private int cartItemCount = 0;
     private final List<Product> cart = new ArrayList<>();
-
     private bcbfixhub.bcbfixhub.ScenesApplication application;
+
+    private static final String DATABASE_NAME = "Product-Details"; // must match ProductController
 
     @Override
     public void setApplication(bcbfixhub.bcbfixhub.ScenesApplication application) {
@@ -43,9 +43,9 @@ public class MainController extends ScenesController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        MongoDatabase db = ProductDBConnection.getDatabase();
+        MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
 
-        // Populate categories from database collections
+        // Populate categories from collections
         List<String> collectionList = new ArrayList<>();
         for (String name : db.listCollectionNames()) collectionList.add(name);
         var collections = FXCollections.observableArrayList(collectionList);
@@ -56,7 +56,7 @@ public class MainController extends ScenesController implements Initializable {
         // Category filter listener
         categoryChoiceBox.setOnAction(e -> {
             String selected = categoryChoiceBox.getValue();
-            if (selected.equals("All")) loadAllProducts();
+            if ("All".equals(selected)) loadAllProducts();
             else loadProductsFromMongoDB(selected);
         });
 
@@ -70,7 +70,7 @@ public class MainController extends ScenesController implements Initializable {
     // Load all products from all collections
     private void loadAllProducts() {
         catalogTilePane.getChildren().clear();
-        MongoDatabase db = ProductDBConnection.getDatabase();
+        MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
         for (String collectionName : db.listCollectionNames()) {
             loadProductsFromMongoDB(collectionName);
         }
@@ -79,19 +79,19 @@ public class MainController extends ScenesController implements Initializable {
     // Load products from a single collection
     private void loadProductsFromMongoDB(String collectionName) {
         try {
-            MongoCollection<Document> collection = ProductDBConnection.getDatabase().getCollection(collectionName);
-            try (MongoCursor<Document> cursor = collection.find().iterator()) {
-                while (cursor.hasNext()) {
-                    Document doc = cursor.next();
-                    String stock = doc.getString("stock");
-                    String brand = doc.getString("brand");
-                    String model = doc.getString("model");
-                    Double price = doc.getDouble("price");
+            MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
+            MongoCollection<Document> collection = db.getCollection(collectionName);
 
-                    Product product = new Product(stock, brand, model, price);
-                    catalogTilePane.getChildren().add(createProductCard(product));
-                }
+            for (Document doc : collection.find()) {
+                String stock = doc.getString("stock");
+                String brand = doc.getString("brand");
+                String model = doc.getString("model");
+                Double price = doc.getDouble("price");
+
+                Product product = new Product(stock, brand, model, price);
+                catalogTilePane.getChildren().add(createProductCard(product));
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -105,7 +105,7 @@ public class MainController extends ScenesController implements Initializable {
         card.setPrefSize(200, 300);
         card.setStyle("-fx-background-color: #FFF8E7; -fx-background-radius: 8; -fx-border-color: #D1B48C; -fx-border-radius: 8;");
 
-        // Placeholder for image box
+        // Placeholder for image
         VBox imageBox = new VBox();
         imageBox.setPrefSize(180, 150);
         imageBox.setStyle("-fx-background-color: #E0CBAF; -fx-background-radius: 5;");
@@ -113,8 +113,8 @@ public class MainController extends ScenesController implements Initializable {
         Label nameLabel = new Label(product.getBrand() + " " + product.getModel());
         nameLabel.getStyleClass().add("product-name");
 
-        Label categoryLabel = new Label("Stock: " + product.getStock());
-        categoryLabel.getStyleClass().add("product-category");
+        Label stockLabel = new Label("Stock: " + product.getStock());
+        stockLabel.getStyleClass().add("product-category");
 
         Label priceLabel = new Label("₱" + String.format("%.2f", product.getPrice()));
         priceLabel.getStyleClass().add("product-price");
@@ -123,7 +123,7 @@ public class MainController extends ScenesController implements Initializable {
         addToCartButton.getStyleClass().add("add-to-cart-button");
         addToCartButton.setOnAction(e -> handleAddToCart(product));
 
-        card.getChildren().addAll(imageBox, nameLabel, categoryLabel, priceLabel, addToCartButton);
+        card.getChildren().addAll(imageBox, nameLabel, stockLabel, priceLabel, addToCartButton);
         VBox.setMargin(addToCartButton, new Insets(10, 0, 0, 0));
 
         return card;
