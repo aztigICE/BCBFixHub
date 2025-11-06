@@ -1,43 +1,27 @@
 package bcbfixhub.bcbfixhub.controllers;
 
-import bcbfixhub.bcbfixhub.UserApplication;
 import bcbfixhub.bcbfixhub.models.User;
 import bcbfixhub.bcbfixhub.models.UserDAO;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.util.Objects;
-
-public class UserController {
+public class UserController extends ScenesController {
 
     @FXML
     private TextField emailField;
 
     @FXML
-    private Label emailLabel;
-
-    @FXML
     private PasswordField passwordField;
 
-    private User user = new User();
-    private UserDAO userDAO = new UserDAO();
-
-    private Alert alert;
+    private final User user = new User();
+    private final UserDAO userDAO = new UserDAO();
+    private Alert alert = new Alert(Alert.AlertType.NONE);
 
     public void initialize() {
         this.emailField.textProperty().bindBidirectional(user.emailProperty());
         this.passwordField.textProperty().bindBidirectional(user.passwordProperty());
-        this.alert = new Alert(Alert.AlertType.NONE);
         this.alert.setTitle("Authentication");
     }
 
@@ -46,70 +30,49 @@ public class UserController {
         String enteredEmail = user.getEmail();
         String enteredPassword = user.getPassword();
 
-        // Hardcoded admin credentials
+        // Admin shortcut
         if ("admin".equals(enteredEmail) && "1234".equals(enteredPassword)) {
-            try {
-                FXMLLoader loader = new FXMLLoader(UserApplication.class.getResource("admin.fxml"));
-                Parent root = loader.load();
-                Scene scene = new Scene(root);
-
-                scene.getStylesheets().add(Objects.requireNonNull(UserApplication.class.getResource("login.css")).toExternalForm());
-                Stage stage = (Stage) emailField.getScene().getWindow();
-                stage.setTitle("Admin Dashboard");
-                stage.setScene(scene);
-                stage.show();
-
-                // Informational alert (optional)
-                this.alert.setAlertType(Alert.AlertType.INFORMATION);
-                this.alert.setHeaderText("Admin Login Success");
-                this.alert.setContentText("Welcome, admin.");
-                alert.showAndWait();
-            } catch (IOException e) {
-                this.alert.setAlertType(Alert.AlertType.ERROR);
-                this.alert.setHeaderText("Error");
-                this.alert.setContentText("Unable to load admin dashboard: " + e.getMessage());
-                alert.showAndWait();
-            } finally {
-                this.user.setEmail("");
-                this.user.setPassword("");
-            }
+            showAlert(Alert.AlertType.INFORMATION, "Admin Login Success", "Welcome, admin.");
+            app.switchTo("dashboard");
+            clearFields();
             return;
         }
 
+        // Regular authentication
         boolean isAuthenticated = userDAO.authenticate(enteredEmail, enteredPassword);
 
         if (isAuthenticated) {
-            this.alert.setAlertType(Alert.AlertType.INFORMATION);
-            this.alert.setHeaderText("Login Success");
-            emailLabel.setText("Logged in as: " + enteredEmail);
+            showAlert(Alert.AlertType.INFORMATION, "Login Success", "Welcome, " + enteredEmail + ".");
+            app.switchTo("dashboard");
         } else {
-            this.alert.setAlertType(Alert.AlertType.ERROR);
-            this.alert.setHeaderText("Login Failed");
-            this.alert.setContentText("Invalid credentials.");
+            showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid credentials.");
         }
+
+        System.out.println("Before clear: " + emailField.getText());
+        clearFields();
+        System.out.println("After clear: " + emailField.getText());
+
+    }
+
+    @FXML
+    protected void onRegister() {
+        app.switchTo("register");
+    }
+
+    @FXML
+    protected void onClose() {
+        emailField.getScene().getWindow().hide();
+    }
+
+    private void clearFields() {
+        user.setEmail("");
+        user.setPassword("");
+    }
+
+    private void showAlert(Alert.AlertType type, String header, String content) {
+        alert.setAlertType(type);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
         alert.showAndWait();
-
-        this.user.setEmail("");
-        this.user.setPassword("");
-    }
-
-    @FXML
-    protected void onRegister(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(UserApplication.class.getResource("register.fxml"));
-        Scene scene = new Scene(loader.load());
-        scene.getStylesheets().add(Objects.requireNonNull(UserApplication.
-                class.getResource("login.css")).toExternalForm());
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setTitle("Register");
-        stage.setScene(scene);
-        stage.show();
-    }
-
-
-    @FXML
-    protected void onClose(ActionEvent event) {
-        Node source = (Node) event.getSource();
-        Stage window = (Stage) source.getScene().getWindow();
-        window.close();
     }
 }

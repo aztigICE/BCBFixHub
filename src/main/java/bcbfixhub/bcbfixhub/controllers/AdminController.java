@@ -36,7 +36,7 @@ public class AdminController
         stage.show();
     }
     public void onLogin(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(UserApplication.class.getResource("login.fxml"));
+        FXMLLoader loader = new FXMLLoader(UserApplication.class.getResource("login-view.fxml"));
         Scene scene = new Scene(loader.load());
         scene.getStylesheets().add(Objects.requireNonNull(UserApplication.
                 class.getResource("login.css")).toExternalForm());
