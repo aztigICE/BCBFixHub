@@ -3,6 +3,7 @@ package bcbfixhub.bcbfixhub.models;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager;
 import bcbfixhub.bcbfixhub.utils.PasswordUtils;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -10,8 +11,12 @@ import static com.mongodb.client.model.Filters.eq;
 public class UserDAO {
     private final MongoCollection<Document> collection;
 
+    /**
+     * DAO constructor that dynamically chooses the database.
+     * You can pass a different database if needed.
+     */
     public UserDAO() {
-        MongoDatabase database = MongoDBConnection.getDatabase();
+        MongoDatabase database = MongoDBConnectionManager.getDatabase("User-Details");
         collection = database.getCollection("users");
     }
 

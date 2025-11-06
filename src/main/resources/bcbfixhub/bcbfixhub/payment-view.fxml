@@ -27,82 +27,78 @@
             <children>
                 <Label text="Payment Method" styleClass="title-label">
                     <font>
-                        <Font name="System Bold" size="20.0" />
+                        <Font name="System Bold" size="20.0"/>
                     </font>
                 </Label>
 
                 <!-- Payment Toggles -->
                 <VBox prefWidth="100.0" spacing="10.0" styleClass="toggle-box">
-                    <fx:define>
-                        <ToggleGroup fx:id="paymentToggleGroup" />
-                    </fx:define>
                     <children>
-                        <!-- GCash Toggle -->
-                        <ToggleButton fx:id="gcashToggle" mnemonicParsing="false" text="GCash" toggleGroup="$paymentToggleGroup" styleClass="payment-toggle-button" prefWidth="400.0" />
-                        <Separator />
-                        <!-- Paypal Toggle -->
-                        <ToggleButton fx:id="paypalToggle" mnemonicParsing="false" text="PayPal" toggleGroup="$paymentToggleGroup" styleClass="payment-toggle-button" prefWidth="400.0" />
-                        <Separator />
-                        <!-- Credit/Debit Toggle -->
-                        <ToggleButton fx:id="creditDebitToggle" mnemonicParsing="false" text="Credit/Debit" toggleGroup="$paymentToggleGroup" styleClass="payment-toggle-button" prefWidth="400.0" />
+                        <ToggleButton fx:id="gcashToggle" mnemonicParsing="false"
+                                      text="GCash" styleClass="payment-toggle-button" prefWidth="400.0"/>
+                        <Separator/>
+                        <ToggleButton fx:id="paypalToggle" mnemonicParsing="false"
+                                      text="PayPal" styleClass="payment-toggle-button" prefWidth="400.0"/>
+                        <Separator/>
+                        <ToggleButton fx:id="creditDebitToggle" mnemonicParsing="false"
+                                      text="Credit/Debit" styleClass="payment-toggle-button" prefWidth="400.0"/>
                     </children>
                     <padding>
-                        <Insets bottom="10.0" top="10.0" />
+                        <Insets bottom="10.0" top="10.0"/>
                     </padding>
                 </VBox>
 
-                <!-- This StackPane will hold all payment method forms, overlapping them -->
+                <!-- StackPane for Payment Forms -->
                 <StackPane prefHeight="180.0" prefWidth="300.0">
-                    <!-- GCash Fields Box -->
                     <VBox fx:id="gcashBox" spacing="10.0" visible="false">
                         <padding>
-                            <Insets top="10" right="10" bottom="10" left="10" />
+                            <Insets top="10" right="10" bottom="10" left="10"/>
                         </padding>
-                        <Label text="GCash Details" styleClass="details-title" />
-                        <Label text="GCash Number:" styleClass="details-label" />
-                        <TextField fx:id="gcashNumberField" promptText="e.g., 09123456789" />
-                        <Label text="GCash Name:" styleClass="details-label" />
-                        <TextField fx:id="gcashNameField" promptText="e.g., Juan Dela Cruz" />
+                        <Label text="GCash Details" styleClass="details-title"/>
+                        <Label text="GCash Number:" styleClass="details-label"/>
+                        <TextField fx:id="gcashNumberField" promptText="e.g., 09123456789"/>
+                        <Label text="GCash Name:" styleClass="details-label"/>
+                        <TextField fx:id="gcashNameField" promptText="e.g., Juan Dela Cruz"/>
                     </VBox>
 
-                    <!-- Paypal Fields Box -->
                     <VBox fx:id="paypalBox" spacing="10.0" visible="false">
                         <padding>
-                            <Insets top="10" right="10" bottom="10" left="10" />
+                            <Insets top="10" right="10" bottom="10" left="10"/>
                         </padding>
-                        <Label text="Paypal Details" styleClass="details-title" />
-                        <Label text="Paypal Email:" styleClass="details-label" />
-                        <TextField fx:id="paypalEmailField" promptText="e.g., juan@example.com" />
+                        <Label text="Paypal Details" styleClass="details-title"/>
+                        <Label text="Paypal Email:" styleClass="details-label"/>
+                        <TextField fx:id="paypalEmailField" promptText="e.g., juan@example.com"/>
                     </VBox>
 
-                    <!-- Credit/Debit Card Fields Box -->
                     <VBox fx:id="creditDebitBox" spacing="10.0" visible="false">
                         <padding>
-                            <Insets top="10" right="10" bottom="10" left="10" />
+                            <Insets top="10" right="10" bottom="10" left="10"/>
                         </padding>
-                        <Label text="Credit/Debit Card Details" styleClass="details-title" />
-                        <Label text="Card Number:" styleClass="details-label" />
-                        <TextField fx:id="cardNumberField" promptText="---- ---- ---- ----" />
+                        <Label text="Credit/Debit Card Details" styleClass="details-title"/>
+                        <Label text="Card Number:" styleClass="details-label"/>
+                        <TextField fx:id="cardNumberField" promptText="---- ---- ---- ----"/>
                         <HBox spacing="10.0">
                             <VBox>
-                                <Label text="Expiry Date:" styleClass="details-label" />
-                                <TextField fx:id="expiryDateField" promptText="MM/YY" prefWidth="70.0" />
+                                <Label text="Expiry Date:" styleClass="details-label"/>
+                                <TextField fx:id="expiryDateField" promptText="MM/YY" prefWidth="70.0"/>
                             </VBox>
                             <VBox>
-                                <Label text="CVV:" styleClass="details-label" />
-                                <TextField fx:id="cvvField" promptText="123" prefWidth="50.0" />
+                                <Label text="CVV:" styleClass="details-label"/>
+                                <TextField fx:id="cvvField" promptText="123" prefWidth="50.0"/>
                             </VBox>
                         </HBox>
                     </VBox>
                 </StackPane>
 
-                <!-- Pushes the button to the bottom -->
-                <VBox VBox.vgrow="ALWAYS" />
+                <!-- Spacer -->
+                <VBox VBox.vgrow="ALWAYS"/>
 
                 <!-- Checkout Button -->
-                <Button fx:id="checkoutButton" mnemonicParsing="false" text="CHECKOUT" prefHeight="50.0" prefWidth="420.0" />
+                <Button fx:id="checkoutButton" mnemonicParsing="false" text="CHECKOUT" prefHeight="50.0"
+                        prefWidth="420.0"/>
             </children>
         </VBox>
+
 
         <!-- RIGHT COLUMN (Placeholders) -->
         <VBox prefWidth="415.0" spacing="20.0">
