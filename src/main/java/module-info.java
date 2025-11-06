@@ -12,5 +12,6 @@ module bcbfixhub.bcbfixhub {
     requires jbcrypt;
 
     opens bcbfixhub.bcbfixhub to javafx.fxml;
+    opens bcbfixhub.bcbfixhub.controllers to javafx.fxml;
     exports bcbfixhub.bcbfixhub;
 }
