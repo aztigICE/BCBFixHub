@@ -83,7 +83,8 @@
     -fx-text-fill: #363636;
     -fx-font-weight: bold;
     -fx-background-radius: 5;
-    -fx-pref-width: 80px;
+    -fx-min-width: 80px; /* MODIFIED: Changed from pref-width */
+    -fx-padding: 5 10 5 10; /* ADDED: Added padding for better look */
 }
 
 .cart-button:hover {

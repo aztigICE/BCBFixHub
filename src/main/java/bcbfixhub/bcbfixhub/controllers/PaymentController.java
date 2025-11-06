@@ -1,10 +1,8 @@
 package bcbfixhub.bcbfixhub.controllers;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -12,11 +10,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class PaymentController implements Initializable {
+// --- MODIFICATION: Extend ScenesController ---
+public class PaymentController extends ScenesController implements Initializable {
 
     // --- FXML References for Toggles and Boxes ---
     @FXML
@@ -55,6 +53,16 @@ public class PaymentController implements Initializable {
     // --- FXML Reference for Checkout Button ---
     @FXML
     private Button checkoutButton;
+
+    // --- MODIFICATION: Add application field ---
+    private bcbfixhub.bcbfixhub.ScenesApplication application;
+
+    // --- MODIFICATION: Add setApplication method ---
+    @Override
+    public void setApplication(bcbfixhub.bcbfixhub.ScenesApplication application) {
+        super.setApplication(application);
+        this.application = application;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -174,24 +182,13 @@ public class PaymentController implements Initializable {
             // 1. Close the popup
             popupStage.close();
 
-            // 2. Redirect to the main screen
-            try {
-                // Use absolute path from resources root
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/bcbfixhub/bcbfixhub/user-main-view.fxml"));
-                Parent root = loader.load();
-
-                // Get the current scene from the checkout button and set its root to the new one
-                Scene scene = checkoutButton.getScene();
-                scene.setRoot(root);
-
-            } catch (IOException ioException) {
-                System.err.println("Failed to load user-main-view.fxml:");
-                ioException.printStackTrace();
-                // Show an error popup if loading fails
-                showErrorPopup("Failed to load the main screen.");
-            } catch (Exception ex) {
-                System.err.println("An unexpected error occurred during redirection:");
-                ex.printStackTrace();
+            // 2. Redirect to the main screen using the application controller
+            // --- MODIFICATION: Use application.switchTo ---
+            if (application != null) {
+                application.switchTo("user-dashboard");
+            } else {
+                System.err.println("Application instance is null. Cannot switch scenes.");
+                showErrorPopup("Failed to return to the main screen.");
             }
         });
 

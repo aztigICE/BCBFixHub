@@ -26,6 +26,11 @@ public class ScenesApplication extends Application {
         addScene("admin", "admin-view.fxml",  400, 300);
         addScene("user-dashboard", "user-main-view.fxml", 1000, 700);
         addScene("product", "product-view.fxml", 600, 450);
+        addScene("cart", "cart-view.fxml", 900, 600);
+
+        // ADDED SCENE:
+        // Dimensions from payment-view.fxml (prefWidth="950.0" prefHeight="650.0")
+        addScene("payment", "payment-view.fxml", 950, 650);
 
         switchTo("login");
         stage.show();
@@ -60,8 +65,14 @@ public class ScenesApplication extends Application {
         }
 
         // Set controller link
-        ScenesController controller = loader.getController();
-        controller.setApplication(this);
+        Object controller = loader.getController();
+        // Check if controller extends ScenesController before casting
+        if (controller instanceof ScenesController) {
+            ((ScenesController) controller).setApplication(this);
+        } else {
+            System.out.println("Warning: Controller " + controller.getClass().getName() + " does not extend ScenesController.");
+        }
+
 
         // Store scene
         scenes.put(name, scene);
@@ -73,17 +84,23 @@ public class ScenesApplication extends Application {
         Scene scene = scenes.get(name);
         if (scene == null) {
             try {
-                addScene(name, name + "-view.fxml", 480, 300);
+                // Try to dynamically add if not preloaded
+                String fxmlFile = name + "-view.fxml";
+                // Guess dimensions if not preloaded
+                addScene(name, fxmlFile, 800, 600);
                 scene = scenes.get(name);
             } catch (IOException e) {
                 e.printStackTrace();
+                System.err.println("Failed to load scene: " + name);
                 return;
             }
         }
 
-        mainStage.setScene(scene);
-        mainStage.setTitle(capitalize(name));
-        mainStage.centerOnScreen();
+        if (scene != null) {
+            mainStage.setScene(scene);
+            mainStage.setTitle(capitalize(name));
+            mainStage.centerOnScreen();
+        }
     }
 
     private String capitalize(String s) {

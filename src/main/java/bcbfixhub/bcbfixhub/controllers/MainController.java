@@ -29,6 +29,18 @@ public class MainController extends ScenesController implements Initializable {
     @FXML
     private Button cartButton; // Reference for the cart button
 
+    private int cartItemCount = 0; // Counter for cart items
+
+    // ADD THIS: A field to hold the application instance
+    private bcbfixhub.bcbfixhub.ScenesApplication application;
+
+    // ADD THIS: Override the setApplication method to capture the instance
+    @Override
+    public void setApplication(bcbfixhub.bcbfixhub.ScenesApplication application) {
+        super.setApplication(application); // Calls parent's method
+        this.application = application; // Saves the instance locally
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Populate category choice box
@@ -36,6 +48,9 @@ public class MainController extends ScenesController implements Initializable {
                 "All Categories", "Design", "Development", "Productivity"
         ));
         categoryChoiceBox.setValue("All Categories");
+
+        // Set initial cart button text
+        updateCartButtonText();
 
         // Add placeholder items to the catalog
         // In a real app, you'd load this from a database
@@ -91,10 +106,30 @@ public class MainController extends ScenesController implements Initializable {
         Button addToCartButton = new Button("Add to Cart");
         addToCartButton.getStyleClass().add("add-to-cart-button");
 
+        // Add action to the button
+        addToCartButton.setOnAction(event -> handleAddToCart());
+
         card.getChildren().addAll(imageBox, nameLabel, categoryLabel, priceLabel, addToCartButton);
         VBox.setMargin(addToCartButton, new Insets(10, 0, 0, 0)); // Add space above button
 
         return card;
+    }
+
+    /**
+     * Handles adding an item to the cart.
+     */
+    private void handleAddToCart() {
+        cartItemCount++;
+        updateCartButtonText();
+        System.out.println("Item added to cart. Total items: " + cartItemCount);
+        // In a real app, you'd add the specific item to a cart model/list
+    }
+
+    /**
+     * Updates the cart button text to show the current item count.
+     */
+    private void updateCartButtonText() {
+        cartButton.setText("Cart (" + cartItemCount + ")");
     }
 
     /**
@@ -104,6 +139,7 @@ public class MainController extends ScenesController implements Initializable {
     @FXML
     private void handleGoToCart() {
         System.out.println("Go to Cart button clicked!");
-        // Add logic here to load the cart FXML scene
+        // Switch to the cart scene
+        application.switchTo("cart");
     }
 }
