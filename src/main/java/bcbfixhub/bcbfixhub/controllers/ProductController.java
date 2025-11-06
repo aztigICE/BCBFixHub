@@ -1,218 +1,148 @@
 package bcbfixhub.bcbfixhub.controllers;
 
-import bcbfixhub.bcbfixhub.models.ProductDBConnection;
+import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import org.bson.Document;
 import javafx.scene.layout.GridPane;
+import org.bson.Document;
 
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ProductController extends ScenesController {
 
-    // ✅ Must match fx:id="tabPane" in FXML
     @FXML private TabPane tabPane;
 
-    // === Keyboard Tab ===
+    // === TableViews ===
     @FXML private TableView<Product> tableView;
-    @FXML private TableColumn<Product, String> stockColumn;
-    @FXML private TableColumn<Product, String> brandColumn;
-    @FXML private TableColumn<Product, String> modelColumn;
-    @FXML private TableColumn<Product, Double> priceColumn;
-    @FXML private TextField stockField;
-    @FXML private TextField brandField;
-    @FXML private TextField modelField;
-    @FXML private TextField priceField;
-
-    // === Mouse Tab ===
     @FXML private TableView<Product> tableView1;
-    @FXML private TableColumn<Product, String> stockColumn1;
-    @FXML private TableColumn<Product, String> brandColumn1;
-    @FXML private TableColumn<Product, String> modelColumn1;
-    @FXML private TableColumn<Product, Double> priceColumn1;
-    @FXML private TextField stockField1;
-    @FXML private TextField brandField1;
-    @FXML private TextField modelField1;
-    @FXML private TextField priceField1;
-
-    // === Storage Tab ===
     @FXML private TableView<Product> tableView21;
-    @FXML private TableColumn<Product, String> stockColumn21;
-    @FXML private TableColumn<Product, String> brandColumn21;
-    @FXML private TableColumn<Product, String> modelColumn21;
-    @FXML private TableColumn<Product, Double> priceColumn21;
-    @FXML private TextField stockField2;
-    @FXML private TextField brandField2;
-    @FXML private TextField modelField2;
-    @FXML private TextField priceField2;
-
-    // === Memory Tab ===
     @FXML private TableView<Product> tableView211;
-    @FXML private TableColumn<Product, String> stockColumn211;
-    @FXML private TableColumn<Product, String> brandColumn211;
-    @FXML private TableColumn<Product, String> modelColumn211;
-    @FXML private TableColumn<Product, Double> priceColumn211;
-    @FXML private TextField stockField211;
-    @FXML private TextField brandField211;
-    @FXML private TextField modelField211;
-    @FXML private TextField priceField211;
-
-    // === Monitor Tab ===
     @FXML private TableView<Product> tableView2111;
-    @FXML private TableColumn<Product, String> stockColumn2111;
-    @FXML private TableColumn<Product, String> brandColumn2111;
-    @FXML private TableColumn<Product, String> modelColumn2111;
-    @FXML private TableColumn<Product, Double> priceColumn2111;
-    @FXML private TextField stockField2111;
-    @FXML private TextField brandField2111;
-    @FXML private TextField modelField2111;
-    @FXML private TextField priceField2111;
 
-    // === Initialize All Tabs ===
+    // === TextFields ===
+    @FXML private TextField stockField, brandField, modelField, priceField;
+    @FXML private TextField stockField1, brandField1, modelField1, priceField1;
+    @FXML private TextField stockField2, brandField2, modelField2, priceField2;
+    @FXML private TextField stockField211, brandField211, modelField211, priceField211;
+    @FXML private TextField stockField2111, brandField2111, modelField2111, priceField2111;
+
+    // Maps for dynamic access
+    private final Map<String, TableView<Product>> tables = new HashMap<>();
+    private final Map<String, TextField[]> fields = new HashMap<>();
+
     @FXML
     public void initialize() {
-        setupTable(tableView, stockColumn, brandColumn, modelColumn, priceColumn, "keyboard");
-        setupTable(tableView1, stockColumn1, brandColumn1, modelColumn1, priceColumn1, "mouse");
-        setupTable(tableView21, stockColumn21, brandColumn21, modelColumn21, priceColumn21, "storage");
-        setupTable(tableView211, stockColumn211, brandColumn211, modelColumn211, priceColumn211, "memory");
-        setupTable(tableView2111, stockColumn2111, brandColumn2111, modelColumn2111, priceColumn2111, "monitor");
+        // Map TableViews
+        tables.put("keyboard", tableView);
+        tables.put("mouse", tableView1);
+        tables.put("storage", tableView21);
+        tables.put("memory", tableView211);
+        tables.put("monitor", tableView2111);
+
+        // Map TextFields
+        fields.put("keyboard", new TextField[]{stockField, brandField, modelField, priceField});
+        fields.put("mouse", new TextField[]{stockField1, brandField1, modelField1, priceField1});
+        fields.put("storage", new TextField[]{stockField2, brandField2, modelField2, priceField2});
+        fields.put("memory", new TextField[]{stockField211, brandField211, modelField211, priceField211});
+        fields.put("monitor", new TextField[]{stockField2111, brandField2111, modelField2111, priceField2111});
+
+        // Setup tables dynamically
+        tables.forEach((tabName, table) -> setupTable(table, tabName));
     }
 
-    // === Setup Table Columns and Data ===
-    private void setupTable(TableView<Product> table, TableColumn<Product, String> stockCol,
-                            TableColumn<Product, String> brandCol, TableColumn<Product, String> modelCol,
-                            TableColumn<Product, Double> priceCol, String stockName) {
+    // === Setup Table Columns and Load Data ===
+    private void setupTable(TableView<Product> table, String collectionName) {
+        table.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("stock"));
+        table.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("brand"));
+        table.getColumns().get(2).setCellValueFactory(new PropertyValueFactory<>("model"));
+        table.getColumns().get(3).setCellValueFactory(new PropertyValueFactory<>("price"));
 
-        stockCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
-        brandCol.setCellValueFactory(new PropertyValueFactory<>("brand"));
-        modelCol.setCellValueFactory(new PropertyValueFactory<>("model"));
-        priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
-
-        table.getItems().setAll(fetchProducts(stockName));
+        table.getItems().setAll(fetchProducts(collectionName));
     }
 
-    // === Fetch from MongoDB ===
+    // === Fetch Products from MongoDB ===
     private List<Product> fetchProducts(String collectionName) {
         List<Product> products = new ArrayList<>();
-        try {
-            MongoCollection<Document> collection = ProductDBConnection.getDatabase().getCollection(collectionName);
-            try (MongoCursor<Document> cursor = collection.find().iterator()) {
-                while (cursor.hasNext()) {
-                    Document doc = cursor.next();
-                    String stock = doc.getString("stock");
-                    String brand = doc.getString("brand");
-                    String model = doc.getString("model");
-                    Double price = doc.getDouble("price");
-                    products.add(new Product(stock, brand, model, price));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        MongoDatabase db = MongoDBConnectionManager.getDatabase("Product-Details");
+        MongoCollection<Document> collection = db.getCollection(collectionName);
+
+        for (Document doc : collection.find()) {
+            products.add(new Product(
+                    doc.getString("stock"),
+                    doc.getString("brand"),
+                    doc.getString("model"),
+                    doc.getDouble("price")
+            ));
         }
         return products;
     }
 
-    // === Add Product (works for all tabs) ===
+    // === Add Product ===
     @FXML
     private void handleAddProduct() {
-        if (tabPane == null) {
-            showAlert(Alert.AlertType.ERROR, "TabPane is not connected in FXML!");
-            return;
-        }
+        String activeTab = getActiveCollectionName();
+        TableView<Product> table = tables.get(activeTab);
+        TextField[] f = fields.get(activeTab);
+        if (table == null || f == null) return;
 
-        Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
-        if (selectedTab == null) {
-            showAlert(Alert.AlertType.WARNING, "No tab selected!");
-            return;
-        }
-
-        String tabName = selectedTab.getText().toLowerCase();
-
-        TextField stockF = null, brandF = null, modelF = null, priceF = null;
-        TableView<Product> currentTable = null;
-
-        switch (tabName) {
-            case "keyboard" -> { stockF = stockField; brandF = brandField; modelF = modelField; priceF = priceField; currentTable = tableView; }
-            case "mouse" -> { stockF = stockField1; brandF = brandField1; modelF = modelField1; priceF = priceField1; currentTable = tableView1; }
-            case "storage" -> { stockF = stockField2; brandF = brandField2; modelF = modelField2; priceF = priceField2; currentTable = tableView21; }
-            case "memory" -> { stockF = stockField211; brandF = brandField211; modelF = modelField211; priceF = priceField211; currentTable = tableView211; }
-            case "monitor" -> { stockF = stockField2111; brandF = brandField2111; modelF = modelField2111; priceF = priceField2111; currentTable = tableView2111; }
-            default -> { showAlert(Alert.AlertType.ERROR, "Unknown tab: " + tabName); return; }
-        }
-
-        if (stockF == null || brandF == null || modelF == null || priceF == null) {
-            showAlert(Alert.AlertType.ERROR, "Input fields not found for tab: " + tabName);
-            return;
-        }
-
-        String stock = stockF.getText().trim();
-        String brand = brandF.getText().trim();
-        String model = modelF.getText().trim();
-        String priceText = priceF.getText().trim();
-
+        String stock = f[0].getText().trim();
+        String brand = f[1].getText().trim();
+        String model = f[2].getText().trim();
+        String priceText = f[3].getText().trim();
         if (stock.isEmpty() || brand.isEmpty() || model.isEmpty() || priceText.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Please fill in all fields!");
             return;
         }
 
         double price;
-        try {
-            price = Double.parseDouble(priceText);
-        } catch (NumberFormatException e) {
+        try { price = Double.parseDouble(priceText); }
+        catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Price must be a valid number!");
             return;
         }
 
-        try {
-            MongoCollection<Document> collectionDB = ProductDBConnection.getDatabase().getCollection(tabName);
-            Document newProduct = new Document("stock", stock)
-                    .append("brand", brand)
-                    .append("model", model)
-                    .append("price", price);
-            collectionDB.insertOne(newProduct);
+        MongoCollection<Document> collection = MongoDBConnectionManager.getDatabase("Product-Details")
+                .getCollection(activeTab);
+        Document newProduct = new Document("stock", stock)
+                .append("brand", brand)
+                .append("model", model)
+                .append("price", price);
+        collection.insertOne(newProduct);
 
-            currentTable.getItems().add(new Product(stock, brand, model, price));
-
-            stockF.clear(); brandF.clear(); modelF.clear(); priceF.clear();
-
-            showAlert(Alert.AlertType.INFORMATION, "Product added to " + tabName + " database!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error adding product: " + e.getMessage());
-        }
+        table.getItems().add(new Product(stock, brand, model, price));
+        Arrays.stream(f).forEach(TextField::clear);
+        showAlert(Alert.AlertType.INFORMATION, "Product added to " + activeTab + "!");
     }
 
+    // === Edit Product ===
     @FXML
     private void handleEditProduct() {
-        Product selectedProduct = getSelectedProduct();
-        if (selectedProduct == null) {
-            showAlert("No Selection", "Please select a product to edit.");
+        Product selected = getSelectedProduct();
+        if (selected == null) {
+            showAlert(Alert.AlertType.WARNING, "No product selected!");
             return;
         }
 
-        // Create text fields pre-filled with existing data
-        TextField stockField = new TextField(selectedProduct.getStock());
-        TextField brandField = new TextField(selectedProduct.getBrand());
-        TextField modelField = new TextField(selectedProduct.getModel());
-        TextField priceField = new TextField(String.valueOf(selectedProduct.getPrice()));
+        String activeTab = getActiveCollectionName();
+        TextField[] f = fields.get(activeTab);
 
-        // Create a GridPane layout
+        // Pre-fill dialog fields
+        TextField stockField = new TextField(selected.getStock());
+        TextField brandField = new TextField(selected.getBrand());
+        TextField modelField = new TextField(selected.getModel());
+        TextField priceField = new TextField(String.valueOf(selected.getPrice()));
+
         GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new javafx.geometry.Insets(20, 20, 10, 20));
+        grid.setHgap(10); grid.setVgap(10);
         grid.addRow(0, new Label("Stock:"), stockField);
         grid.addRow(1, new Label("Brand:"), brandField);
         grid.addRow(2, new Label("Model:"), modelField);
         grid.addRow(3, new Label("Price:"), priceField);
 
-        // Create and configure dialog
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Edit Product");
         dialog.getDialogPane().setContent(grid);
@@ -221,130 +151,74 @@ public class ProductController extends ScenesController {
         dialog.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try {
-                    // Get updated values
-                    String newStock = stockField.getText().trim();
-                    String newBrand = brandField.getText().trim();
-                    String newModel = modelField.getText().trim();
-                    double newPrice = Double.parseDouble(priceField.getText().trim());
+                    String stock = stockField.getText().trim();
+                    String brand = brandField.getText().trim();
+                    String model = modelField.getText().trim();
+                    double price = Double.parseDouble(priceField.getText().trim());
 
-                    // Validate inputs
-                    if (newStock.isEmpty() || newBrand.isEmpty() || newModel.isEmpty()) {
-                        showAlert("Validation Error", "All fields must be filled!");
+                    if (stock.isEmpty() || brand.isEmpty() || model.isEmpty()) {
+                        showAlert(Alert.AlertType.WARNING, "All fields must be filled!");
                         return;
                     }
 
-                    // Update MongoDB
-                    String activeCollection = getActiveCollectionName();
-                    MongoCollection<Document> collection = ProductDBConnection.getDatabase().getCollection(activeCollection);
-                    Document filter = new Document("model", selectedProduct.getModel());
-                    Document update = new Document("$set", new Document("collection", newStock)
-                            .append("brand", newBrand)
-                            .append("model", newModel)
-                            .append("price", newPrice));
-                    collection.updateOne(filter, update);
+                    MongoCollection<Document> collection = MongoDBConnectionManager.getDatabase("Product-Details")
+                            .getCollection(activeTab);
+                    collection.updateOne(new Document("model", selected.getModel()),
+                            new Document("$set", new Document("stock", stock)
+                                    .append("brand", brand)
+                                    .append("model", model)
+                                    .append("price", price)));
 
-                    // Update TableView
-                    selectedProduct.setStock(newStock);
-                    selectedProduct.setBrand(newBrand);
-                    selectedProduct.setModel(newModel);
-                    selectedProduct.setPrice(newPrice);
-
-                    // Refresh the current table
-                    switch (activeCollection) {
-                        case "keyboard" -> tableView.refresh();
-                        case "mouse" -> tableView1.refresh();
-                        case "storage" -> tableView21.refresh();
-                        case "memory" -> tableView211.refresh();
-                        case "monitor" -> tableView2111.refresh();
-                    }
-
-                    showAlert("Success", "Product updated successfully!");
-
+                    selected.setStock(stock); selected.setBrand(brand);
+                    selected.setModel(model); selected.setPrice(price);
+                    tables.get(activeTab).refresh();
+                    showAlert(Alert.AlertType.INFORMATION, "Product updated!");
                 } catch (NumberFormatException e) {
-                    showAlert("Error", "Price must be a valid number!");
-                } catch (Exception e) {
-                    showAlert("Error", "Database update failed: " + e.getMessage());
-                    e.printStackTrace();
+                    showAlert(Alert.AlertType.ERROR, "Price must be a number!");
                 }
             }
         });
     }
 
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+    // === Delete Product ===
     @FXML
     private void handleDeleteProduct() {
-        Product selectedProduct = getSelectedProduct();
-        if (selectedProduct == null) {
-            showAlert("No Selection", "Please select a product to delete.");
+        Product selected = getSelectedProduct();
+        if (selected == null) {
+            showAlert(Alert.AlertType.WARNING, "No product selected!");
             return;
         }
 
-        // Confirm deletion
+        String activeTab = getActiveCollectionName();
+        TableView<Product> table = tables.get(activeTab);
+
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Delete Confirmation");
         confirm.setHeaderText(null);
-        confirm.setContentText("Are you sure you want to delete \"" + selectedProduct.getModel() + "\"?");
-
-        confirm.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                try {
-                    String activeCollection = getActiveCollectionName();
-                    MongoCollection<Document> collection = ProductDBConnection.getDatabase().getCollection(activeCollection);
-
-                    // Delete from MongoDB using model as unique identifier
-                    Document filter = new Document("model", selectedProduct.getModel());
-                    collection.deleteOne(filter);
-
-                    // Remove from TableView
-                    switch (activeCollection) {
-                        case "keyboard" -> tableView.getItems().remove(selectedProduct);
-                        case "mouse" -> tableView1.getItems().remove(selectedProduct);
-                        case "storage" -> tableView21.getItems().remove(selectedProduct);
-                        case "memory" -> tableView211.getItems().remove(selectedProduct);
-                        case "monitor" -> tableView2111.getItems().remove(selectedProduct);
-                    }
-
-                    showAlert("Success", "Product deleted successfully!");
-                } catch (Exception e) {
-                    showAlert("Error", "Failed to delete product: " + e.getMessage());
-                    e.printStackTrace();
-                }
+        confirm.setContentText("Delete \"" + selected.getModel() + "\"?");
+        confirm.showAndWait().ifPresent(resp -> {
+            if (resp == ButtonType.OK) {
+                MongoCollection<Document> collection = MongoDBConnectionManager.getDatabase("Product-Details")
+                        .getCollection(activeTab);
+                collection.deleteOne(new Document("model", selected.getModel()));
+                table.getItems().remove(selected);
+                showAlert(Alert.AlertType.INFORMATION, "Product deleted!");
             }
         });
     }
 
-
+    // === Helpers ===
     private Product getSelectedProduct() {
-        String tabName = tabPane.getSelectionModel().getSelectedItem().getText().toLowerCase();
-        return switch (tabName) {
-            case "keyboard" -> tableView.getSelectionModel().getSelectedItem();
-            case "mouse" -> tableView1.getSelectionModel().getSelectedItem();
-            case "storage" -> tableView21.getSelectionModel().getSelectedItem();
-            case "memory" -> tableView211.getSelectionModel().getSelectedItem();
-            case "monitor" -> tableView2111.getSelectionModel().getSelectedItem();
-            default -> null;
-        };
+        String activeTab = getActiveCollectionName();
+        TableView<Product> table = tables.get(activeTab);
+        return table == null ? null : table.getSelectionModel().getSelectedItem();
     }
-
 
     private String getActiveCollectionName() {
         if (tabPane == null || tabPane.getSelectionModel().getSelectedItem() == null)
-            return "Product"; // fallback
-
+            return "keyboard"; // default fallback
         return tabPane.getSelectionModel().getSelectedItem().getText().toLowerCase();
     }
 
-
-
-
-    // === Alerts ===
     private void showAlert(Alert.AlertType type, String message) {
         Alert alert = new Alert(type);
         alert.setHeaderText(null);
@@ -358,16 +232,11 @@ public class ProductController extends ScenesController {
 
     // === Inner Product Class ===
     public static class Product {
-        private String stock;
-        private String brand;
-        private String model;
+        private String stock, brand, model;
         private Double price;
 
         public Product(String stock, String brand, String model, Double price) {
-            this.stock = stock;
-            this.brand = brand;
-            this.model = model;
-            this.price = price;
+            this.stock = stock; this.brand = brand; this.model = model; this.price = price;
         }
 
         public String getStock() { return stock; }
@@ -380,5 +249,4 @@ public class ProductController extends ScenesController {
         public void setModel(String model) { this.model = model; }
         public void setPrice(Double price) { this.price = price; }
     }
-
 }
