@@ -28,43 +28,56 @@ public class MainController extends ScenesController implements Initializable {
     @FXML private TextField searchBar;
     @FXML private TilePane catalogTilePane;
     @FXML private Button cartButton;
+    @FXML private Button accountButton;
 
     private int cartItemCount = 0;
     private final List<Product> cart = new ArrayList<>();
+
+    private bcbfixhub.bcbfixhub.ScenesApplication application;
+
+    @Override
+    public void setApplication(bcbfixhub.bcbfixhub.ScenesApplication application) {
+        super.setApplication(application);
+        this.application = application;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         MongoDatabase db = ProductDBConnection.getDatabase();
 
-        // Load collection names for category filter
+        // Populate categories from database collections
         List<String> collectionList = new ArrayList<>();
         for (String name : db.listCollectionNames()) collectionList.add(name);
         var collections = FXCollections.observableArrayList(collectionList);
-        collections.add(0, "All");
+        collections.add(0, "All"); // Add "All" option
         categoryChoiceBox.setItems(collections);
         categoryChoiceBox.setValue("All");
 
-        // Category selection listener
+        // Category filter listener
         categoryChoiceBox.setOnAction(e -> {
             String selected = categoryChoiceBox.getValue();
-            if (selected.equals("All")) loadAllProductsAsTiles();
-            else loadProductsFromMongoDBAsTiles(selected);
+            if (selected.equals("All")) loadAllProducts();
+            else loadProductsFromMongoDB(selected);
         });
 
+        // Initialize cart button
         updateCartButtonText();
-        loadAllProductsAsTiles();
+
+        // Load all products initially
+        loadAllProducts();
     }
 
     // Load all products from all collections
-    private void loadAllProductsAsTiles() {
+    private void loadAllProducts() {
         catalogTilePane.getChildren().clear();
-        for (String collectionName : ProductDBConnection.getDatabase().listCollectionNames()) {
-            loadProductsFromMongoDBAsTiles(collectionName);
+        MongoDatabase db = ProductDBConnection.getDatabase();
+        for (String collectionName : db.listCollectionNames()) {
+            loadProductsFromMongoDB(collectionName);
         }
     }
 
     // Load products from a single collection
-    private void loadProductsFromMongoDBAsTiles(String collectionName) {
+    private void loadProductsFromMongoDB(String collectionName) {
         try {
             MongoCollection<Document> collection = ProductDBConnection.getDatabase().getCollection(collectionName);
             try (MongoCursor<Document> cursor = collection.find().iterator()) {
@@ -74,6 +87,7 @@ public class MainController extends ScenesController implements Initializable {
                     String brand = doc.getString("brand");
                     String model = doc.getString("model");
                     Double price = doc.getDouble("price");
+
                     Product product = new Product(stock, brand, model, price);
                     catalogTilePane.getChildren().add(createProductCard(product));
                 }
@@ -83,29 +97,38 @@ public class MainController extends ScenesController implements Initializable {
         }
     }
 
-    // Create a visual product card
+    // Create a product card as a VBox
     private VBox createProductCard(Product product) {
         VBox card = new VBox();
         card.setSpacing(10);
         card.setAlignment(Pos.CENTER);
-        card.setPrefSize(200, 250);
+        card.setPrefSize(200, 300);
         card.setStyle("-fx-background-color: #FFF8E7; -fx-background-radius: 8; -fx-border-color: #D1B48C; -fx-border-radius: 8;");
 
-        Label brandLabel = new Label(product.getBrand());
-        brandLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-        Label modelLabel = new Label(product.getModel());
-        Label stockLabel = new Label("Stock: " + product.getStock());
+        // Placeholder for image box
+        VBox imageBox = new VBox();
+        imageBox.setPrefSize(180, 150);
+        imageBox.setStyle("-fx-background-color: #E0CBAF; -fx-background-radius: 5;");
+
+        Label nameLabel = new Label(product.getBrand() + " " + product.getModel());
+        nameLabel.getStyleClass().add("product-name");
+
+        Label categoryLabel = new Label("Stock: " + product.getStock());
+        categoryLabel.getStyleClass().add("product-category");
+
         Label priceLabel = new Label("₱" + String.format("%.2f", product.getPrice()));
+        priceLabel.getStyleClass().add("product-price");
 
         Button addToCartButton = new Button("Add to Cart");
+        addToCartButton.getStyleClass().add("add-to-cart-button");
         addToCartButton.setOnAction(e -> handleAddToCart(product));
 
-        card.getChildren().addAll(brandLabel, modelLabel, stockLabel, priceLabel, addToCartButton);
+        card.getChildren().addAll(imageBox, nameLabel, categoryLabel, priceLabel, addToCartButton);
         VBox.setMargin(addToCartButton, new Insets(10, 0, 0, 0));
+
         return card;
     }
 
-    // Add product to cart
     private void handleAddToCart(Product product) {
         cart.add(product);
         cartItemCount++;
@@ -119,10 +142,15 @@ public class MainController extends ScenesController implements Initializable {
 
     @FXML
     private void handleGoToCart() {
-        if (app != null) app.switchTo("cart");
+        if (application != null) application.switchTo("cart");
     }
 
-    // Inner Product class (reused from ProductController)
+    @FXML
+    private void handleGoToAccount() {
+        if (application != null) application.switchTo("account");
+    }
+
+    // Inner Product class
     public static class Product {
         private String stock;
         private String brand;
@@ -140,10 +168,5 @@ public class MainController extends ScenesController implements Initializable {
         public String getBrand() { return brand; }
         public String getModel() { return model; }
         public Double getPrice() { return price; }
-
-        public void setStock(String stock) { this.stock = stock; }
-        public void setBrand(String brand) { this.brand = brand; }
-        public void setModel(String model) { this.model = model; }
-        public void setPrice(Double price) { this.price = price; }
     }
 }
