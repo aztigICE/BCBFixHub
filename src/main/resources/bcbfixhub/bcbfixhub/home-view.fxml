@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+  Root BorderPane for the new home/welcome screen.
+  Uses the new home.css stylesheet.
+-->
+<BorderPane prefHeight="550.0" prefWidth="450.0" styleClass="home-root"
+            stylesheets="@css/home.css"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="bcbfixhub.bcbfixhub.controllers.HomeController">
+
+    <!-- Center: Logo Placeholder -->
+    <center>
+        <VBox alignment="CENTER" spacing="10.0">
+            <Label styleClass="logo-placeholder-icon" text="[LOGO]"/>
+            <Label styleClass="logo-placeholder-text" text="BCB Fix Hub"/>
+        </VBox>
+    </center>
+
+    <!-- Bottom: Navigation Buttons -->
+    <bottom>
+        <!-- EDITED: Removed fx:id="button-bar" as it is not injected in the controller -->
+        <HBox styleClass="button-bar">
+            <children>
+                <Button onAction="#onLogin" text="Login" styleClass="home-primary-button"/>
+                <Button onAction="#onRegister" text="Register" styleClass="home-secondary-button"/>
+                <Button fx:id="exitButton" onAction="#onExit" text="Exit" styleClass="home-secondary-button"/>
+            </children>
+        </HBox>
+    </bottom>
+</BorderPane>

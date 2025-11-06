@@ -52,7 +52,7 @@ public class RegisterController extends ScenesController {
 
         if (created) {
             showAlert(Alert.AlertType.INFORMATION, "Registration Success", "Account created successfully!");
-            app.switchTo("login");
+            app.switchTo("login"); // Keep this to send user to login after successful register
             clearFields();
         } else {
             showAlert(Alert.AlertType.ERROR, "Registration Failed", "Email already exists.");
@@ -60,8 +60,8 @@ public class RegisterController extends ScenesController {
     }
 
     @FXML
-    protected void onLogin(ActionEvent event) {
-        app.switchTo("login");
+    protected void onHome(ActionEvent event) { // EDITED: Was onLogin
+        app.switchTo("home"); // EDITED: Switched to home
     }
 
     private void clearFields() {
