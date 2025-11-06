@@ -1,66 +1,63 @@
 /* Root container */
 .root {
     -fx-background-color: #FFFFFF;
+    -fx-font-family: "Segoe UI", sans-serif;
 }
 
-/* NEW Top Navigation Bar */
+/* Top navigation bar */
 .nav-bar {
-    -fx-background-color: #363636;
-}
-
-/* Re-scoping store title for new nav bar */
-.nav-bar .store-title {
-    -fx-font-size: 22px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #FFD000; /* Yellow to stand out */
-}
-
-/* NEW Nav Buttons */
-.nav-button {
-    -fx-background-color: transparent;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-padding: 5 12 5 12;
-    -fx-cursor: hand;
-}
-.nav-button:hover {
-    -fx-background-color: #555555;
-    -fx-background-radius: 5;
-}
-
-/* NEW Selected Nav Button */
-.nav-button-selected {
-    -fx-background-color: #FFD000;
-    -fx-text-fill: #363636;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-padding: 5 12 5 12;
-    -fx-background-radius: 5;
-}
-
-
-/* Top filter bar */
-.filter-bar {
-    -fx-background-color: #676767;
-    -fx-border-color: #505050;
+    -fx-background-color: #4A4A4A;
+    -fx-padding: 10 30 10 30;
+    -fx-border-color: #383838;
     -fx-border-width: 0 0 1 0; /* Bottom border */
 }
 
-/* OLD .store-title, now for the filter bar */
-.filter-bar-title {
+.nav-bar .store-title {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-text-fill: #FFFFFF;
 }
 
-/* Style for non-title labels in the filter bar, like "Category:" */
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-padding: 5 15 5 15;
+    -fx-background-radius: 5;
+}
+
+.nav-button-selected {
+    -fx-background-color: #FFD000;
+    -fx-text-fill: #363636;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+}
+
+.nav-button:hover {
+    -fx-background-color: #E6BB00;
+    -fx-cursor: hand;
+}
+
+/* Filter/Search bar */
+.filter-bar {
+    -fx-background-color: #676767;
+    -fx-border-color: #505050;
+    -fx-border-width: 0 0 1 0; /* Bottom border */
+    -fx-padding: 15 30 15 30;
+}
+
+.filter-bar .filter-bar-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+}
+
 .filter-bar .label {
     -fx-text-fill: #FFFFFF;
     -fx-font-weight: bold;
 }
 
-/* Main scroll pane */
+/* ScrollPane */
 .scroll-pane {
     -fx-background-color: transparent;
 }
@@ -71,12 +68,13 @@
 
 /* Product Card Styling */
 .product-card {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E0E0E0;
-    -fx-border-radius: 10;
-    -fx-background-radius: 10;
+    -fx-background-color: #FFF8E7;
+    -fx-border-color: #D1B48C;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
     -fx-padding: 10;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 4);
+    -fx-alignment: center;
 }
 
 .product-card:hover {
@@ -101,13 +99,14 @@
     -fx-text-fill: #363636;
 }
 
-/* Button to add to cart */
+/* Add to Cart Button */
 .add-to-cart-button {
     -fx-background-color: #FFD000;
     -fx-text-fill: #363636;
     -fx-font-weight: bold;
     -fx-background-radius: 5;
     -fx-pref-width: 180; /* Match card width */
+    -fx-padding: 5 0 5 0;
 }
 
 .add-to-cart-button:hover {
@@ -115,14 +114,14 @@
     -fx-cursor: hand;
 }
 
-/* Main cart button in header */
+/* Main Cart Button */
 .cart-button {
     -fx-background-color: #FFD000;
     -fx-text-fill: #363636;
     -fx-font-weight: bold;
     -fx-background-radius: 5;
-    -fx-min-width: 80px; /* MODIFIED: Changed from pref-width */
-    -fx-padding: 5 10 5 10; /* ADDED: Added padding for better look */
+    -fx-min-width: 80px;
+    -fx-padding: 5 10 5 10;
 }
 
 .cart-button:hover {
@@ -130,8 +129,7 @@
     -fx-cursor: hand;
 }
 
-
-/* Standard text field - from payment.css */
+/* TextField Styling */
 .text-field {
     -fx-background-radius: 5;
     -fx-background-color: #FFFFFF;
@@ -140,9 +138,10 @@
     -fx-prompt-text-fill: #888888;
 }
 
-/* Standard choice box */
+/* ChoiceBox Styling */
 .choice-box {
     -fx-background-radius: 5;
     -fx-background-color: #FFFFFF;
     -fx-border-color: #AAAAAA;
+    -fx-padding: 3 5 3 5;
 }
