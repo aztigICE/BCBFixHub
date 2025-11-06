@@ -29,12 +29,15 @@ public class MainController extends ScenesController implements Initializable {
     @FXML
     private Button cartButton; // Reference for the cart button
 
+    @FXML
+    private Button accountButton; // ADDED
+
     private int cartItemCount = 0; // Counter for cart items
 
-    // ADD THIS: A field to hold the application instance
+    // A field to hold the application instance
     private bcbfixhub.bcbfixhub.ScenesApplication application;
 
-    // ADD THIS: Override the setApplication method to capture the instance
+    // Override the setApplication method to capture the instance
     @Override
     public void setApplication(bcbfixhub.bcbfixhub.ScenesApplication application) {
         super.setApplication(application); // Calls parent's method
@@ -141,5 +144,14 @@ public class MainController extends ScenesController implements Initializable {
         System.out.println("Go to Cart button clicked!");
         // Switch to the cart scene
         application.switchTo("cart");
+    }
+
+    /**
+     * ADDED: Handles switching to the account view.
+     */
+    @FXML
+    private void handleGoToAccount() {
+        System.out.println("Account button clicked!");
+        application.switchTo("account");
     }
 }
