@@ -33,7 +33,7 @@ public class UserController extends ScenesController {
         // Admin shortcut
         if ("admin".equals(enteredEmail) && "1234".equals(enteredPassword)) {
             showAlert(Alert.AlertType.INFORMATION, "Admin Login Success", "Welcome, admin.");
-            app.switchTo("dashboard");
+            app.switchTo("admin");
             clearFields();
             return;
         }

@@ -20,6 +20,7 @@ public class ScenesController {
         app.switchTo("register");
     }
 
+
     // Optional helper for dynamic buttons:
     protected void switchTo(String name) {
         app.switchTo(name);

@@ -23,6 +23,7 @@ public class ScenesApplication extends Application {
         // Preload initial scenes
         addScene("login", "login-view.fxml", 400, 300);
         addScene("register", "register-view.fxml", 400, 300);
+        addScene("admin", "admin.fxml",  400, 300);
 
         switchTo("login");
         stage.show();
