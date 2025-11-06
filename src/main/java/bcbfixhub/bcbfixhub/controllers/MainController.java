@@ -1,5 +1,9 @@
 package bcbfixhub.bcbfixhub.controllers;
 
+import bcbfixhub.bcbfixhub.models.ProductDBConnection;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,135 +15,135 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import org.bson.Document;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainController extends ScenesController implements Initializable {
 
-    @FXML
-    private ChoiceBox<String> categoryChoiceBox;
+    @FXML private ChoiceBox<String> categoryChoiceBox;
+    @FXML private TextField searchBar;
+    @FXML private TilePane catalogTilePane;
+    @FXML private Button cartButton;
 
-    @FXML
-    private TextField searchBar;
-
-    @FXML
-    private TilePane catalogTilePane;
-
-    @FXML
-    private Button cartButton; // Reference for the cart button
-
-    private int cartItemCount = 0; // Counter for cart items
-
-    // ADD THIS: A field to hold the application instance
-    private bcbfixhub.bcbfixhub.ScenesApplication application;
-
-    // ADD THIS: Override the setApplication method to capture the instance
-    @Override
-    public void setApplication(bcbfixhub.bcbfixhub.ScenesApplication application) {
-        super.setApplication(application); // Calls parent's method
-        this.application = application; // Saves the instance locally
-    }
+    private int cartItemCount = 0;
+    private final List<Product> cart = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Populate category choice box
-        categoryChoiceBox.setItems(FXCollections.observableArrayList(
-                "All Categories", "Design", "Development", "Productivity"
-        ));
-        categoryChoiceBox.setValue("All Categories");
+        MongoDatabase db = ProductDBConnection.getDatabase();
 
-        // Set initial cart button text
+        // Load collection names for category filter
+        List<String> collectionList = new ArrayList<>();
+        for (String name : db.listCollectionNames()) collectionList.add(name);
+        var collections = FXCollections.observableArrayList(collectionList);
+        collections.add(0, "All");
+        categoryChoiceBox.setItems(collections);
+        categoryChoiceBox.setValue("All");
+
+        // Category selection listener
+        categoryChoiceBox.setOnAction(e -> {
+            String selected = categoryChoiceBox.getValue();
+            if (selected.equals("All")) loadAllProductsAsTiles();
+            else loadProductsFromMongoDBAsTiles(selected);
+        });
+
         updateCartButtonText();
-
-        // Add placeholder items to the catalog
-        // In a real app, you'd load this from a database
-        catalogTilePane.getChildren().add(
-                createProductCard("Adobe Photoshop", "Design", "$11.00", "https://placehold.co/200x150/E8D8B3/363636?text=Photoshop")
-        );
-        catalogTilePane.getChildren().add(
-                createProductCard("Adobe Illustrator", "Design", "$20.00", "https://placehold.co/200x150/E8D8B3/363636?text=Illustrator")
-        );
-        catalogTilePane.getChildren().add(
-                createProductCard("Visual Studio Code", "Development", "Free", "https://placehold.co/200x150/E8D8B3/363636?text=VS+Code")
-        );
-        catalogTilePane.getChildren().add(
-                createProductCard("Microsoft Office", "Productivity", "$99.00", "https://placehold.co/200x150/E8D8B3/363636?text=Office")
-        );
-
-        // You can add listeners here for search and category filtering
-        // e.g., searchBar.textProperty().addListener(...)
+        loadAllProductsAsTiles();
     }
 
-    /**
-     * Helper method to create a placeholder product card.
-     * In a real app, this would be a separate FXML component.
-     * @param productName The name of the product
-     * @param category The product category
-     * @param price The product price
-     * @param imageUrl A placeholder image URL
-     * @return A VBox representing the product card
-     */
-    private VBox createProductCard(String productName, String category, String price, String imageUrl) {
+    // Load all products from all collections
+    private void loadAllProductsAsTiles() {
+        catalogTilePane.getChildren().clear();
+        for (String collectionName : ProductDBConnection.getDatabase().listCollectionNames()) {
+            loadProductsFromMongoDBAsTiles(collectionName);
+        }
+    }
+
+    // Load products from a single collection
+    private void loadProductsFromMongoDBAsTiles(String collectionName) {
+        try {
+            MongoCollection<Document> collection = ProductDBConnection.getDatabase().getCollection(collectionName);
+            try (MongoCursor<Document> cursor = collection.find().iterator()) {
+                while (cursor.hasNext()) {
+                    Document doc = cursor.next();
+                    String stock = doc.getString("stock");
+                    String brand = doc.getString("brand");
+                    String model = doc.getString("model");
+                    Double price = doc.getDouble("price");
+                    Product product = new Product(stock, brand, model, price);
+                    catalogTilePane.getChildren().add(createProductCard(product));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Create a visual product card
+    private VBox createProductCard(Product product) {
         VBox card = new VBox();
-        card.getStyleClass().add("product-card");
-        card.setPrefSize(200, 300); // Fixed size for cards
         card.setSpacing(10);
         card.setAlignment(Pos.CENTER);
+        card.setPrefSize(200, 250);
+        card.setStyle("-fx-background-color: #FFF8E7; -fx-background-radius: 8; -fx-border-color: #D1B48C; -fx-border-radius: 8;");
 
-        // Placeholder for image
-        VBox imageBox = new VBox();
-        imageBox.setPrefSize(180, 150);
-        imageBox.setStyle("-fx-background-color: #E0CBAF; -fx-background-radius: 5;");
-        // In a real app, you'd use an ImageView here:
-        // ImageView imageView = new ImageView(new Image(imageUrl));
-
-        Label nameLabel = new Label(productName);
-        nameLabel.getStyleClass().add("product-name");
-
-        Label categoryLabel = new Label(category);
-        categoryLabel.getStyleClass().add("product-category");
-
-        Label priceLabel = new Label(price);
-        priceLabel.getStyleClass().add("product-price");
+        Label brandLabel = new Label(product.getBrand());
+        brandLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        Label modelLabel = new Label(product.getModel());
+        Label stockLabel = new Label("Stock: " + product.getStock());
+        Label priceLabel = new Label("₱" + String.format("%.2f", product.getPrice()));
 
         Button addToCartButton = new Button("Add to Cart");
-        addToCartButton.getStyleClass().add("add-to-cart-button");
+        addToCartButton.setOnAction(e -> handleAddToCart(product));
 
-        // Add action to the button
-        addToCartButton.setOnAction(event -> handleAddToCart());
-
-        card.getChildren().addAll(imageBox, nameLabel, categoryLabel, priceLabel, addToCartButton);
-        VBox.setMargin(addToCartButton, new Insets(10, 0, 0, 0)); // Add space above button
-
+        card.getChildren().addAll(brandLabel, modelLabel, stockLabel, priceLabel, addToCartButton);
+        VBox.setMargin(addToCartButton, new Insets(10, 0, 0, 0));
         return card;
     }
 
-    /**
-     * Handles adding an item to the cart.
-     */
-    private void handleAddToCart() {
+    // Add product to cart
+    private void handleAddToCart(Product product) {
+        cart.add(product);
         cartItemCount++;
         updateCartButtonText();
-        System.out.println("Item added to cart. Total items: " + cartItemCount);
-        // In a real app, you'd add the specific item to a cart model/list
+        System.out.println("Added to cart: " + product.getBrand() + " " + product.getModel());
     }
 
-    /**
-     * Updates the cart button text to show the current item count.
-     */
     private void updateCartButtonText() {
         cartButton.setText("Cart (" + cartItemCount + ")");
     }
 
-    /**
-     * Placeholder method for handling the cart button click.
-     * This is where you would navigate to the cart screen.
-     */
     @FXML
     private void handleGoToCart() {
-        System.out.println("Go to Cart button clicked!");
-        // Switch to the cart scene
-        application.switchTo("cart");
+        if (app != null) app.switchTo("cart");
+    }
+
+    // Inner Product class (reused from ProductController)
+    public static class Product {
+        private String stock;
+        private String brand;
+        private String model;
+        private Double price;
+
+        public Product(String stock, String brand, String model, Double price) {
+            this.stock = stock;
+            this.brand = brand;
+            this.model = model;
+            this.price = price;
+        }
+
+        public String getStock() { return stock; }
+        public String getBrand() { return brand; }
+        public String getModel() { return model; }
+        public Double getPrice() { return price; }
+
+        public void setStock(String stock) { this.stock = stock; }
+        public void setBrand(String brand) { this.brand = brand; }
+        public void setModel(String model) { this.model = model; }
+        public void setPrice(Double price) { this.price = price; }
     }
 }
