@@ -58,8 +58,8 @@ public class LoginController extends ScenesController {
     }
 
     @FXML
-    protected void onClose() {
-        emailField.getScene().getWindow().hide();
+    protected void onHome() { // EDITED: Was onClose
+        app.switchTo("home"); // EDITED: Switched to home
     }
 
     private void clearFields() {

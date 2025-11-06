@@ -20,22 +20,25 @@ public class ScenesApplication extends Application {
     public void start(Stage stage) throws IOException {
         this.mainStage = stage;
 
+        // --- NEW STANDARD SIZE for auth windows ---
+        int authWidth = 450;
+        int authHeight = 550;
+
         // Preload initial scenes
-        addScene("login", "login-view.fxml", 400, 300);
-        addScene("register", "register-view.fxml", 400, 300);
+        addScene("home", "home-view.fxml", authWidth, authHeight); // ADDED home scene
+        addScene("login", "login-view.fxml", authWidth, authHeight); // EDITED size
+        addScene("register", "register-view.fxml", authWidth, authHeight); // EDITED size
+
+        // Other scenes
         addScene("admin", "admin-view.fxml",  400, 300);
         addScene("user-dashboard", "user-main-view.fxml", 1000, 700);
         addScene("product", "product-view.fxml", 600, 450);
         addScene("cart", "cart-view.fxml", 900, 600);
-
-        // ADDED SCENE:
-        // Dimensions from payment-view.fxml (prefWidth="950.0" prefHeight="650.0")
         addScene("payment", "payment-view.fxml", 950, 650);
-
-        // MODIFIED SCENE: Updated dimensions
         addScene("account", "account-view.fxml", 1000, 700);
 
-        switchTo("login");
+
+        switchTo("home"); // EDITED to start on home
         stage.show();
         stage.centerOnScreen();
 
@@ -49,17 +52,27 @@ public class ScenesApplication extends Application {
         }
 
         if (fxmlUrl == null) {
-            throw new IOException("FXML file not found for scene: " + name);
+            // EDITED: Try to load from root if nested fails (for FXML)
+            fxmlUrl = getClass().getResource("/" + fxml);
+        }
+
+        if (fxmlUrl == null) {
+            throw new IOException("FXML file not found for scene: " + name + " (tried: /bcbfixhub/bcbfixhub/" + fxml + ", /bcbfixhub.bcbfixhub/" + fxml + ", /" + fxml + ")");
         }
 
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
         Scene scene = new Scene(loader.load(), width, height);
 
-        // Optional CSS (fix: add missing slash)
+        // Optional CSS
         URL cssUrl = getClass().getResource("/bcbfixhub/bcbfixhub/css/" + name + ".css");
         if (cssUrl == null) {
             cssUrl = getClass().getResource("/bcbfixhub.bcbfixhub/css/" + name + ".css");
         }
+        if (cssUrl == null) {
+            // EDITED: Try to load from /css/ relative to root
+            cssUrl = getClass().getResource("/css/" + name + ".css");
+        }
+
         if (cssUrl != null) {
             scene.getStylesheets().add(cssUrl.toExternalForm());
             System.out.println("Loaded CSS for scene: " + name + " -> " + cssUrl);
@@ -69,12 +82,12 @@ public class ScenesApplication extends Application {
 
         // Set controller link
         Object controller = loader.getController();
-        // Check if controller extends ScenesController before casting
         if (controller instanceof ScenesController) {
             ((ScenesController) controller).setApplication(this);
-        } else {
-            // Optional: Handle controllers that don't need the application instance
+        } else if (controller != null) {
             System.out.println("Warning: Controller " + controller.getClass().getName() + " does not extend ScenesController.");
+        } else {
+            System.out.println("Warning: No controller found for " + name);
         }
 
 
