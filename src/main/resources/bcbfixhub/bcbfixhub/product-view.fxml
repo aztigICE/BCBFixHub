@@ -151,5 +151,10 @@
          </Tab>
      </tabs>
    </TabPane>
+   <HBox layoutX="552.0" layoutY="2.0" prefHeight="83.0" prefWidth="47.0">
+      <children>
+         <Button alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#backAdmin" prefHeight="25.0" prefWidth="43.0" text="Back" />
+      </children>
+   </HBox>
 
 </AnchorPane>

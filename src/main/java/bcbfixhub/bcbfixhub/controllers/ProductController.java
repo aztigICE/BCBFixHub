@@ -3,6 +3,7 @@ package bcbfixhub.bcbfixhub.controllers;
 import bcbfixhub.bcbfixhub.models.ProductDBConnection;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -349,6 +350,10 @@ public class ProductController extends ScenesController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public void backAdmin(ActionEvent event) {
+        app.switchTo("admin");
     }
 
     // === Inner Product Class ===
