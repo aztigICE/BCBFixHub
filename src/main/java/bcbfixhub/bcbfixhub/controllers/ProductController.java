@@ -20,55 +20,55 @@ public class ProductController {
 
     // === Keyboard Tab ===
     @FXML private TableView<Product> tableView;
-    @FXML private TableColumn<Product, String> collectionColumn;
+    @FXML private TableColumn<Product, String> stockColumn;
     @FXML private TableColumn<Product, String> brandColumn;
     @FXML private TableColumn<Product, String> modelColumn;
     @FXML private TableColumn<Product, Double> priceColumn;
-    @FXML private TextField collectionField;
+    @FXML private TextField stockField;
     @FXML private TextField brandField;
     @FXML private TextField modelField;
     @FXML private TextField priceField;
 
     // === Mouse Tab ===
     @FXML private TableView<Product> tableView1;
-    @FXML private TableColumn<Product, String> collectionColumn1;
+    @FXML private TableColumn<Product, String> stockColumn1;
     @FXML private TableColumn<Product, String> brandColumn1;
     @FXML private TableColumn<Product, String> modelColumn1;
     @FXML private TableColumn<Product, Double> priceColumn1;
-    @FXML private TextField collectionField1;
+    @FXML private TextField stockField1;
     @FXML private TextField brandField1;
     @FXML private TextField modelField1;
     @FXML private TextField priceField1;
 
     // === Storage Tab ===
     @FXML private TableView<Product> tableView21;
-    @FXML private TableColumn<Product, String> collectionColumn21;
+    @FXML private TableColumn<Product, String> stockColumn21;
     @FXML private TableColumn<Product, String> brandColumn21;
     @FXML private TableColumn<Product, String> modelColumn21;
     @FXML private TableColumn<Product, Double> priceColumn21;
-    @FXML private TextField collectionField2;
+    @FXML private TextField stockField2;
     @FXML private TextField brandField2;
     @FXML private TextField modelField2;
     @FXML private TextField priceField2;
 
     // === Memory Tab ===
     @FXML private TableView<Product> tableView211;
-    @FXML private TableColumn<Product, String> collectionColumn211;
+    @FXML private TableColumn<Product, String> stockColumn211;
     @FXML private TableColumn<Product, String> brandColumn211;
     @FXML private TableColumn<Product, String> modelColumn211;
     @FXML private TableColumn<Product, Double> priceColumn211;
-    @FXML private TextField collectionField211;
+    @FXML private TextField stockField211;
     @FXML private TextField brandField211;
     @FXML private TextField modelField211;
     @FXML private TextField priceField211;
 
     // === Monitor Tab ===
     @FXML private TableView<Product> tableView2111;
-    @FXML private TableColumn<Product, String> collectionColumn2111;
+    @FXML private TableColumn<Product, String> stockColumn2111;
     @FXML private TableColumn<Product, String> brandColumn2111;
     @FXML private TableColumn<Product, String> modelColumn2111;
     @FXML private TableColumn<Product, Double> priceColumn2111;
-    @FXML private TextField collectionField2111;
+    @FXML private TextField stockField2111;
     @FXML private TextField brandField2111;
     @FXML private TextField modelField2111;
     @FXML private TextField priceField2111;
@@ -76,24 +76,24 @@ public class ProductController {
     // === Initialize All Tabs ===
     @FXML
     public void initialize() {
-        setupTable(tableView, collectionColumn, brandColumn, modelColumn, priceColumn, "keyboard");
-        setupTable(tableView1, collectionColumn1, brandColumn1, modelColumn1, priceColumn1, "mouse");
-        setupTable(tableView21, collectionColumn21, brandColumn21, modelColumn21, priceColumn21, "storage");
-        setupTable(tableView211, collectionColumn211, brandColumn211, modelColumn211, priceColumn211, "memory");
-        setupTable(tableView2111, collectionColumn2111, brandColumn2111, modelColumn2111, priceColumn2111, "monitor");
+        setupTable(tableView, stockColumn, brandColumn, modelColumn, priceColumn, "keyboard");
+        setupTable(tableView1, stockColumn1, brandColumn1, modelColumn1, priceColumn1, "mouse");
+        setupTable(tableView21, stockColumn21, brandColumn21, modelColumn21, priceColumn21, "storage");
+        setupTable(tableView211, stockColumn211, brandColumn211, modelColumn211, priceColumn211, "memory");
+        setupTable(tableView2111, stockColumn2111, brandColumn2111, modelColumn2111, priceColumn2111, "monitor");
     }
 
     // === Setup Table Columns and Data ===
-    private void setupTable(TableView<Product> table, TableColumn<Product, String> collectionCol,
+    private void setupTable(TableView<Product> table, TableColumn<Product, String> stockCol,
                             TableColumn<Product, String> brandCol, TableColumn<Product, String> modelCol,
-                            TableColumn<Product, Double> priceCol, String collectionName) {
+                            TableColumn<Product, Double> priceCol, String stockName) {
 
-        collectionCol.setCellValueFactory(new PropertyValueFactory<>("collection"));
+        stockCol.setCellValueFactory(new PropertyValueFactory<>("stock"));
         brandCol.setCellValueFactory(new PropertyValueFactory<>("brand"));
         modelCol.setCellValueFactory(new PropertyValueFactory<>("model"));
         priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
 
-        table.getItems().setAll(fetchProducts(collectionName));
+        table.getItems().setAll(fetchProducts(stockName));
     }
 
     // === Fetch from MongoDB ===
@@ -104,11 +104,11 @@ public class ProductController {
             try (MongoCursor<Document> cursor = collection.find().iterator()) {
                 while (cursor.hasNext()) {
                     Document doc = cursor.next();
-                    String collectionType = doc.getString("collection");
+                    String stock = doc.getString("stock");
                     String brand = doc.getString("brand");
                     String model = doc.getString("model");
                     Double price = doc.getDouble("price");
-                    products.add(new Product(collectionType, brand, model, price));
+                    products.add(new Product(stock, brand, model, price));
                 }
             }
         } catch (Exception e) {
@@ -133,29 +133,29 @@ public class ProductController {
 
         String tabName = selectedTab.getText().toLowerCase();
 
-        TextField collectionF = null, brandF = null, modelF = null, priceF = null;
+        TextField stockF = null, brandF = null, modelF = null, priceF = null;
         TableView<Product> currentTable = null;
 
         switch (tabName) {
-            case "keyboard" -> { collectionF = collectionField; brandF = brandField; modelF = modelField; priceF = priceField; currentTable = tableView; }
-            case "mouse" -> { collectionF = collectionField1; brandF = brandField1; modelF = modelField1; priceF = priceField1; currentTable = tableView1; }
-            case "storage" -> { collectionF = collectionField2; brandF = brandField2; modelF = modelField2; priceF = priceField2; currentTable = tableView21; }
-            case "memory" -> { collectionF = collectionField211; brandF = brandField211; modelF = modelField211; priceF = priceField211; currentTable = tableView211; }
-            case "monitor" -> { collectionF = collectionField2111; brandF = brandField2111; modelF = modelField2111; priceF = priceField2111; currentTable = tableView2111; }
+            case "keyboard" -> { stockF = stockField; brandF = brandField; modelF = modelField; priceF = priceField; currentTable = tableView; }
+            case "mouse" -> { stockF = stockField1; brandF = brandField1; modelF = modelField1; priceF = priceField1; currentTable = tableView1; }
+            case "storage" -> { stockF = stockField2; brandF = brandField2; modelF = modelField2; priceF = priceField2; currentTable = tableView21; }
+            case "memory" -> { stockF = stockField211; brandF = brandField211; modelF = modelField211; priceF = priceField211; currentTable = tableView211; }
+            case "monitor" -> { stockF = stockField2111; brandF = brandField2111; modelF = modelField2111; priceF = priceField2111; currentTable = tableView2111; }
             default -> { showAlert(Alert.AlertType.ERROR, "Unknown tab: " + tabName); return; }
         }
 
-        if (collectionF == null || brandF == null || modelF == null || priceF == null) {
+        if (stockF == null || brandF == null || modelF == null || priceF == null) {
             showAlert(Alert.AlertType.ERROR, "Input fields not found for tab: " + tabName);
             return;
         }
 
-        String collection = collectionF.getText().trim();
+        String stock = stockF.getText().trim();
         String brand = brandF.getText().trim();
         String model = modelF.getText().trim();
         String priceText = priceF.getText().trim();
 
-        if (collection.isEmpty() || brand.isEmpty() || model.isEmpty() || priceText.isEmpty()) {
+        if (stock.isEmpty() || brand.isEmpty() || model.isEmpty() || priceText.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Please fill in all fields!");
             return;
         }
@@ -170,17 +170,17 @@ public class ProductController {
 
         try {
             MongoCollection<Document> collectionDB = ProductDBConnection.getDatabase().getCollection(tabName);
-            Document newProduct = new Document("collection", collection)
+            Document newProduct = new Document("stock", stock)
                     .append("brand", brand)
                     .append("model", model)
                     .append("price", price);
             collectionDB.insertOne(newProduct);
 
-            currentTable.getItems().add(new Product(collection, brand, model, price));
+            currentTable.getItems().add(new Product(stock, brand, model, price));
 
-            collectionF.clear(); brandF.clear(); modelF.clear(); priceF.clear();
+            stockF.clear(); brandF.clear(); modelF.clear(); priceF.clear();
 
-            showAlert(Alert.AlertType.INFORMATION, "Product added to " + tabName + " collection!");
+            showAlert(Alert.AlertType.INFORMATION, "Product added to " + tabName + " database!");
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error adding product: " + e.getMessage());
@@ -196,7 +196,7 @@ public class ProductController {
         }
 
         // Create text fields pre-filled with existing data
-        TextField collectionField = new TextField(selectedProduct.getCollection());
+        TextField stockField = new TextField(selectedProduct.getStock());
         TextField brandField = new TextField(selectedProduct.getBrand());
         TextField modelField = new TextField(selectedProduct.getModel());
         TextField priceField = new TextField(String.valueOf(selectedProduct.getPrice()));
@@ -206,7 +206,7 @@ public class ProductController {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new javafx.geometry.Insets(20, 20, 10, 20));
-        grid.addRow(0, new Label("Collection:"), collectionField);
+        grid.addRow(0, new Label("Stock:"), stockField);
         grid.addRow(1, new Label("Brand:"), brandField);
         grid.addRow(2, new Label("Model:"), modelField);
         grid.addRow(3, new Label("Price:"), priceField);
@@ -221,13 +221,13 @@ public class ProductController {
             if (response == ButtonType.OK) {
                 try {
                     // Get updated values
-                    String newCollection = collectionField.getText().trim();
+                    String newStock = stockField.getText().trim();
                     String newBrand = brandField.getText().trim();
                     String newModel = modelField.getText().trim();
                     double newPrice = Double.parseDouble(priceField.getText().trim());
 
                     // Validate inputs
-                    if (newCollection.isEmpty() || newBrand.isEmpty() || newModel.isEmpty()) {
+                    if (newStock.isEmpty() || newBrand.isEmpty() || newModel.isEmpty()) {
                         showAlert("Validation Error", "All fields must be filled!");
                         return;
                     }
@@ -236,14 +236,14 @@ public class ProductController {
                     String activeCollection = getActiveCollectionName();
                     MongoCollection<Document> collection = ProductDBConnection.getDatabase().getCollection(activeCollection);
                     Document filter = new Document("model", selectedProduct.getModel());
-                    Document update = new Document("$set", new Document("collection", newCollection)
+                    Document update = new Document("$set", new Document("collection", newStock)
                             .append("brand", newBrand)
                             .append("model", newModel)
                             .append("price", newPrice));
                     collection.updateOne(filter, update);
 
                     // Update TableView
-                    selectedProduct.setCollection(newCollection);
+                    selectedProduct.setStock(newStock);
                     selectedProduct.setBrand(newBrand);
                     selectedProduct.setModel(newModel);
                     selectedProduct.setPrice(newPrice);
@@ -311,24 +311,24 @@ public class ProductController {
 
     // === Inner Product Class ===
     public static class Product {
-        private String collection;
+        private String stock;
         private String brand;
         private String model;
         private Double price;
 
-        public Product(String collection, String brand, String model, Double price) {
-            this.collection = collection;
+        public Product(String stock, String brand, String model, Double price) {
+            this.stock = stock;
             this.brand = brand;
             this.model = model;
             this.price = price;
         }
 
-        public String getCollection() { return collection; }
+        public String getStock() { return stock; }
         public String getBrand() { return brand; }
         public String getModel() { return model; }
         public Double getPrice() { return price; }
 
-        public void setCollection(String collection) { this.collection = collection; }
+        public void setStock(String stock) { this.stock = stock; }
         public void setBrand(String brand) { this.brand = brand; }
         public void setModel(String model) { this.model = model; }
         public void setPrice(Double price) { this.price = price; }
