@@ -1,5 +1,6 @@
 package bcbfixhub.bcbfixhub.controllers;
 
+import bcbfixhub.bcbfixhub.ScenesApplication;
 import bcbfixhub.bcbfixhub.models.User;
 import bcbfixhub.bcbfixhub.models.UserDAO;
 import javafx.fxml.FXML;
@@ -9,15 +10,12 @@ import javafx.scene.control.TextField;
 
 public class LoginController extends ScenesController {
 
-    @FXML
-    private TextField emailField;
-
-    @FXML
-    private PasswordField passwordField;
+    @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
 
     private final User user = new User();
     private final UserDAO userDAO = new UserDAO();
-    private Alert alert = new Alert(Alert.AlertType.NONE);
+    private final Alert alert = new Alert(Alert.AlertType.NONE);
 
     public void initialize() {
         this.emailField.textProperty().bindBidirectional(user.emailProperty());
@@ -30,12 +28,15 @@ public class LoginController extends ScenesController {
         String enteredEmail = user.getEmail();
         String enteredPassword = user.getPassword();
 
-
-
         // Authenticate using database
         boolean isAuthenticated = userDAO.authenticate(enteredEmail, enteredPassword);
 
         if (isAuthenticated) {
+            // Save logged-in user in application
+            if (app instanceof ScenesApplication sa) {
+                sa.setLoggedInUser(new User(enteredEmail)); // store username/email
+            }
+
             // Check if the user is admin
             if ("admin".equals(enteredEmail)) {
                 showAlert(Alert.AlertType.INFORMATION, "Admin Login Success", "Welcome, admin.");
@@ -49,8 +50,6 @@ public class LoginController extends ScenesController {
         }
 
         clearFields();
-
-
     }
 
     @FXML
@@ -59,8 +58,8 @@ public class LoginController extends ScenesController {
     }
 
     @FXML
-    protected void onHome() { // EDITED: Was onClose
-        app.switchTo("home"); // EDITED: Switched to home
+    protected void onHome() {
+        app.switchTo("home");
     }
 
     private void clearFields() {

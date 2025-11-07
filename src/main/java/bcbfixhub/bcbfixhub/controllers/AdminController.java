@@ -40,12 +40,8 @@ public class AdminController extends ScenesController
     }
 
     @FXML
-    public void onUser(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(ScenesController.class.getResource("users.fxml"));
-        Scene scene = new Scene(loader.load());
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setTitle("Register");
-        stage.setScene(scene);
-        stage.show();
+    public void onUser() {
+        app.switchTo("users");
     }
+
 }

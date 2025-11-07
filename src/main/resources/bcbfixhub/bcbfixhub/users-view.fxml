@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="bcbfixhub.bcbfixhub.controllers.UsersController"
+            prefHeight="600.0" prefWidth="800.0">
+
+    <!-- Top title and back button -->
+    <VBox spacing="10" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="User Management" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Back" onAction="#backAdmin"/>
+        </HBox>
+
+        <!-- TableView for users -->
+        <TableView fx:id="usersTable" prefHeight="500" prefWidth="780">
+            <columns>
+                <TableColumn fx:id="usernameColumn" text="Username" prefWidth="200"/>
+                <TableColumn fx:id="emailColumn" text="Email" prefWidth="250"/>
+                <TableColumn fx:id="phoneColumn" text="Phone" prefWidth="150"/>
+                <TableColumn fx:id="actionColumn" text="Actions" prefWidth="180"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+</AnchorPane>

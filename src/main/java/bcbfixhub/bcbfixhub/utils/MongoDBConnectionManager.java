@@ -2,10 +2,15 @@ package bcbfixhub.bcbfixhub.utils;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
 
 public class MongoDBConnectionManager {
 
@@ -25,5 +30,40 @@ public class MongoDBConnectionManager {
             databases.put(dbName, getClient().getDatabase(dbName));
         }
         return databases.get(dbName);
+    }
+
+    /**
+     * Decrease the stock of a product in a collection by a specified amount.
+     *
+     * @param dbName    The database name
+     * @param brand     The product brand
+     * @param model     The product model
+     * @param quantity  The amount to decrease
+     */
+    public static void decreaseStock(String dbName, String brand, String model, int quantity) {
+        try {
+            MongoDatabase db = getDatabase(dbName);
+
+            // Loop through collections to find the product
+            for (String collectionName : db.listCollectionNames()) {
+                MongoCollection<Document> collection = db.getCollection(collectionName);
+
+                Document product = collection.find(and(eq("brand", brand), eq("model", model))).first();
+                if (product != null) {
+                    int currentStock = product.getInteger("stock", 0);
+                    int newStock = Math.max(0, currentStock - quantity); // prevent negative stock
+
+                    collection.updateOne(
+                            and(eq("brand", brand), eq("model", model)),
+                            new Document("$set", new Document("stock", newStock))
+                    );
+
+                    System.out.println("Stock updated for " + brand + " " + model + ": " + currentStock + " -> " + newStock);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
