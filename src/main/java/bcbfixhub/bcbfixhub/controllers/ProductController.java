@@ -24,11 +24,11 @@ public class ProductController extends ScenesController {
     @FXML private TableView<Product> tableView2111;
 
     // === TextFields ===
-    @FXML private TextField stockField, brandField, modelField, priceField;
-    @FXML private TextField stockField1, brandField1, modelField1, priceField1;
-    @FXML private TextField stockField2, brandField2, modelField2, priceField2;
-    @FXML private TextField stockField211, brandField211, modelField211, priceField211;
-    @FXML private TextField stockField2111, brandField2111, modelField2111, priceField2111;
+    @FXML private TextField stockField, brandField, modelField, priceField, imageField;
+    @FXML private TextField stockField1, brandField1, modelField1, priceField1, imageField1;
+    @FXML private TextField stockField2, brandField2, modelField2, priceField2, imageField2;
+    @FXML private TextField stockField211, brandField211, modelField211, priceField211, imageField211;
+    @FXML private TextField stockField2111, brandField2111, modelField2111, priceField2111, imageField2111;
 
     // Maps for dynamic access
     private final Map<String, TableView<Product>> tables = new HashMap<>();
@@ -43,12 +43,12 @@ public class ProductController extends ScenesController {
         tables.put("memory", tableView211);
         tables.put("monitor", tableView2111);
 
-        // Map TextFields
-        fields.put("keyboard", new TextField[]{stockField, brandField, modelField, priceField});
-        fields.put("mouse", new TextField[]{stockField1, brandField1, modelField1, priceField1});
-        fields.put("storage", new TextField[]{stockField2, brandField2, modelField2, priceField2});
-        fields.put("memory", new TextField[]{stockField211, brandField211, modelField211, priceField211});
-        fields.put("monitor", new TextField[]{stockField2111, brandField2111, modelField2111, priceField2111});
+        // Map TextFields (added imageField)
+        fields.put("keyboard", new TextField[]{stockField, brandField, modelField, priceField, imageField});
+        fields.put("mouse", new TextField[]{stockField1, brandField1, modelField1, priceField1, imageField1});
+        fields.put("storage", new TextField[]{stockField2, brandField2, modelField2, priceField2, imageField2});
+        fields.put("memory", new TextField[]{stockField211, brandField211, modelField211, priceField211, imageField211});
+        fields.put("monitor", new TextField[]{stockField2111, brandField2111, modelField2111, priceField2111, imageField2111});
 
         // Setup tables dynamically
         tables.forEach((tabName, table) -> setupTable(table, tabName));
@@ -60,6 +60,7 @@ public class ProductController extends ScenesController {
         table.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("brand"));
         table.getColumns().get(2).setCellValueFactory(new PropertyValueFactory<>("model"));
         table.getColumns().get(3).setCellValueFactory(new PropertyValueFactory<>("price"));
+        table.getColumns().get(4).setCellValueFactory(new PropertyValueFactory<>("imageName")); // new column
 
         table.getItems().setAll(fetchProducts(collectionName));
     }
@@ -75,7 +76,8 @@ public class ProductController extends ScenesController {
                     doc.getString("stock"),
                     doc.getString("brand"),
                     doc.getString("model"),
-                    doc.getDouble("price")
+                    doc.getDouble("price"),
+                    doc.getString("imageName") // fetch imageName
             ));
         }
         return products;
@@ -93,7 +95,9 @@ public class ProductController extends ScenesController {
         String brand = f[1].getText().trim();
         String model = f[2].getText().trim();
         String priceText = f[3].getText().trim();
-        if (stock.isEmpty() || brand.isEmpty() || model.isEmpty() || priceText.isEmpty()) {
+        String imageName = f[4].getText().trim(); // get imageName
+
+        if (stock.isEmpty() || brand.isEmpty() || model.isEmpty() || priceText.isEmpty() || imageName.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Please fill in all fields!");
             return;
         }
@@ -110,10 +114,11 @@ public class ProductController extends ScenesController {
         Document newProduct = new Document("stock", stock)
                 .append("brand", brand)
                 .append("model", model)
-                .append("price", price);
+                .append("price", price)
+                .append("imageName", imageName);
         collection.insertOne(newProduct);
 
-        table.getItems().add(new Product(stock, brand, model, price));
+        table.getItems().add(new Product(stock, brand, model, price, imageName));
         Arrays.stream(f).forEach(TextField::clear);
         showAlert(Alert.AlertType.INFORMATION, "Product added to " + activeTab + "!");
     }
@@ -130,11 +135,11 @@ public class ProductController extends ScenesController {
         String activeTab = getActiveCollectionName();
         TextField[] f = fields.get(activeTab);
 
-        // Pre-fill dialog fields
         TextField stockField = new TextField(selected.getStock());
         TextField brandField = new TextField(selected.getBrand());
         TextField modelField = new TextField(selected.getModel());
         TextField priceField = new TextField(String.valueOf(selected.getPrice()));
+        TextField imageField = new TextField(selected.getImageName());
 
         GridPane grid = new GridPane();
         grid.setHgap(10); grid.setVgap(10);
@@ -142,6 +147,7 @@ public class ProductController extends ScenesController {
         grid.addRow(1, new Label("Brand:"), brandField);
         grid.addRow(2, new Label("Model:"), modelField);
         grid.addRow(3, new Label("Price:"), priceField);
+        grid.addRow(4, new Label("Image Name:"), imageField);
 
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Edit Product");
@@ -155,8 +161,9 @@ public class ProductController extends ScenesController {
                     String brand = brandField.getText().trim();
                     String model = modelField.getText().trim();
                     double price = Double.parseDouble(priceField.getText().trim());
+                    String imageName = imageField.getText().trim();
 
-                    if (stock.isEmpty() || brand.isEmpty() || model.isEmpty()) {
+                    if (stock.isEmpty() || brand.isEmpty() || model.isEmpty() || imageName.isEmpty()) {
                         showAlert(Alert.AlertType.WARNING, "All fields must be filled!");
                         return;
                     }
@@ -167,10 +174,12 @@ public class ProductController extends ScenesController {
                             new Document("$set", new Document("stock", stock)
                                     .append("brand", brand)
                                     .append("model", model)
-                                    .append("price", price)));
+                                    .append("price", price)
+                                    .append("imageName", imageName)));
 
                     selected.setStock(stock); selected.setBrand(brand);
                     selected.setModel(model); selected.setPrice(price);
+                    selected.setImageName(imageName);
                     tables.get(activeTab).refresh();
                     showAlert(Alert.AlertType.INFORMATION, "Product updated!");
                 } catch (NumberFormatException e) {
@@ -232,21 +241,24 @@ public class ProductController extends ScenesController {
 
     // === Inner Product Class ===
     public static class Product {
-        private String stock, brand, model;
+        private String stock, brand, model, imageName;
         private Double price;
 
-        public Product(String stock, String brand, String model, Double price) {
+        public Product(String stock, String brand, String model, Double price, String imageName) {
             this.stock = stock; this.brand = brand; this.model = model; this.price = price;
+            this.imageName = imageName;
         }
 
         public String getStock() { return stock; }
         public String getBrand() { return brand; }
         public String getModel() { return model; }
         public Double getPrice() { return price; }
+        public String getImageName() { return imageName; }
 
         public void setStock(String stock) { this.stock = stock; }
         public void setBrand(String brand) { this.brand = brand; }
         public void setModel(String model) { this.model = model; }
         public void setPrice(Double price) { this.price = price; }
+        public void setImageName(String imageName) { this.imageName = imageName; }
     }
 }

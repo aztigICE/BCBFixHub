@@ -6,13 +6,15 @@ public class Product {
     private String brand;
     private String model;
     private double price;
+    private String imageName; // new field for product image
 
-    public Product(int id, String stock, String brand, String model, double price) {
+    public Product(int id, String stock, String brand, String model, double price, String imageName) {
         this.id = id;
         this.stock = stock;
         this.brand = brand;
         this.model = model;
         this.price = price;
+        this.imageName = imageName;
     }
 
     // === Getters ===
@@ -36,6 +38,10 @@ public class Product {
         return price;
     }
 
+    public String getImageName() {
+        return imageName;
+    }
+
     // === Setters ===
     public void setId(int id) {
         this.id = id;
@@ -55,5 +61,18 @@ public class Product {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+
+
+    /**
+     * Convenience method to get the full path for the product image.
+     */
+    public String getImagePath() {
+        return "resources/bcbfixhub/bcbfixhub/product_images/" + imageName;
     }
 }

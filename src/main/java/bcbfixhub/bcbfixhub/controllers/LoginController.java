@@ -30,23 +30,24 @@ public class LoginController extends ScenesController {
         String enteredEmail = user.getEmail();
         String enteredPassword = user.getPassword();
 
-        // Admin shortcut
-        if ("admin".equals(enteredEmail) && "1234".equals(enteredPassword)) {
-            showAlert(Alert.AlertType.INFORMATION, "Admin Login Success", "Welcome, admin.");
-            app.switchTo("admin");
-            clearFields();
-            return;
-        }
 
-        // Regular authentication
+
+        // Authenticate using database
         boolean isAuthenticated = userDAO.authenticate(enteredEmail, enteredPassword);
 
         if (isAuthenticated) {
-            showAlert(Alert.AlertType.INFORMATION, "Login Success", "Welcome, " + enteredEmail + ".");
-            app.switchTo("user-dashboard");
+            // Check if the user is admin
+            if ("admin".equals(enteredEmail)) {
+                showAlert(Alert.AlertType.INFORMATION, "Admin Login Success", "Welcome, admin.");
+                app.switchTo("admin");
+            } else {
+                showAlert(Alert.AlertType.INFORMATION, "Login Success", "Welcome, " + enteredEmail + ".");
+                app.switchTo("user-dashboard");
+            }
         } else {
             showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid credentials.");
         }
+
         clearFields();
 
 
