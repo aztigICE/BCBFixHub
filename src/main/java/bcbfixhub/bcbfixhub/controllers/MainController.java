@@ -44,14 +44,7 @@ public class MainController extends ScenesController implements Initializable {
     public void setApplication(ScenesApplication application) {
         super.setApplication(application);
         this.application = application;
-
-        // Update cart + reload stock whenever the scene is shown
-        Platform.runLater(() -> {
-            updateCartButtonText();
-            refreshProducts();
-        });
     }
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -307,16 +300,5 @@ public class MainController extends ScenesController implements Initializable {
         }
 
         return results;
-    }
-
-    public void refreshProducts() {
-        Platform.runLater(() -> {
-            String selected = categoryChoiceBox.getValue();
-            if ("All".equals(selected)) {
-                loadAllProductsAsync();
-            } else {
-                loadProductsFromMongoDBAsync(selected);
-            }
-        });
     }
 }
