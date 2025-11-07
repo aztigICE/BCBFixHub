@@ -53,7 +53,7 @@ The application provides a complete e-commerce experience with separate workflow
 * **UI Framework:** 🎨 **JavaFX**
 * **Build Tool:** 📦 **Gradle**
 * **Styling:** 💅 **CSS** (for JavaFX styling)
-* **Database:** 🗄️ (e.g., MySQL, PostgreSQL - connected via JDBC)
+* **Database:** 🗄️ **MongoDB**
 
 ---
 
