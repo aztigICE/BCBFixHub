@@ -55,7 +55,6 @@
     </top>
 
     <center>
-        <!-- Scrollable product area -->
         <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="scroll-pane">
             <content>
                 <TilePane fx:id="catalogTilePane" hgap="20.0" vgap="20.0">

@@ -169,7 +169,7 @@ public class PaymentController extends ScenesController implements Initializable
 
             Document paymentDoc = new Document()
                     .append("username", application.getLoggedInUser().getEmail())
-                    .append("date", formattedDate) // ✅ add this line
+                    .append("date", formattedDate) //  add this line
                     .append("subtotal", subtotal)
                     .append("tax", tax)
                     .append("total", total);

@@ -40,7 +40,7 @@ public class AccountController extends ScenesController implements Initializable
         super.setApplication(application);
         this.application = application;
 
-        // ✅ Ensure these load AFTER the app reference is set
+        // Ensure these load AFTER the app reference is set
         javafx.application.Platform.runLater(() -> {
             loadOrdersFromDB();
             populateCart();

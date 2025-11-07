@@ -81,7 +81,7 @@ public class MainController extends ScenesController implements Initializable {
         loadAllProductsAsync();
     }
 
-    // ✅ Async load for all categories
+    //  Async load for all categories
     private void loadAllProductsAsync() {
         catalogTilePane.getChildren().clear();
         String[] categories = {"keyboard", "mouse", "memory", "storage", "monitor"};
@@ -90,7 +90,7 @@ public class MainController extends ScenesController implements Initializable {
         }
     }
 
-    // ✅ Async load single category
+    // Async load single category
     private void loadProductsFromMongoDBAsync(String collectionName) {
         Task<List<Product>> task = new Task<>() {
             @Override
@@ -111,7 +111,7 @@ public class MainController extends ScenesController implements Initializable {
         new Thread(task, "ProductLoader-" + collectionName).start();
     }
 
-    // ✅ Background fetch products
+    //  Background fetch products
     private List<Product> fetchProducts(String collectionName) {
         List<Product> products = new ArrayList<>();
         try {
@@ -134,7 +134,7 @@ public class MainController extends ScenesController implements Initializable {
         return products;
     }
 
-    // ✅ UI product card creation
+    //  UI product card creation
     private VBox createProductCard(Product product) {
         VBox card = new VBox(10);
         card.setAlignment(Pos.CENTER);
@@ -165,7 +165,7 @@ public class MainController extends ScenesController implements Initializable {
         return card;
     }
 
-    // ✅ Cached image loading
+    //  Cached image loading
     private Image getCachedImage(String imageName) {
         if (imageName == null || imageName.isEmpty()) return getPlaceholderImage();
 
@@ -226,7 +226,7 @@ public class MainController extends ScenesController implements Initializable {
         if (application != null) application.switchTo("account");
     }
 
-    // ✅ Product class
+    //  Product class
     public static class Product {
         private final String stock, brand, model, imageName;
         private final Double price;
@@ -246,7 +246,7 @@ public class MainController extends ScenesController implements Initializable {
         public String getImageName() { return imageName; }
     }
 
-    // ✅ Async search
+    // Async search
     private void handleSearchAsync(String query) {
         Task<List<Product>> task = new Task<>() {
             @Override
