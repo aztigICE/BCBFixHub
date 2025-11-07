@@ -55,6 +55,15 @@
     -fx-background-radius: 10;
 }
 
+#backToStore {
+    -fx-background-color: #FFD000;
+    -fx-text-fill: #363636;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+}
+
+
 /* Darken button on hover */
 #checkoutButton:hover {
     -fx-background-color: #E6BB00; /* A darker yellow */

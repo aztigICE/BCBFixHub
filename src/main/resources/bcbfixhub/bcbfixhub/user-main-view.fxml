@@ -42,7 +42,12 @@
                     <Label text="Category:"/>
                     <ChoiceBox fx:id="categoryChoiceBox" prefWidth="150.0"/>
                     <TextField fx:id="searchBar" promptText="Search products..." prefWidth="250.0"/>
-                    <Button fx:id="cartButton" mnemonicParsing="false" text="Cart" styleClass="cart-button" onAction="#handleGoToCart"/>
+                    <Button fx:id="cartButton"
+                            mnemonicParsing="false"
+                            text="Cart (0)"
+                            styleClass="cart-button"
+                            onAction="#handleGoToCart"/>
+
                 </children>
             </HBox>
 
