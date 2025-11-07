@@ -30,9 +30,9 @@ public class ScenesApplication extends Application {
         addScene("register", "register-view.fxml", authWidth, authHeight); // EDITED size
 
         // Other scenes
-        addScene("admin", "admin-view.fxml",  400, 300);
+        addScene("admin", "admin-view.fxml",  900, 600);
         addScene("user-dashboard", "user-main-view.fxml", 1000, 700);
-        addScene("product", "product-view.fxml", 600, 450);
+        addScene("product", "product-view.fxml", 900, 600);
         addScene("cart", "cart-view.fxml", 900, 600);
         addScene("payment", "payment-view.fxml", 950, 650);
         addScene("account", "account-view.fxml", 1000, 700);

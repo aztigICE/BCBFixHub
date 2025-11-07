@@ -3,47 +3,40 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <!--
-  Root VBox, applies the auth-root style and links the register.css stylesheet.
-  EDITED: Standardized prefHeight and prefWidth.
+  EDITED:
+  - Linked admin.css stylesheet.
+  - Added styleClass="admin-root" to root VBox.
+  - Changed fx:id to "adminRoot".
+  - Added a title Label.
+  - Added styleClasses to all Buttons.
 -->
-<VBox fx:id="register"
+<VBox fx:id="adminRoot"
       alignment="CENTER"
-      prefHeight="550.0" prefWidth="450.0"
-      spacing="15.0" styleClass="auth-root"
-      stylesheets="@css/register.css"
-      xmlns="http://javafx.com/javafx/21.0.6"
+      spacing="20.0"
+      styleClass="admin-root"
+      stylesheets="@css/admin.css"
+      xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="bcbfixhub.bcbfixhub.controllers.RegisterController">
+      fx:controller="bcbfixhub.bcbfixhub.controllers.AdminController">
 
     <padding>
-        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
 
-    <!-- Title Label -->
-    <Label styleClass="auth-title" text="Create Account" />
+    <Label styleClass="admin-title" text="Admin Panel" />
 
-    <!-- EDITED: Re-added missing fields and removed bad comment -->
-    <TextField fx:id="usernameField" promptText="Username" />
-    <TextField fx:id="emailField" promptText="Email" />
-    <PasswordField fx:id="passwordField" promptText="Password" />
-    <PasswordField fx:id="confirmPasswordField" promptText="Confirm Password" />
-    <TextField fx:id="phoneField" promptText="Phone Number (Optional)" />
-
-    <!-- EDITED: Replaced ButtonBar with HBox for centering -->
-    <HBox styleClass="button-bar">
-        <children>
-            <Button onAction="#onRegister" text="Register" styleClass="auth-primary-button" />
-            <Button onAction="#onHome" text="Home" styleClass="auth-secondary-button" />
-        </children>
-        <VBox.margin>
-            <Insets top="10.0" />
-        </VBox.margin>
-    </HBox>
+    <VBox alignment="CENTER" spacing="25"> <!-- Reduced spacing a bit -->
+        <Button onAction="#onProducts" text="Products" styleClass="admin-button" />
+        <Button onAction="#onOrder" text="Orders" styleClass="admin-button" />
+        <Button onAction="#onUser" text="Users" styleClass="admin-button" />
+        <Button onAction="#onLogOut" text="Log Out" styleClass="admin-logout-button">
+            <VBox.margin>
+                <Insets top="20.0" /> <!-- Added margin above logout -->
+            </VBox.margin>
+        </Button>
+    </VBox>
 
 </VBox>

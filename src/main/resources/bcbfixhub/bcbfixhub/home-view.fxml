@@ -3,6 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -10,29 +12,50 @@
 <!--
   Root BorderPane for the new home/welcome screen.
   Uses the new home.css stylesheet.
+  EDITED: Added imports for ImageView and Image.
 -->
-<BorderPane prefHeight="550.0" prefWidth="450.0" styleClass="home-root"
+<BorderPane prefHeight="600.0" prefWidth="500.0" styleClass="home-root"
             stylesheets="@css/home.css"
             xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="bcbfixhub.bcbfixhub.controllers.HomeController">
 
-    <!-- Center: Logo Placeholder -->
+    <!--
+      EDITED: Replaced the ImageView with a VBox to hold both
+      the image and the new title.
+    -->
     <center>
         <VBox alignment="CENTER" spacing="10.0">
-            <Label styleClass="logo-placeholder-icon" text="[LOGO]"/>
-            <Label styleClass="logo-placeholder-text" text="BCB Fix Hub"/>
+            <children>
+                <!-- EDITED: Set fitHeight to 300.0 -->
+                <ImageView fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <!--
+                          Place your logo at 'src/main/resources/images/logo.png'
+                          The path starts with '/' to load from the root of your resources.
+                        -->
+                        <Image url="@/images/BCBLOGO.png" />
+                    </image>
+                </ImageView>
+                <!-- ADDED: New title label -->
+                <Label styleClass="home-title" text="BCB FixHub" />
+            </children>
+            <padding>
+                <!-- EDITED: Added bottom padding to "raise" the VBox from the buttons -->
+                <Insets bottom="40.0" />
+            </padding>
         </VBox>
     </center>
 
     <!-- Bottom: Navigation Buttons -->
     <bottom>
-        <!-- EDITED: Removed fx:id="button-bar" as it is not injected in the controller -->
+        <!-- EDITED: Removed fx:id as it's not needed -->
         <HBox styleClass="button-bar">
             <children>
-                <Button onAction="#onLogin" text="Login" styleClass="home-primary-button"/>
-                <Button onAction="#onRegister" text="Register" styleClass="home-secondary-button"/>
-                <Button fx:id="exitButton" onAction="#onExit" text="Exit" styleClass="home-secondary-button"/>
+                <Button onAction="#onLogin" styleClass="home-primary-button" text="Login" />
+                <Button onAction="#onRegister" styleClass="home-secondary-button" text="Register" />
+                <!-- EDITED: Added fx:id here so the controller can find the button -->
+                <Button fx:id="exitButton" onAction="#onExit" styleClass="home-secondary-button" text="Exit" />
             </children>
         </HBox>
     </bottom>

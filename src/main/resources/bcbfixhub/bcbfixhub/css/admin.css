@@ -1,0 +1,50 @@
+/*
+ * Stylesheet for the Admin View
+ * Matches the auth/home theme
+ */
+
+.admin-root {
+    -fx-background-color: #363636;
+    -fx-padding: 40px;
+}
+
+.admin-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-padding-bottom: 20px; /* Space between title and buttons */
+}
+
+/* Main admin navigation buttons */
+.admin-button {
+    -fx-background-color: #FFD000;
+    -fx-text-fill: #363636;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-font-size: 14px;
+    -fx-pref-width: 300px; /* Maintain existing width */
+    -fx-pref-height: 40px;
+    -fx-cursor: hand;
+}
+
+.admin-button:hover {
+    -fx-background-color: #E6BB00;
+}
+
+/* Logout button, styled as a secondary action */
+.admin-logout-button {
+    -fx-background-color: #676767;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-border-color: #888888;
+    -fx-border-radius: 5;
+    -fx-font-size: 14px;
+    -fx-pref-width: 300px; /* Maintain existing width */
+    -fx-pref-height: 40px;
+    -fx-cursor: hand;
+}
+
+.admin-logout-button:hover {
+    -fx-background-color: #555555;
+}

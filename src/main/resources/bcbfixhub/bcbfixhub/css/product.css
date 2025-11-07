@@ -1,0 +1,132 @@
+/*
+ * Stylesheet for the Product Management View
+ * Matches the main application theme (main.css)
+ */
+
+.product-root {
+    -fx-background-color: #F4F4F4; /* Light background for data */
+}
+
+/* Style the TabPane header */
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #363636;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #363636;
+    -fx-background-insets: 0;
+    -fx-padding: 8 15 8 15;
+}
+
+.tab-pane .tab .tab-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+/* Style for the selected tab */
+.tab-pane .tab:selected {
+    -fx-background-color: #F4F4F4; /* Match root background */
+    -fx-border-color: #FFD000;
+    -fx-border-width: 3 0 0 0; /* Top border */
+}
+
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #363636; /* Dark text when selected */
+}
+
+.tab-pane .tab:hover {
+    -fx-background-color: #555555;
+}
+
+.tab-pane .tab:selected:hover {
+    -fx-background-color: #F4F4F4;
+}
+
+/* Style the TableView to match main.css */
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #676767; /* Dark grey header */
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-view .table-cell {
+    -fx-border-color: transparent;
+    -fx-padding: 5 10 5 10;
+}
+
+/* Bottom action bar for text fields and buttons */
+.action-bar {
+    -fx-background-color: #FFFFFF;
+    -fx-padding: 15px;
+    -fx-spacing: 10px;
+    -fx-border-color: #E0E0E0;
+    -fx-border-width: 1 0 0 0; /* Top border */
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Standard text field styling (from main.css) */
+.text-field {
+    -fx-background-radius: 5;
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #AAAAAA;
+    -fx-border-radius: 5;
+    -fx-text-fill: #363636;
+    -fx-prompt-text-fill: #888888;
+    -fx-font-size: 12px;
+}
+
+/* Standard Buttons */
+.admin-button {
+    -fx-background-color: #FFD000;
+    -fx-text-fill: #363636;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+.admin-button:hover { -fx-background-color: #E6BB00; }
+
+.edit-button {
+    -fx-background-color: #3498db; /* Blue for Edit */
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+.edit-button:hover { -fx-background-color: #2980b9; }
+
+.delete-button {
+    -fx-background-color: #e74c3c; /* Red for Delete */
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+.delete-button:hover { -fx-background-color: #c0392b; }
+
+/* Floating Back Button */
+.back-button-bar {
+    -fx-background-color: #363636;
+    -fx-padding: 8px 15px;
+    -fx-alignment: CENTER_RIGHT;
+}
+
+.back-button {
+    -fx-background-color: #676767;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+.back-button:hover { -fx-background-color: #555555; }
