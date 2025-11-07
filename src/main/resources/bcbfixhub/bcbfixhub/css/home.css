@@ -8,19 +8,14 @@
     -fx-padding: 40px;
 }
 
-/* Logo placeholder icon */
-.logo-placeholder-icon {
-    -fx-font-size: 64px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #676767;
-}
-
-/* Logo placeholder text */
-.logo-placeholder-text {
-    -fx-font-size: 36px;
+/* ADDED: Title style for under the logo */
+.home-title {
+    -fx-font-size: 32px;
     -fx-font-weight: bold;
     -fx-text-fill: #FFD000; /* Main theme yellow */
 }
+
+/* EDITED: Removed old .logo-placeholder-icon and .logo-placeholder-text styles */
 
 /* Button container at the bottom */
 .button-bar {

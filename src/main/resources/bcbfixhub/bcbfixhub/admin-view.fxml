@@ -1,29 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
-<VBox fx:id="register"
-      alignment="CENTER"
-      spacing="20.0"
-      xmlns="http://javafx.com/javafx/25"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="bcbfixhub.bcbfixhub.controllers.AdminController">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
+<!--
+  EDITED:
+  - Changed root to BorderPane for a more professional layout.
+  - Set prefHeight/prefWidth to new 900x600 standard.
+  - Added a <top> HBox for a proper header.
+  - Kept <center> as a VBox for the main buttons.
+  - Adjusted button widths in css.
+-->
+<BorderPane prefHeight="600.0" prefWidth="900.0" styleClass="admin-root"
+            stylesheets="@css/admin.css"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="bcbfixhub.bcbfixhub.controllers.AdminController">
 
-    <VBox alignment="CENTER" spacing="45">
-        <Button onAction="#onProducts" text="Products" prefWidth="300"/>
-        <Button onAction="#onOrder" text="Orders" prefWidth="300"/>
-        <Button onAction="#onUser" text="Users" prefWidth="300"/>
-        <Button onAction="#onLogOut" text="Log Out" prefWidth="300"/>
-    </VBox>
+    <top>
+        <HBox styleClass="header-bar">
+            <children>
+                <Label styleClass="header-title" text="Admin Dashboard" />
+            </children>
+        </HBox>
+    </top>
 
-</VBox>
-
+    <center>
+        <VBox alignment="CENTER" spacing="30.0">
+            <children>
+                <Button onAction="#onProducts" text="Manage Products" styleClass="admin-button" />
+                <Button onAction="#onOrder" text="View Orders" styleClass="admin-button" />
+                <Button onAction="#onUser" text="Manage Users" styleClass="admin-button" />
+                <Button onAction="#onLogOut" text="Log Out" styleClass="admin-logout-button">
+                    <VBox.margin>
+                        <Insets top="30.0" /> <!-- Added margin above logout -->
+                    </VBox.margin>
+                </Button>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>
