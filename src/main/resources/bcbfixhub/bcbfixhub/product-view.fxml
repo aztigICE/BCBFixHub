@@ -10,17 +10,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 
-<!--
-  EDITED:
-  - Changed root to BorderPane for better layout.
-  - Linked product.css stylesheet.
-  - Added styleClass="product-root".
-  - Placed TabPane in <center> and Back button in <top>.
-  - Added styleClasses to all Buttons, TextFields, and TableViews.
-  - Wrapped bottom controls in an HBox with styleClass="action-bar".
-  - EDITED: Changed prefHeight/prefWidth to new 900x600 standard.
--->
-<BorderPane prefHeight="600.0" prefWidth="900.0" styleClass="product-root"
+<BorderPane prefHeight="600.0" prefWidth="1200.0" styleClass="product-root"
             stylesheets="@css/product.css"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="bcbfixhub.bcbfixhub.controllers.ProductController">
@@ -34,9 +24,9 @@
     <center>
         <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
             <tabs>
+                <!-- Keyboard Tab -->
                 <Tab text="Keyboard">
                     <content>
-                        <!-- Replaced AnchorPane with BorderPane for simple top/bottom layout -->
                         <BorderPane>
                             <center>
                                 <TableView fx:id="tableView">
@@ -45,11 +35,8 @@
                                         <TableColumn fx:id="brandColumn" prefWidth="145.0" text="Product Brand" />
                                         <TableColumn fx:id="modelColumn" prefWidth="230.0" text="Product Model" />
                                         <TableColumn fx:id="priceColumn" prefWidth="90.0" text="Price(PHP)" />
+                                        <TableColumn fx:id="imageColumn" prefWidth="180.0" text="Image Name" />
                                     </columns>
-                                    <BorderPane.margin>
-                                        <Insets />
-                                    </BorderPane.margin>
-                                    <!-- Ensure TableView stretches -->
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                     </columnResizePolicy>
@@ -61,7 +48,7 @@
                                     <TextField fx:id="brandField" prefWidth="100.0" promptText="Brand" />
                                     <TextField fx:id="modelField" prefWidth="150.0" promptText="Model" />
                                     <TextField fx:id="priceField" prefWidth="80.0" promptText="Price" />
-                                    <!-- Spacer -->
+                                    <TextField fx:id="imageField" prefWidth="150.0" promptText="Image Name" />
                                     <HBox HBox.hgrow="ALWAYS" />
                                     <Button onAction="#handleAddProduct" text="Add" styleClass="admin-button" />
                                     <Button onAction="#handleEditProduct" text="Edit" styleClass="edit-button" />
@@ -71,6 +58,8 @@
                         </BorderPane>
                     </content>
                 </Tab>
+
+                <!-- Mouse Tab -->
                 <Tab text="Mouse">
                     <content>
                         <BorderPane>
@@ -81,6 +70,7 @@
                                         <TableColumn fx:id="brandColumn1" prefWidth="145.0" text="Product Brand" />
                                         <TableColumn fx:id="modelColumn1" prefWidth="230.0" text="Product Model" />
                                         <TableColumn fx:id="priceColumn1" prefWidth="90.0" text="Price(PHP)" />
+                                        <TableColumn fx:id="imageColumn1" prefWidth="180.0" text="Image Name" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -93,6 +83,7 @@
                                     <TextField fx:id="brandField1" prefWidth="100.0" promptText="Brand" />
                                     <TextField fx:id="modelField1" prefWidth="150.0" promptText="Model" />
                                     <TextField fx:id="priceField1" prefWidth="80.0" promptText="Price" />
+                                    <TextField fx:id="imageField1" prefWidth="150.0" promptText="Image Name" />
                                     <HBox HBox.hgrow="ALWAYS" />
                                     <Button onAction="#handleAddProduct" text="Add" styleClass="admin-button" />
                                     <Button onAction="#handleEditProduct" text="Edit" styleClass="edit-button" />
@@ -102,6 +93,8 @@
                         </BorderPane>
                     </content>
                 </Tab>
+
+                <!-- Storage Tab -->
                 <Tab text="Storage">
                     <content>
                         <BorderPane>
@@ -112,6 +105,7 @@
                                         <TableColumn fx:id="brandColumn21" prefWidth="145.0" text="Product Brand" />
                                         <TableColumn fx:id="modelColumn21" prefWidth="230.0" text="Product Model" />
                                         <TableColumn fx:id="priceColumn21" prefWidth="90.0" text="Price(PHP)" />
+                                        <TableColumn fx:id="imageColumn21" prefWidth="180.0" text="Image Name" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -124,6 +118,7 @@
                                     <TextField fx:id="brandField2" prefWidth="100.0" promptText="Brand" />
                                     <TextField fx:id="modelField2" prefWidth="150.0" promptText="Model" />
                                     <TextField fx:id="priceField2" prefWidth="80.0" promptText="Price" />
+                                    <TextField fx:id="imageField2" prefWidth="150.0" promptText="Image Name" />
                                     <HBox HBox.hgrow="ALWAYS" />
                                     <Button onAction="#handleAddProduct" text="Add" styleClass="admin-button" />
                                     <Button onAction="#handleEditProduct" text="Edit" styleClass="edit-button" />
@@ -133,6 +128,8 @@
                         </BorderPane>
                     </content>
                 </Tab>
+
+                <!-- Memory Tab -->
                 <Tab text="Memory">
                     <content>
                         <BorderPane>
@@ -143,6 +140,7 @@
                                         <TableColumn fx:id="brandColumn211" prefWidth="145.0" text="Product Brand" />
                                         <TableColumn fx:id="modelColumn211" prefWidth="230.0" text="Product Model" />
                                         <TableColumn fx:id="priceColumn211" prefWidth="90.0" text="Price(PHP)" />
+                                        <TableColumn fx:id="imageColumn211" prefWidth="180.0" text="Image Name" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -155,6 +153,7 @@
                                     <TextField fx:id="brandField211" prefWidth="100.0" promptText="Brand" />
                                     <TextField fx:id="modelField211" prefWidth="150.0" promptText="Model" />
                                     <TextField fx:id="priceField211" prefWidth="80.0" promptText="Price" />
+                                    <TextField fx:id="imageField211" prefWidth="150.0" promptText="Image Name" />
                                     <HBox HBox.hgrow="ALWAYS" />
                                     <Button onAction="#handleAddProduct" text="Add" styleClass="admin-button" />
                                     <Button onAction="#handleEditProduct" text="Edit" styleClass="edit-button" />
@@ -164,6 +163,8 @@
                         </BorderPane>
                     </content>
                 </Tab>
+
+                <!-- Monitor Tab -->
                 <Tab text="Monitor">
                     <content>
                         <BorderPane>
@@ -174,6 +175,7 @@
                                         <TableColumn fx:id="brandColumn2111" prefWidth="145.0" text="Product Brand" />
                                         <TableColumn fx:id="modelColumn2111" prefWidth="230.0" text="Product Model" />
                                         <TableColumn fx:id="priceColumn2111" prefWidth="90.0" text="Price(PHP)" />
+                                        <TableColumn fx:id="imageColumn2111" prefWidth="180.0" text="Image Name" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -186,6 +188,7 @@
                                     <TextField fx:id="brandField2111" prefWidth="100.0" promptText="Brand" />
                                     <TextField fx:id="modelField2111" prefWidth="150.0" promptText="Model" />
                                     <TextField fx:id="priceField2111" prefWidth="80.0" promptText="Price" />
+                                    <TextField fx:id="imageField2111" prefWidth="150.0" promptText="Image Name" />
                                     <HBox HBox.hgrow="ALWAYS" />
                                     <Button onAction="#handleAddProduct" text="Add" styleClass="admin-button" />
                                     <Button onAction="#handleEditProduct" text="Edit" styleClass="edit-button" />
