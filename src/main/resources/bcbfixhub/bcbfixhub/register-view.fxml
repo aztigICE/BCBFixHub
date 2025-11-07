@@ -46,7 +46,7 @@
             <!--
               EDITED: This button now uses the auth-primary-button style.
             -->
-            <Button onAction="#onRegister" styleClass="auth-primary-button" text="Register" />
+            <Button  fx:id="registerButton" onAction="#onRegister" styleClass="auth-primary-button" text="Register" />
         </children>
         <VBox.margin>
             <Insets top="10.0" /> <!-- Added margin above buttons -->
