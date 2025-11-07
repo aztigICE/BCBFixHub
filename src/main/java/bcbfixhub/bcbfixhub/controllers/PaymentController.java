@@ -2,7 +2,7 @@ package bcbfixhub.bcbfixhub.controllers;
 
 import bcbfixhub.bcbfixhub.ScenesApplication;
 import bcbfixhub.bcbfixhub.controllers.MainController.Product;
-import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager; // you need this utility class for MongoDB
+import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import javafx.fxml.FXML;
@@ -89,7 +89,7 @@ public class PaymentController extends ScenesController implements Initializable
             return;
         }
 
-        savePaymentToDatabase(); // <-- save payment details
+        savePaymentToDatabase(); // save payment details to MongoDB
 
         if (application != null) application.getCart().clear();
         loadCart(); // refresh cart display
@@ -132,13 +132,15 @@ public class PaymentController extends ScenesController implements Initializable
                 .append("tax", tax)
                 .append("total", total);
 
-        for (Product product : application.getCart()) {
-            Document item = new Document()
-                    .append("brand", product.getBrand())
-                    .append("model", product.getModel())
-                    .append("price", product.getPrice());
-            paymentDoc.append("items", item);
-        }
+        // Add cart items as a list of documents
+        var items = application.getCart().stream().map(product -> new Document()
+                        .append("brand", product.getBrand())
+                        .append("model", product.getModel())
+                        .append("price", product.getPrice())
+                        .append("imageName", product.getImageName()))
+                .toList();
+
+        paymentDoc.append("items", items);
 
         collection.insertOne(paymentDoc);
         System.out.println("Payment saved to MongoDB for user: " + application.getLoggedInUser().getEmail());
