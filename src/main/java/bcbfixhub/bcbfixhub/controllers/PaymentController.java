@@ -15,7 +15,6 @@ import java.util.ResourceBundle;
 
 public class PaymentController extends ScenesController implements Initializable {
 
-    // --- FXML References ---
     @FXML private ToggleButton gcashToggle;
     @FXML private ToggleButton paypalToggle;
     @FXML private ToggleButton creditDebitToggle;
@@ -44,19 +43,14 @@ public class PaymentController extends ScenesController implements Initializable
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Create ToggleGroup programmatically
         paymentToggleGroup = new ToggleGroup();
         gcashToggle.setToggleGroup(paymentToggleGroup);
         paypalToggle.setToggleGroup(paymentToggleGroup);
         creditDebitToggle.setToggleGroup(paymentToggleGroup);
 
-        // Listen to toggle changes
         paymentToggleGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             handlePaymentMethodChange(newToggle);
         });
-
-        // Optional: set default toggle
-        // gcashToggle.setSelected(true);
 
         checkoutButton.setOnAction(event -> handleCheckout());
     }
@@ -73,8 +67,14 @@ public class PaymentController extends ScenesController implements Initializable
 
     private void handleCheckout() {
         String errorMessage = validateInputs();
-        if (errorMessage == null) showConfirmationPopup();
-        else showErrorPopup(errorMessage);
+        if (errorMessage == null) {
+            // Confirm payment
+            showConfirmationPopup();
+            // Clear cart after payment
+            if (application != null) application.getCart().clear();
+        } else {
+            showErrorPopup(errorMessage);
+        }
     }
 
     private String validateInputs() {
@@ -123,6 +123,7 @@ public class PaymentController extends ScenesController implements Initializable
         Button okButton = new Button("OK");
         okButton.setOnAction(e -> {
             popup.close();
+            // Redirect to dashboard
             if (application != null) application.switchTo("user-dashboard");
             else showErrorPopup("Failed to return to the main screen.");
         });

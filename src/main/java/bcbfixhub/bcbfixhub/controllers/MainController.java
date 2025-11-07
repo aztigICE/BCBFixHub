@@ -30,8 +30,7 @@ public class MainController extends ScenesController implements Initializable {
     @FXML private Button cartButton;
     @FXML private Button accountButton;
 
-    private ScenesApplication application;
-
+    private ScenesApplication application;  // shared application
     private static final String DATABASE_NAME = "Product-Details";
 
     @Override
@@ -44,7 +43,6 @@ public class MainController extends ScenesController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
 
-        // Populate categories
         List<String> collectionList = new ArrayList<>();
         for (String name : db.listCollectionNames()) collectionList.add(name);
         var collections = FXCollections.observableArrayList(collectionList);
@@ -91,7 +89,8 @@ public class MainController extends ScenesController implements Initializable {
     }
 
     private VBox createProductCard(Product product) {
-        VBox card = new VBox(10);
+        VBox card = new VBox();
+        card.setSpacing(10);
         card.setAlignment(Pos.CENTER);
         card.setPrefSize(200, 300);
         card.setStyle("-fx-background-color: #FFF8E7; -fx-background-radius: 8; -fx-border-color: #D1B48C; -fx-border-radius: 8;");
@@ -101,14 +100,21 @@ public class MainController extends ScenesController implements Initializable {
         imageBox.setStyle("-fx-background-color: #E0CBAF; -fx-background-radius: 5;");
 
         Label nameLabel = new Label(product.getBrand() + " " + product.getModel());
+        nameLabel.getStyleClass().add("product-name");
+
         Label stockLabel = new Label("Stock: " + product.getStock());
+        stockLabel.getStyleClass().add("product-category");
+
         Label priceLabel = new Label("₱" + String.format("%.2f", product.getPrice()));
+        priceLabel.getStyleClass().add("product-price");
 
         Button addToCartButton = new Button("Add to Cart");
+        addToCartButton.getStyleClass().add("add-to-cart-button");
         addToCartButton.setOnAction(e -> handleAddToCart(product));
 
         card.getChildren().addAll(imageBox, nameLabel, stockLabel, priceLabel, addToCartButton);
         VBox.setMargin(addToCartButton, new Insets(10, 0, 0, 0));
+
         return card;
     }
 
@@ -116,6 +122,9 @@ public class MainController extends ScenesController implements Initializable {
         if (application != null) {
             application.getCart().add(product);
             updateCartButtonText();
+            System.out.println("Added to cart: " + product.getBrand() + " " + product.getModel());
+        } else {
+            System.err.println("Application is null! Cannot add to cart.");
         }
     }
 
@@ -123,23 +132,32 @@ public class MainController extends ScenesController implements Initializable {
         if (application != null) {
             int count = application.getCart().size();
             cartButton.setText("Cart (" + count + ")");
-        } else cartButton.setText("Cart (0)");
+        } else {
+            cartButton.setText("Cart (0)");
+        }
     }
 
-    @FXML private void handleGoToCart() {
+    @FXML
+    private void handleGoToCart() {
         if (application != null) application.switchTo("cart");
     }
 
-    @FXML private void handleGoToAccount() {
+    @FXML
+    private void handleGoToAccount() {
         if (application != null) application.switchTo("account");
     }
 
     public static class Product {
-        private String stock, brand, model;
+        private String stock;
+        private String brand;
+        private String model;
         private Double price;
 
         public Product(String stock, String brand, String model, Double price) {
-            this.stock = stock; this.brand = brand; this.model = model; this.price = price;
+            this.stock = stock;
+            this.brand = brand;
+            this.model = model;
+            this.price = price;
         }
 
         public String getStock() { return stock; }

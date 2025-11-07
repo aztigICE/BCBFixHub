@@ -9,18 +9,20 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+
+import bcbfixhub.bcbfixhub.controllers.MainController.Product;
 
 public class ScenesApplication extends Application {
 
     private Stage mainStage;
     private final Map<String, Scene> scenes = new HashMap<>();
-    private final List<Object> cart = new ArrayList<>(); // shared cart
+    private final List<Product> cart = new ArrayList<>(); // strongly typed cart
 
-    public List<Object> getCart() {
+    public List<Product> getCart() {
         return cart;
     }
 
@@ -51,9 +53,8 @@ public class ScenesApplication extends Application {
 
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
         Scene scene = new Scene(loader.load(), width, height);
-        scene.setUserData(loader); // store loader for later controller access
+        scene.setUserData(loader); // store loader for controller access
 
-        // Set controller link
         Object controller = loader.getController();
         if (controller instanceof ScenesController sc) {
             sc.setApplication(this);
@@ -78,7 +79,7 @@ public class ScenesApplication extends Application {
         mainStage.setTitle(capitalize(name));
         mainStage.centerOnScreen();
 
-        // Call loadCart() if cart scene
+        // Call loadCart() if switching to cart scene
         Object controller = getControllerForScene(scene);
         if ("cart".equals(name) && controller instanceof CartController cartController) {
             cartController.loadCart();
