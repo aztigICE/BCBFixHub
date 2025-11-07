@@ -13,13 +13,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import org.bson.Document;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainController extends ScenesController implements Initializable {
@@ -31,7 +31,6 @@ public class MainController extends ScenesController implements Initializable {
     @FXML private Button accountButton;
 
     private ScenesApplication application;
-
     private static final String DATABASE_NAME = "Product-Details";
 
     @Override
@@ -42,20 +41,20 @@ public class MainController extends ScenesController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
-
-        // Populate categories
-        List<String> collectionList = new ArrayList<>();
-        for (String name : db.listCollectionNames()) collectionList.add(name);
-        var collections = FXCollections.observableArrayList(collectionList);
-        collections.add(0, "All");
+        // Hardcoded category list — corresponds to MongoDB collection names
+        var collections = FXCollections.observableArrayList(
+                "All", "keyboard", "mouse", "memory", "storage", "monitor"
+        );
         categoryChoiceBox.setItems(collections);
         categoryChoiceBox.setValue("All");
 
         categoryChoiceBox.setOnAction(e -> {
             String selected = categoryChoiceBox.getValue();
-            if ("All".equals(selected)) loadAllProducts();
-            else loadProductsFromMongoDB(selected);
+            if ("All".equals(selected)) {
+                loadAllProducts();
+            } else {
+                loadProductsFromMongoDB(selected);
+            }
         });
 
         updateCartButtonText();
@@ -63,15 +62,18 @@ public class MainController extends ScenesController implements Initializable {
     }
 
     private void loadAllProducts() {
-        catalogTilePane.getChildren().clear();
-        MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
-        for (String collectionName : db.listCollectionNames()) {
-            loadProductsFromMongoDB(collectionName);
+        catalogTilePane.getChildren().clear(); // keep this here to start fresh
+        String[] categories = {"keyboard", "mouse", "memory", "storage", "monitor"};
+        for (String category : categories) {
+            loadProductsFromMongoDB(category);
         }
     }
 
     private void loadProductsFromMongoDB(String collectionName) {
         try {
+            // ✅ clear only when switching individual category
+            catalogTilePane.getChildren().clear();
+
             MongoCollection<Document> collection = MongoDBConnectionManager
                     .getDatabase(DATABASE_NAME)
                     .getCollection(collectionName);
@@ -81,8 +83,9 @@ public class MainController extends ScenesController implements Initializable {
                 String brand = doc.getString("brand");
                 String model = doc.getString("model");
                 Double price = doc.getDouble("price");
+                String imageName = doc.getString("imageName");
 
-                Product product = new Product(stock, brand, model, price);
+                Product product = new Product(stock, brand, model, price, imageName);
                 catalogTilePane.getChildren().add(createProductCard(product));
             }
         } catch (Exception e) {
@@ -94,11 +97,42 @@ public class MainController extends ScenesController implements Initializable {
         VBox card = new VBox(10);
         card.setAlignment(Pos.CENTER);
         card.setPrefSize(200, 300);
-        card.setStyle("-fx-background-color: #FFF8E7; -fx-background-radius: 8; -fx-border-color: #D1B48C; -fx-border-radius: 8;");
+        card.setStyle("""
+            -fx-background-color: #FFF8E7;
+            -fx-background-radius: 8;
+            -fx-border-color: #D1B48C;
+            -fx-border-radius: 8;
+        """);
 
-        VBox imageBox = new VBox();
-        imageBox.setPrefSize(180, 150);
-        imageBox.setStyle("-fx-background-color: #E0CBAF; -fx-background-radius: 5;");
+        // --- Image ---
+        if (product.getImageName() != null && !product.getImageName().isEmpty()) {
+            ImageView imageView = new ImageView();
+            imageView.setFitWidth(180);
+            imageView.setFitHeight(150);
+            imageView.setPreserveRatio(true);
+            imageView.setSmooth(true);
+
+            String[] folders = {"keyboard", "mouse", "memory", "storage", "monitor"};
+            String[] extensions = {".jpg", ".png"};
+
+            boolean imageLoaded = false;
+            for (String folder : folders) {
+                for (String ext : extensions) {
+                    String path = "bcbfixhub/bcbfixhub/product_images/" + folder + "/" + product.getImageName() + ext;
+                    try (var stream = getClass().getClassLoader().getResourceAsStream(path)) {
+                        if (stream != null) {
+                            imageView.setImage(new Image(stream));
+                            card.getChildren().add(imageView);
+                            imageLoaded = true;
+                            break; // stop after finding first valid image
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (imageLoaded) break;
+            }
+        }
 
         Label nameLabel = new Label(product.getBrand() + " " + product.getModel());
         Label stockLabel = new Label("Stock: " + product.getStock());
@@ -107,8 +141,9 @@ public class MainController extends ScenesController implements Initializable {
         Button addToCartButton = new Button("Add to Cart");
         addToCartButton.setOnAction(e -> handleAddToCart(product));
 
-        card.getChildren().addAll(imageBox, nameLabel, stockLabel, priceLabel, addToCartButton);
+        card.getChildren().addAll(nameLabel, stockLabel, priceLabel, addToCartButton);
         VBox.setMargin(addToCartButton, new Insets(10, 0, 0, 0));
+
         return card;
     }
 
@@ -123,7 +158,9 @@ public class MainController extends ScenesController implements Initializable {
         if (application != null) {
             int count = application.getCart().size();
             cartButton.setText("Cart (" + count + ")");
-        } else cartButton.setText("Cart (0)");
+        } else {
+            cartButton.setText("Cart (0)");
+        }
     }
 
     @FXML private void handleGoToCart() {
@@ -135,16 +172,21 @@ public class MainController extends ScenesController implements Initializable {
     }
 
     public static class Product {
-        private String stock, brand, model;
-        private Double price;
+        private final String stock, brand, model, imageName;
+        private final Double price;
 
-        public Product(String stock, String brand, String model, Double price) {
-            this.stock = stock; this.brand = brand; this.model = model; this.price = price;
+        public Product(String stock, String brand, String model, Double price, String imageName) {
+            this.stock = stock;
+            this.brand = brand;
+            this.model = model;
+            this.price = price;
+            this.imageName = imageName;
         }
 
         public String getStock() { return stock; }
         public String getBrand() { return brand; }
         public String getModel() { return model; }
         public Double getPrice() { return price; }
+        public String getImageName() { return imageName; }
     }
 }
