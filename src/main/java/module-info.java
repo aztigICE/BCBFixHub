@@ -11,6 +11,7 @@ module bcbfixhub.bcbfixhub {
     requires javafx.graphics;
     requires jbcrypt;
     requires net.synedra.validatorfx;
+    requires javafx.base;
 
     opens bcbfixhub.bcbfixhub to javafx.fxml;
     opens bcbfixhub.bcbfixhub.controllers to javafx.fxml;

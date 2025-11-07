@@ -1,59 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleButton?>
-<?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<!--
-  Root HBox, linked to payment.css.
-  All inline styles have been removed.
--->
-<HBox prefHeight="650.0" prefWidth="950.0" spacing="30.0" styleClass="root" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bcbfixhub.bcbfixhub.controllers.PaymentController">
+<HBox xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="bcbfixhub.bcbfixhub.controllers.PaymentController"
+      spacing="30.0" prefWidth="950.0" prefHeight="650.0">
+
     <padding>
-        <Insets top="30.0" right="30.0" bottom="30.0" left="30.0" />
+        <Insets top="30" right="30" bottom="30" left="30"/>
     </padding>
-    <children>
-        <!-- LEFT COLUMN (Payment) -->
-        <VBox prefWidth="420.0" spacing="15.0">
-            <children>
-                <Label text="Payment Method" styleClass="title-label">
-                    <font>
-                        <Font name="System Bold" size="20.0"/>
-                    </font>
-                </Label>
 
-                <!-- Payment Toggles -->
-                <VBox prefWidth="100.0" spacing="10.0" styleClass="toggle-box">
-                    <children>
-                        <ToggleButton fx:id="gcashToggle" mnemonicParsing="false"
-                                      text="GCash" styleClass="payment-toggle-button" prefWidth="400.0"/>
-                        <Separator/>
-                        <ToggleButton fx:id="paypalToggle" mnemonicParsing="false"
-                                      text="PayPal" styleClass="payment-toggle-button" prefWidth="400.0"/>
-                        <Separator/>
-                        <ToggleButton fx:id="creditDebitToggle" mnemonicParsing="false"
-                                      text="Credit/Debit" styleClass="payment-toggle-button" prefWidth="400.0"/>
-                    </children>
-                    <padding>
-                        <Insets bottom="10.0" top="10.0"/>
-                    </padding>
-                </VBox>
+    <!-- LEFT COLUMN: Payment Methods -->
+    <VBox spacing="15.0" prefWidth="420.0">
+        <children>
+            <Label text="Payment Method" styleClass="title-label">
+                <font><Font name="System Bold" size="20"/></font>
+            </Label>
 
-                <!-- StackPane for Payment Forms -->
-                <StackPane prefHeight="180.0" prefWidth="300.0">
+            <VBox spacing="10.0" styleClass="toggle-box">
+                <children>
+                    <ToggleButton fx:id="gcashToggle" text="GCash" prefWidth="400.0"/>
+                    <Separator/>
+                    <ToggleButton fx:id="paypalToggle" text="PayPal" prefWidth="400.0"/>
+                    <Separator/>
+                    <ToggleButton fx:id="creditDebitToggle" text="Credit/Debit" prefWidth="400.0"/>
+                </children>
+                <padding>
+                    <Insets top="10" bottom="10"/>
+                </padding>
+            </VBox>
+
+            <StackPane prefHeight="220.0">
+                <children>
+                    <!-- GCash -->
                     <VBox fx:id="gcashBox" spacing="10.0" visible="false">
-                        <padding>
-                            <Insets top="10" right="10" bottom="10" left="10"/>
-                        </padding>
+                        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
                         <Label text="GCash Details" styleClass="details-title"/>
                         <Label text="GCash Number:" styleClass="details-label"/>
                         <TextField fx:id="gcashNumberField" promptText="e.g., 09123456789"/>
@@ -61,19 +46,17 @@
                         <TextField fx:id="gcashNameField" promptText="e.g., Juan Dela Cruz"/>
                     </VBox>
 
+                    <!-- PayPal -->
                     <VBox fx:id="paypalBox" spacing="10.0" visible="false">
-                        <padding>
-                            <Insets top="10" right="10" bottom="10" left="10"/>
-                        </padding>
-                        <Label text="Paypal Details" styleClass="details-title"/>
-                        <Label text="Paypal Email:" styleClass="details-label"/>
+                        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+                        <Label text="PayPal Details" styleClass="details-title"/>
+                        <Label text="PayPal Email:" styleClass="details-label"/>
                         <TextField fx:id="paypalEmailField" promptText="e.g., juan@example.com"/>
                     </VBox>
 
+                    <!-- Credit/Debit -->
                     <VBox fx:id="creditDebitBox" spacing="10.0" visible="false">
-                        <padding>
-                            <Insets top="10" right="10" bottom="10" left="10"/>
-                        </padding>
+                        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
                         <Label text="Credit/Debit Card Details" styleClass="details-title"/>
                         <Label text="Card Number:" styleClass="details-label"/>
                         <TextField fx:id="cardNumberField" promptText="---- ---- ---- ----"/>
@@ -88,61 +71,38 @@
                             </VBox>
                         </HBox>
                     </VBox>
-                </StackPane>
+                </children>
+            </StackPane>
 
-                <!-- Spacer -->
-                <VBox VBox.vgrow="ALWAYS"/>
+            <VBox VBox.vgrow="ALWAYS"/>
+            <Button fx:id="checkoutButton" text="CHECKOUT" prefWidth="420.0" prefHeight="50.0"/>
+        </children>
+    </VBox>
 
-                <!-- Checkout Button -->
-                <Button fx:id="checkoutButton" mnemonicParsing="false" text="CHECKOUT" prefHeight="50.0"
-                        prefWidth="420.0"/>
-            </children>
-        </VBox>
+    <!-- RIGHT COLUMN: Cart Items and Summary -->
+    <VBox spacing="20.0" prefWidth="415.0">
+        <children>
+            <Label text="Order Summary" styleClass="summary-title"/>
+            <ScrollPane fitToWidth="true" prefHeight="400.0">
+                <content>
+                    <VBox fx:id="cartItemsContainer" spacing="10.0"/>
+                </content>
+            </ScrollPane>
 
+            <Separator/>
 
-        <!-- RIGHT COLUMN (Placeholders) -->
-        <VBox prefWidth="415.0" spacing="20.0">
-            <!-- Placeholder: Order Summary with new dark background -->
-            <VBox spacing="10.0" styleClass="summary-box" VBox.vgrow="ALWAYS">
-                <padding>
-                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                </padding>
-                <Label text="Designer Package" styleClass="summary-title">
-                    <font>
-                        <Font name="System Bold" size="16.0" />
-                    </font>
-                </Label>
-                <Label text="Package for Designer include Photoshop and Illustrator" styleClass="summary-subtitle" />
-                <Separator />
+            <GridPane hgap="10.0" vgap="5.0">
+                <children>
+                    <Label text="SUBTOTAL" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <Label fx:id="subtotalLabel" text="PHP0.00" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
-                <!-- Placeholder: Item List -->
-                <GridPane hgap="10.0" vgap="10.0">
-                    <Label text="PRODUCT" styleClass="grid-header" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                    <Label text="PRICE" styleClass="grid-header" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                    <Label text="Adobe Photoshop" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                    <Label text="\$11" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                    <Label text="Adobe Illustrator" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                    <Label text="\$20" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                </GridPane>
-                <Separator />
+                    <Label text="TAX" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <Label fx:id="taxLabel" text="PHP0.00" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-                <!-- Placeholder: Totals -->
-                <GridPane hgap="10.0" vgap="5.0">
-                    <Label text="SUBTOTAL" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                    <Label text="\$31" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                    <Label text="TAX" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                    <Label text="\$14" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                    <Label text="PROCESSING FEE" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                    <Label text="\$5" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                </GridPane>
-                <Separator />
-
-                <!-- Placeholder: Grand Total -->
-                <GridPane hgap="10.0">
-                    <Label text="TOTAL" styleClass="grid-total" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                    <Label text="\$50" styleClass="grid-total" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                </GridPane>
-            </VBox>
-        </VBox>
-    </children>
+                    <Label text="TOTAL" style="-fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                    <Label fx:id="totalLabel" text="PHP0.00" style="-fx-font-weight: bold;" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                </children>
+            </GridPane>
+        </children>
+    </VBox>
 </HBox>

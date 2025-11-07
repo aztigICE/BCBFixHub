@@ -1,7 +1,10 @@
 package bcbfixhub.bcbfixhub;
 
 import bcbfixhub.bcbfixhub.controllers.CartController;
+import bcbfixhub.bcbfixhub.controllers.PaymentController;
 import bcbfixhub.bcbfixhub.controllers.ScenesController;
+import bcbfixhub.bcbfixhub.models.User;
+import bcbfixhub.bcbfixhub.controllers.MainController.Product;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,20 +12,18 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ScenesApplication extends Application {
 
     private Stage mainStage;
     private final Map<String, Scene> scenes = new HashMap<>();
-    private final List<Object> cart = new ArrayList<>(); // shared cart
+    private final List<Product> cart = new ArrayList<>(); // shared cart
+    private User loggedInUser; // track current logged-in user
 
-    public List<Object> getCart() {
-        return cart;
-    }
+    public List<Product> getCart() { return cart; }
+    public User getLoggedInUser() { return loggedInUser; }
+    public void setLoggedInUser(User user) { this.loggedInUser = user; }
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -37,6 +38,7 @@ public class ScenesApplication extends Application {
         addScene("cart", "cart-view.fxml", 900, 600);
         addScene("payment", "payment-view.fxml", 950, 650);
         addScene("account", "account-view.fxml", 1000, 700);
+        addScene("users", "users-view.fxml", 450, 550);
 
         switchTo("home");
         stage.show();
@@ -50,9 +52,8 @@ public class ScenesApplication extends Application {
 
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
         Scene scene = new Scene(loader.load(), width, height);
-        scene.setUserData(loader); // store loader for later controller access
+        scene.setUserData(loader); // store loader for controller access
 
-        // Set controller link
         Object controller = loader.getController();
         if (controller instanceof ScenesController sc) {
             sc.setApplication(this);
@@ -77,11 +78,10 @@ public class ScenesApplication extends Application {
         mainStage.setTitle(capitalize(name));
         mainStage.centerOnScreen();
 
-        // Call loadCart() if cart scene
+        // Refresh cart/payment views to show latest cart
         Object controller = getControllerForScene(scene);
-        if ("cart".equals(name) && controller instanceof CartController cartController) {
-            cartController.loadCart();
-        }
+        if (controller instanceof CartController cartController) cartController.loadCart();
+        if (controller instanceof PaymentController paymentController) paymentController.loadCart();
     }
 
     private Object getControllerForScene(Scene scene) {

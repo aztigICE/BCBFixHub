@@ -20,6 +20,8 @@ import javafx.scene.layout.VBox;
 import org.bson.Document;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainController extends ScenesController implements Initializable {
@@ -31,6 +33,7 @@ public class MainController extends ScenesController implements Initializable {
     @FXML private Button accountButton;
 
     private ScenesApplication application;
+
     private static final String DATABASE_NAME = "Product-Details";
 
     @Override
@@ -45,6 +48,13 @@ public class MainController extends ScenesController implements Initializable {
         var collections = FXCollections.observableArrayList(
                 "All", "keyboard", "mouse", "memory", "storage", "monitor"
         );
+
+        MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
+
+        List<String> collectionList = new ArrayList<>();
+        for (String name : db.listCollectionNames()) collectionList.add(name);
+        collections = FXCollections.observableArrayList(collectionList);
+        collections.add(0, "All");
         categoryChoiceBox.setItems(collections);
         categoryChoiceBox.setValue("All");
 
@@ -62,7 +72,7 @@ public class MainController extends ScenesController implements Initializable {
     }
 
     private void loadAllProducts() {
-        catalogTilePane.getChildren().clear(); // keep this here to start fresh
+        catalogTilePane.getChildren().clear();
         String[] categories = {"keyboard", "mouse", "memory", "storage", "monitor"};
         for (String category : categories) {
             loadProductsFromMongoDB(category);
@@ -71,7 +81,6 @@ public class MainController extends ScenesController implements Initializable {
 
     private void loadProductsFromMongoDB(String collectionName) {
         try {
-            // ✅ clear only when switching individual category
             catalogTilePane.getChildren().clear();
 
             MongoCollection<Document> collection = MongoDBConnectionManager
@@ -83,7 +92,7 @@ public class MainController extends ScenesController implements Initializable {
                 String brand = doc.getString("brand");
                 String model = doc.getString("model");
                 Double price = doc.getDouble("price");
-                String imageName = doc.getString("imageName");
+                String imageName = doc.getString("imageName"); // now valid
 
                 Product product = new Product(stock, brand, model, price, imageName);
                 catalogTilePane.getChildren().add(createProductCard(product));
@@ -94,7 +103,8 @@ public class MainController extends ScenesController implements Initializable {
     }
 
     private VBox createProductCard(Product product) {
-        VBox card = new VBox(10);
+        VBox card = new VBox();
+        card.setSpacing(10);
         card.setAlignment(Pos.CENTER);
         card.setPrefSize(200, 300);
         card.setStyle("""
@@ -124,7 +134,7 @@ public class MainController extends ScenesController implements Initializable {
                             imageView.setImage(new Image(stream));
                             card.getChildren().add(imageView);
                             imageLoaded = true;
-                            break; // stop after finding first valid image
+                            break;
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -135,10 +145,16 @@ public class MainController extends ScenesController implements Initializable {
         }
 
         Label nameLabel = new Label(product.getBrand() + " " + product.getModel());
+        nameLabel.getStyleClass().add("product-name");
+
         Label stockLabel = new Label("Stock: " + product.getStock());
+        stockLabel.getStyleClass().add("product-category");
+
         Label priceLabel = new Label("₱" + String.format("%.2f", product.getPrice()));
+        priceLabel.getStyleClass().add("product-price");
 
         Button addToCartButton = new Button("Add to Cart");
+        addToCartButton.getStyleClass().add("add-to-cart-button");
         addToCartButton.setOnAction(e -> handleAddToCart(product));
 
         card.getChildren().addAll(nameLabel, stockLabel, priceLabel, addToCartButton);
@@ -151,6 +167,9 @@ public class MainController extends ScenesController implements Initializable {
         if (application != null) {
             application.getCart().add(product);
             updateCartButtonText();
+            System.out.println("Added to cart: " + product.getBrand() + " " + product.getModel());
+        } else {
+            System.err.println("Application is null! Cannot add to cart.");
         }
     }
 
@@ -163,17 +182,22 @@ public class MainController extends ScenesController implements Initializable {
         }
     }
 
-    @FXML private void handleGoToCart() {
+    @FXML
+    private void handleGoToCart() {
         if (application != null) application.switchTo("cart");
     }
 
-    @FXML private void handleGoToAccount() {
+    @FXML
+    private void handleGoToAccount() {
         if (application != null) application.switchTo("account");
     }
 
     public static class Product {
-        private final String stock, brand, model, imageName;
-        private final Double price;
+        private String stock;
+        private String brand;
+        private String model;
+        private Double price;
+        private String imageName; // <-- fixed field
 
         public Product(String stock, String brand, String model, Double price, String imageName) {
             this.stock = stock;

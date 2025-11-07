@@ -9,109 +9,87 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import bcbfixhub.bcbfixhub.controllers.MainController.Product;
+
 public class CartController extends ScenesController implements Initializable {
 
-    @FXML private Button backButton;
-    @FXML private Button checkoutButton;
     @FXML private VBox cartItemsContainer;
-    @FXML private Label emptyCartLabel;
     @FXML private Label subtotalLabel;
     @FXML private Label taxLabel;
     @FXML private Label totalLabel;
+    @FXML private Button backButton;
+    @FXML private Button checkoutButton;
 
     private ScenesApplication application;
+    private static final double TAX_RATE = 0.08;
 
     @Override
     public void setApplication(ScenesApplication application) {
         super.setApplication(application);
         this.application = application;
+        loadCart();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Do nothing initially
+        if (application != null) loadCart();
+    }
+
+    @FXML
+    private void handleGoBack() {
+        if (application != null) {
+            application.switchTo("user-dashboard"); // Or whichever scene is the previous screen
+        }
+    }
+
+    @FXML
+    private void handleCheckout() {
+        if (application != null) {
+            if (application.getCart().isEmpty()) {
+                System.out.println("Cart is empty!");
+                return;
+            }
+            application.switchTo("payment");
+        }
     }
 
     public void loadCart() {
+        if (cartItemsContainer == null || application == null) return;
+
         cartItemsContainer.getChildren().clear();
-
-        if (application == null || application.getCart().isEmpty()) {
-            emptyCartLabel.setVisible(true);
-            emptyCartLabel.setManaged(true);
-            checkoutButton.setDisable(true);
-            subtotalLabel.setText("₱0.00");
-            taxLabel.setText("₱0.00");
-            totalLabel.setText("₱0.00");
-            return;
-        }
-
-        emptyCartLabel.setVisible(false);
-        emptyCartLabel.setManaged(false);
-        checkoutButton.setDisable(false);
-
         double subtotal = 0;
 
-        for (Object obj : application.getCart()) {
-            if (obj instanceof MainController.Product product) {
-                HBox itemBox = createCartItemNode(product);
-                cartItemsContainer.getChildren().add(itemBox);
-                subtotal += product.getPrice();
-            }
+        if (application.getCart().isEmpty()) {
+            Label emptyLabel = new Label("Your cart is empty.");
+            emptyLabel.setPadding(new Insets(10));
+            cartItemsContainer.getChildren().add(emptyLabel);
         }
 
-        updateSummary(subtotal);
-    }
+        for (Product product : application.getCart()) {
+            HBox itemBox = new HBox(10);
+            itemBox.setPadding(new Insets(5));
 
-    private HBox createCartItemNode(MainController.Product product) {
-        HBox itemBox = new HBox(20);
-        itemBox.setAlignment(Pos.CENTER_LEFT);
-        itemBox.setPadding(new Insets(10));
-        itemBox.setStyle("-fx-border-color: #E0E0E0; -fx-border-width: 0 0 1 0;");
+            Label nameLabel = new Label(product.getBrand() + " " + product.getModel());
+            nameLabel.setPrefWidth(200);
 
-        Label nameLabel = new Label(product.getBrand() + " " + product.getModel());
-        nameLabel.setFont(new Font("System Bold", 16));
+            Label priceLabel = new Label("$" + String.format("%.2f", product.getPrice()));
+            priceLabel.setPrefWidth(80);
 
-        Label priceLabel = new Label("₱" + String.format("%.2f", product.getPrice()));
-        priceLabel.setFont(new Font(16));
+            itemBox.getChildren().addAll(nameLabel, priceLabel);
+            cartItemsContainer.getChildren().add(itemBox);
 
-        Button removeButton = new Button("Remove");
-        removeButton.setStyle("-fx-background-color: #FF6B6B; -fx-text-fill: white;");
-        removeButton.setOnAction(e -> {
-            application.getCart().remove(product);
-            loadCart();
-        });
+            subtotal += product.getPrice();
+        }
 
-        HBox spacer = new HBox();
-        HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
-        itemBox.getChildren().addAll(nameLabel, spacer, priceLabel, removeButton);
-        return itemBox;
-    }
-
-    private void updateSummary(double subtotal) {
-        double tax = subtotal * 0.08;
+        double tax = subtotal * TAX_RATE;
         double total = subtotal + tax;
 
-        subtotalLabel.setText("₱" + String.format("%.2f", subtotal));
-        taxLabel.setText("₱" + String.format("%.2f", tax));
-        totalLabel.setText("₱" + String.format("%.2f", total));
-
-        checkoutButton.setDisable(subtotal == 0);
-    }
-
-    @FXML private void handleGoBack() {
-        if (application != null) application.switchTo("user-dashboard");
-    }
-
-    @FXML private void handleCheckout() {
-        if (application != null) {
-            // TODO: Decrease stock in MongoDB if needed
-            application.getCart().clear();
-            loadCart();
-        }
+        subtotalLabel.setText("$" + String.format("%.2f", subtotal));
+        taxLabel.setText("$" + String.format("%.2f", tax));
+        totalLabel.setText("$" + String.format("%.2f", total));
     }
 }
