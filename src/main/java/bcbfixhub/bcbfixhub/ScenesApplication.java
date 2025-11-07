@@ -37,6 +37,7 @@ public class ScenesApplication extends Application {
         addScene("cart", "cart-view.fxml", 900, 600);
         addScene("payment", "payment-view.fxml", 950, 650);
         addScene("account", "account-view.fxml", 1000, 700);
+        addScene("users", "users-view.fxml", 450, 550);
 
         switchTo("home");
         stage.show();

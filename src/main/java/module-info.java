@@ -10,6 +10,7 @@ module bcbfixhub.bcbfixhub {
     requires org.mongodb.driver.sync.client;
     requires javafx.graphics;
     requires jbcrypt;
+    requires javafx.base;
 
     opens bcbfixhub.bcbfixhub to javafx.fxml;
     opens bcbfixhub.bcbfixhub.controllers to javafx.fxml;

@@ -7,14 +7,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-  EDITED:
-  - Changed root to BorderPane for a more professional layout.
-  - Set prefHeight/prefWidth to new 900x600 standard.
-  - Added a <top> HBox for a proper header.
-  - Kept <center> as a VBox for the main buttons.
-  - Adjusted button widths in css.
--->
 <BorderPane prefHeight="600.0" prefWidth="900.0" styleClass="admin-root"
             stylesheets="@css/admin.css"
             xmlns="http://javafx.com/javafx/21"
@@ -37,7 +29,7 @@
                 <Button onAction="#onUser" text="Manage Users" styleClass="admin-button" />
                 <Button onAction="#onLogOut" text="Log Out" styleClass="admin-logout-button">
                     <VBox.margin>
-                        <Insets top="30.0" /> <!-- Added margin above logout -->
+                        <Insets top="30.0" />
                     </VBox.margin>
                 </Button>
             </children>
