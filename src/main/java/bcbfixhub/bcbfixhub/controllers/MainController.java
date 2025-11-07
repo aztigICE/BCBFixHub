@@ -32,6 +32,7 @@ public class MainController extends ScenesController implements Initializable {
     @FXML private TextField searchBar;
     @FXML private TilePane catalogTilePane;
     @FXML private Button cartButton;
+    @FXML private Button accountButton;
 
     private ScenesApplication application;
     private static final String DATABASE_NAME = "Product-Details";
@@ -39,14 +40,19 @@ public class MainController extends ScenesController implements Initializable {
     private final Map<String, Image> imageCache = new HashMap<>();
     private final PauseTransition searchDelay = new PauseTransition(Duration.millis(400)); // debounce delay
 
-    // sets the application using scenesapplication
     @Override
     public void setApplication(ScenesApplication application) {
         super.setApplication(application);
         this.application = application;
+
+        // Update cart + reload stock whenever the scene is shown
+        Platform.runLater(() -> {
+            updateCartButtonText();
+            refreshProducts();
+        });
     }
 
-    // initializes the drop down menu
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         var collections = FXCollections.observableArrayList(
@@ -75,7 +81,7 @@ public class MainController extends ScenesController implements Initializable {
         loadAllProductsAsync();
     }
 
-    //  async load for all categories
+    // ✅ Async load for all categories
     private void loadAllProductsAsync() {
         catalogTilePane.getChildren().clear();
         String[] categories = {"keyboard", "mouse", "memory", "storage", "monitor"};
@@ -84,7 +90,7 @@ public class MainController extends ScenesController implements Initializable {
         }
     }
 
-    //  async load single category
+    // ✅ Async load single category
     private void loadProductsFromMongoDBAsync(String collectionName) {
         Task<List<Product>> task = new Task<>() {
             @Override
@@ -105,7 +111,7 @@ public class MainController extends ScenesController implements Initializable {
         new Thread(task, "ProductLoader-" + collectionName).start();
     }
 
-    //  background fetch products
+    // ✅ Background fetch products
     private List<Product> fetchProducts(String collectionName) {
         List<Product> products = new ArrayList<>();
         try {
@@ -128,7 +134,7 @@ public class MainController extends ScenesController implements Initializable {
         return products;
     }
 
-    //  UI product card creation
+    // ✅ UI product card creation
     private VBox createProductCard(Product product) {
         VBox card = new VBox(10);
         card.setAlignment(Pos.CENTER);
@@ -159,7 +165,7 @@ public class MainController extends ScenesController implements Initializable {
         return card;
     }
 
-    //  Cached image loading
+    // ✅ Cached image loading
     private Image getCachedImage(String imageName) {
         if (imageName == null || imageName.isEmpty()) return getPlaceholderImage();
 
@@ -194,14 +200,13 @@ public class MainController extends ScenesController implements Initializable {
         }
     }
 
-    // adds product to the shopping cart with the application
     private void handleAddToCart(Product product) {
         if (application != null) {
             application.getCart().add(product);
             updateCartButtonText();
         }
     }
-    // increases the cart number in the top right
+
     private void updateCartButtonText() {
         Platform.runLater(() -> {
             if (application != null) {
@@ -213,16 +218,15 @@ public class MainController extends ScenesController implements Initializable {
         });
     }
 
-    // goes to the cart scene
     @FXML private void handleGoToCart() {
         if (application != null) application.switchTo("cart");
     }
-    // goes to the account scene
+
     @FXML private void handleGoToAccount() {
         if (application != null) application.switchTo("account");
     }
 
-    //  Product class
+    // ✅ Product class
     public static class Product {
         private final String stock, brand, model, imageName;
         private final Double price;
@@ -242,7 +246,7 @@ public class MainController extends ScenesController implements Initializable {
         public String getImageName() { return imageName; }
     }
 
-    //  Async search
+    // ✅ Async search
     private void handleSearchAsync(String query) {
         Task<List<Product>> task = new Task<>() {
             @Override
@@ -303,5 +307,16 @@ public class MainController extends ScenesController implements Initializable {
         }
 
         return results;
+    }
+
+    public void refreshProducts() {
+        Platform.runLater(() -> {
+            String selected = categoryChoiceBox.getValue();
+            if ("All".equals(selected)) {
+                loadAllProductsAsync();
+            } else {
+                loadProductsFromMongoDBAsync(selected);
+            }
+        });
     }
 }

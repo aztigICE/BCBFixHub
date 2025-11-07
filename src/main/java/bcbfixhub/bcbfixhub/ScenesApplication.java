@@ -1,11 +1,10 @@
 package bcbfixhub.bcbfixhub;
 
-import bcbfixhub.bcbfixhub.controllers.CartController;
-import bcbfixhub.bcbfixhub.controllers.PaymentController;
-import bcbfixhub.bcbfixhub.controllers.ScenesController;
+import bcbfixhub.bcbfixhub.controllers.*;
 import bcbfixhub.bcbfixhub.models.User;
 import bcbfixhub.bcbfixhub.controllers.MainController.Product;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -18,8 +17,8 @@ public class ScenesApplication extends Application {
 
     private Stage mainStage;
     private final Map<String, Scene> scenes = new HashMap<>();
-    private final List<Product> cart = new ArrayList<>(); // shared cart
-    private User loggedInUser; // track current logged-in user
+    private final List<Product> cart = new ArrayList<>();
+    private User loggedInUser;
 
     public List<Product> getCart() { return cart; }
     public User getLoggedInUser() { return loggedInUser; }
@@ -53,12 +52,10 @@ public class ScenesApplication extends Application {
 
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
         Scene scene = new Scene(loader.load(), width, height);
-        scene.setUserData(loader); // store loader for controller access
+        scene.setUserData(loader);
 
         Object controller = loader.getController();
-        if (controller instanceof ScenesController sc) {
-            sc.setApplication(this);
-        }
+        if (controller instanceof ScenesController sc) sc.setApplication(this);
 
         scenes.put(name, scene);
     }
@@ -79,10 +76,19 @@ public class ScenesApplication extends Application {
         mainStage.setTitle(capitalize(name));
         mainStage.centerOnScreen();
 
-        // Refresh cart/payment views to show latest cart
         Object controller = getControllerForScene(scene);
-        if (controller instanceof CartController cartController) cartController.loadCart();
-        if (controller instanceof PaymentController paymentController) paymentController.loadCart();
+        if (controller instanceof ScenesController sc) sc.setApplication(this);
+
+        // Run refresh logic on the next JavaFX tick (after scene is displayed)
+        Platform.runLater(() -> {
+            if (controller instanceof CartController cartController) {
+                cartController.loadCart(); // Always refresh cart display
+            } else if (controller instanceof PaymentController paymentController) {
+                paymentController.loadCartSafely();
+            } else if (controller instanceof AccountController accountController) {
+                accountController.populateCart();
+            }
+        });
     }
 
     private Object getControllerForScene(Scene scene) {
@@ -99,5 +105,13 @@ public class ScenesApplication extends Application {
 
     public static void main(String[] args) {
         launch();
+    }
+
+    public Object getControllerForScene(String name) {
+        Scene scene = scenes.get(name);
+        if (scene != null && scene.getUserData() instanceof FXMLLoader loader) {
+            return loader.getController();
+        }
+        return null;
     }
 }
