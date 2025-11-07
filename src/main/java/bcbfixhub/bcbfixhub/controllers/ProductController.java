@@ -36,14 +36,14 @@ public class ProductController extends ScenesController {
 
     @FXML
     public void initialize() {
-        // Map TableViews
+        // tabs per category
         tables.put("keyboard", tableView);
         tables.put("mouse", tableView1);
         tables.put("storage", tableView21);
         tables.put("memory", tableView211);
         tables.put("monitor", tableView2111);
 
-        // Map TextFields (added imageField)
+        // sets up the fields for the information
         fields.put("keyboard", new TextField[]{stockField, brandField, modelField, priceField, imageField});
         fields.put("mouse", new TextField[]{stockField1, brandField1, modelField1, priceField1, imageField1});
         fields.put("storage", new TextField[]{stockField2, brandField2, modelField2, priceField2, imageField2});

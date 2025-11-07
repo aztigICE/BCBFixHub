@@ -29,6 +29,7 @@ public class UsersController extends ScenesController {
     private static final String DATABASE_NAME = "User-Details";
     private static final String COLLECTION_NAME = "users";
 
+    // initializes the columns of info
     @FXML
     public void initialize() {
         // Setup columns
@@ -43,11 +44,13 @@ public class UsersController extends ScenesController {
         loadUsers();
     }
 
+    // loads every user in the database
     private void loadUsers() {
         List<User> users = fetchUsers();
         usersTable.setItems(FXCollections.observableArrayList(users));
     }
 
+    // fetches the user's information from the database
     private List<User> fetchUsers() {
         List<User> usersList = new ArrayList<>();
         MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
@@ -63,7 +66,7 @@ public class UsersController extends ScenesController {
         return usersList;
     }
 
-    // Add Edit/Delete buttons to each row
+    // edits email or deletes the user
     private void addActionButtons() {
         actionColumn.setCellFactory(col -> new TableCell<>() {
             private final Button editButton = new Button("Edit");
@@ -75,6 +78,7 @@ public class UsersController extends ScenesController {
                 deleteButton.setOnAction(e -> handleDelete(getTableView().getItems().get(getIndex())));
             }
 
+            // updates the cell and displays custom container
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
@@ -87,7 +91,7 @@ public class UsersController extends ScenesController {
         });
     }
 
-    // Edit user
+    // edit user
     private void handleEdit(User user) {
         TextInputDialog dialog = new TextInputDialog(user.getEmail());
         dialog.setTitle("Edit User");
@@ -96,7 +100,7 @@ public class UsersController extends ScenesController {
 
         dialog.showAndWait().ifPresent(newEmail -> {
             user.setEmail(newEmail);
-            // Update MongoDB
+            // updates MongoDB
             MongoCollection<Document> collection = MongoDBConnectionManager
                     .getDatabase(DATABASE_NAME)
                     .getCollection(COLLECTION_NAME);
@@ -105,7 +109,7 @@ public class UsersController extends ScenesController {
         });
     }
 
-    // Delete user
+    // delete user
     private void handleDelete(User user) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setHeaderText(null);
@@ -121,6 +125,7 @@ public class UsersController extends ScenesController {
         });
     }
 
+    // goes back to the admin tools
     public void backAdmin(ActionEvent event) {
         app.switchTo("admin");
     }

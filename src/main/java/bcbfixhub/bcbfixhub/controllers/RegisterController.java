@@ -95,7 +95,7 @@ public class RegisterController extends ScenesController {
                 .decorates(phoneField)
                 .immediate();
 
-        // 🔒 Disable register button when there are validation errors
+        // disables register button when there are validation errors
         registerButton.disableProperty().bind(validator.containsErrorsProperty());
     }
 
@@ -121,12 +121,12 @@ public class RegisterController extends ScenesController {
             showAlert(Alert.AlertType.ERROR, "Registration Failed", "Email already exists.");
         }
     }
-
+    // goes back to home screen
     @FXML
     protected void onHome(ActionEvent event) {
         app.switchTo("home");
     }
-
+    // clears fields
     private void clearFields() {
         user.setUsername("");
         user.setEmail("");
@@ -134,7 +134,7 @@ public class RegisterController extends ScenesController {
         user.setPhone("");
         confirmPasswordField.clear();
     }
-
+    // shows alerts
     private void showAlert(Alert.AlertType type, String header, String content) {
         Alert alert = new Alert(type);
         alert.setHeaderText(header);

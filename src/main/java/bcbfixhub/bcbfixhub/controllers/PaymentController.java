@@ -49,6 +49,7 @@ public class PaymentController extends ScenesController implements Initializable
     private static final double TAX_RATE = 0.08;
     private static final String PAYMENT_DB = "Payment-Details"; // fixed database name
 
+    // uses scenesapplication and initializes the shopping cart
     @Override
     public void setApplication(ScenesApplication application) {
         super.setApplication(application);
@@ -57,6 +58,7 @@ public class PaymentController extends ScenesController implements Initializable
         if (cartItemsContainer != null) loadCart();
     }
 
+    // the payment options
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         paymentToggleGroup = new ToggleGroup();
@@ -72,6 +74,7 @@ public class PaymentController extends ScenesController implements Initializable
         if (application != null) loadCart();
     }
 
+    // which payment method to use
     private void handlePaymentMethodChange(Toggle selectedToggle) {
         gcashBox.setVisible(false);
         paypalBox.setVisible(false);
@@ -82,6 +85,7 @@ public class PaymentController extends ScenesController implements Initializable
         else if (selectedToggle == creditDebitToggle) creditDebitBox.setVisible(true);
     }
 
+    // checkout button
     private void handleCheckout() {
         String errorMessage = validateInputs();
         if (errorMessage != null) {
@@ -97,6 +101,7 @@ public class PaymentController extends ScenesController implements Initializable
         showConfirmationPopup();
     }
 
+    // check if the inputs are empty
     private String validateInputs() {
         Toggle selected = paymentToggleGroup.getSelectedToggle();
 
@@ -116,6 +121,7 @@ public class PaymentController extends ScenesController implements Initializable
         return null;
     }
 
+    // saves the payment information to mongoDB
     private void savePaymentToDatabase() {
         if (application == null || application.getLoggedInUser() == null) return;
 
@@ -126,12 +132,14 @@ public class PaymentController extends ScenesController implements Initializable
         double tax = subtotal * TAX_RATE;
         double total = subtotal + tax;
 
+        // whats inside the document
         Document paymentDoc = new Document()
                 .append("username", application.getLoggedInUser().getEmail())
                 .append("subtotal", subtotal)
                 .append("tax", tax)
                 .append("total", total);
 
+        // whats items were ordered
         for (Product product : application.getCart()) {
             Document item = new Document()
                     .append("brand", product.getBrand())
@@ -140,10 +148,12 @@ public class PaymentController extends ScenesController implements Initializable
             paymentDoc.append("items", item);
         }
 
+        // inserts the document inside the collection payment-details
         collection.insertOne(paymentDoc);
         System.out.println("Payment saved to MongoDB for user: " + application.getLoggedInUser().getEmail());
     }
 
+    // scene
     private void showErrorPopup(String message) {
         Stage popup = new Stage();
         popup.initModality(Modality.APPLICATION_MODAL);
@@ -161,6 +171,7 @@ public class PaymentController extends ScenesController implements Initializable
         popup.showAndWait();
     }
 
+    // shows a popup for if the order was confirmed
     private void showConfirmationPopup() {
         Stage popup = new Stage();
         popup.initModality(Modality.APPLICATION_MODAL);
@@ -181,6 +192,7 @@ public class PaymentController extends ScenesController implements Initializable
         popup.showAndWait();
     }
 
+    // gets the cart from the previous application and all the products inside and prints in the box
     public void loadCart() {
         if (cartItemsContainer == null || application == null) return;
 

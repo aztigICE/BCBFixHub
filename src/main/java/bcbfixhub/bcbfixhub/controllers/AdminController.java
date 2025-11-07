@@ -25,14 +25,7 @@ public class AdminController extends ScenesController
     }
 
     @FXML
-    public void onOrder(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(ScenesController.class.getResource("order.fxml"));
-        Scene scene = new Scene(loader.load());
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setTitle("Register");
-        stage.setScene(scene);
-        stage.show();
-    }
+    public void onOrder() { app.switchTo("orders"); }
 
     @FXML
     public void onLogOut() {
