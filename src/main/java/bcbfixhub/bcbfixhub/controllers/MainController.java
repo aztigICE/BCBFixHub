@@ -1,5 +1,6 @@
 package bcbfixhub.bcbfixhub.controllers;
 
+import bcbfixhub.bcbfixhub.ScenesApplication;
 import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -29,14 +30,12 @@ public class MainController extends ScenesController implements Initializable {
     @FXML private Button cartButton;
     @FXML private Button accountButton;
 
-    private int cartItemCount = 0;
-    private final List<Product> cart = new ArrayList<>();
-    private bcbfixhub.bcbfixhub.ScenesApplication application;
+    private ScenesApplication application;
 
-    private static final String DATABASE_NAME = "Product-Details"; // must match ProductController
+    private static final String DATABASE_NAME = "Product-Details";
 
     @Override
-    public void setApplication(bcbfixhub.bcbfixhub.ScenesApplication application) {
+    public void setApplication(ScenesApplication application) {
         super.setApplication(application);
         this.application = application;
     }
@@ -45,29 +44,24 @@ public class MainController extends ScenesController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
 
-        // Populate categories from collections
+        // Populate categories
         List<String> collectionList = new ArrayList<>();
         for (String name : db.listCollectionNames()) collectionList.add(name);
         var collections = FXCollections.observableArrayList(collectionList);
-        collections.add(0, "All"); // Add "All" option
+        collections.add(0, "All");
         categoryChoiceBox.setItems(collections);
         categoryChoiceBox.setValue("All");
 
-        // Category filter listener
         categoryChoiceBox.setOnAction(e -> {
             String selected = categoryChoiceBox.getValue();
             if ("All".equals(selected)) loadAllProducts();
             else loadProductsFromMongoDB(selected);
         });
 
-        // Initialize cart button
         updateCartButtonText();
-
-        // Load all products initially
         loadAllProducts();
     }
 
-    // Load all products from all collections
     private void loadAllProducts() {
         catalogTilePane.getChildren().clear();
         MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
@@ -76,11 +70,11 @@ public class MainController extends ScenesController implements Initializable {
         }
     }
 
-    // Load products from a single collection
     private void loadProductsFromMongoDB(String collectionName) {
         try {
-            MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
-            MongoCollection<Document> collection = db.getCollection(collectionName);
+            MongoCollection<Document> collection = MongoDBConnectionManager
+                    .getDatabase(DATABASE_NAME)
+                    .getCollection(collectionName);
 
             for (Document doc : collection.find()) {
                 String stock = doc.getString("stock");
@@ -91,77 +85,61 @@ public class MainController extends ScenesController implements Initializable {
                 Product product = new Product(stock, brand, model, price);
                 catalogTilePane.getChildren().add(createProductCard(product));
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // Create a product card as a VBox
     private VBox createProductCard(Product product) {
-        VBox card = new VBox();
-        card.setSpacing(10);
+        VBox card = new VBox(10);
         card.setAlignment(Pos.CENTER);
         card.setPrefSize(200, 300);
         card.setStyle("-fx-background-color: #FFF8E7; -fx-background-radius: 8; -fx-border-color: #D1B48C; -fx-border-radius: 8;");
 
-        // Placeholder for image
         VBox imageBox = new VBox();
         imageBox.setPrefSize(180, 150);
         imageBox.setStyle("-fx-background-color: #E0CBAF; -fx-background-radius: 5;");
 
         Label nameLabel = new Label(product.getBrand() + " " + product.getModel());
-        nameLabel.getStyleClass().add("product-name");
-
         Label stockLabel = new Label("Stock: " + product.getStock());
-        stockLabel.getStyleClass().add("product-category");
-
         Label priceLabel = new Label("₱" + String.format("%.2f", product.getPrice()));
-        priceLabel.getStyleClass().add("product-price");
 
         Button addToCartButton = new Button("Add to Cart");
-        addToCartButton.getStyleClass().add("add-to-cart-button");
         addToCartButton.setOnAction(e -> handleAddToCart(product));
 
         card.getChildren().addAll(imageBox, nameLabel, stockLabel, priceLabel, addToCartButton);
         VBox.setMargin(addToCartButton, new Insets(10, 0, 0, 0));
-
         return card;
     }
 
     private void handleAddToCart(Product product) {
-        cart.add(product);
-        cartItemCount++;
-        updateCartButtonText();
-        System.out.println("Added to cart: " + product.getBrand() + " " + product.getModel());
+        if (application != null) {
+            application.getCart().add(product);
+            updateCartButtonText();
+        }
     }
 
     private void updateCartButtonText() {
-        cartButton.setText("Cart (" + cartItemCount + ")");
+        if (application != null) {
+            int count = application.getCart().size();
+            cartButton.setText("Cart (" + count + ")");
+        } else cartButton.setText("Cart (0)");
     }
 
-    @FXML
-    private void handleGoToCart() {
+    @FXML private void handleGoToCart() {
         if (application != null) application.switchTo("cart");
     }
 
-    @FXML
-    private void handleGoToAccount() {
+    @FXML private void handleGoToAccount() {
         if (application != null) application.switchTo("account");
     }
 
-    // Inner Product class
     public static class Product {
-        private String stock;
-        private String brand;
-        private String model;
+        private String stock, brand, model;
         private Double price;
 
         public Product(String stock, String brand, String model, Double price) {
-            this.stock = stock;
-            this.brand = brand;
-            this.model = model;
-            this.price = price;
+            this.stock = stock; this.brand = brand; this.model = model; this.price = price;
         }
 
         public String getStock() { return stock; }
