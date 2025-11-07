@@ -9,6 +9,20 @@ public class User {
     private final StringProperty password = new SimpleStringProperty();
     private final StringProperty phone = new SimpleStringProperty();
 
+    // Default constructor
+    public User() {}
+
+    // Constructor with email
+    public User(String email) {
+        this.email.set(email);
+    }
+
+    // Constructor with username and email
+    public User(String username, String email) {
+        this.username.set(username);
+        this.email.set(email);
+    }
+
     // Getters and Setters for username
     public String getUsername() {
         return username.get();
