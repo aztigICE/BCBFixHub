@@ -2,7 +2,7 @@ package bcbfixhub.bcbfixhub.controllers;
 
 import bcbfixhub.bcbfixhub.ScenesApplication;
 import bcbfixhub.bcbfixhub.controllers.MainController.Product;
-import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager;
+import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager; // MongoDB utility
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import javafx.fxml.FXML;
@@ -47,14 +47,14 @@ public class PaymentController extends ScenesController implements Initializable
     private ScenesApplication application;
 
     private static final double TAX_RATE = 0.08;
-    private static final String PAYMENT_DB = "payment-details";
+    private static final String PAYMENT_DB = "Payment-Details"; // fixed database name
 
     @Override
     public void setApplication(ScenesApplication application) {
         super.setApplication(application);
         this.application = application;
 
-        if (cartItemsContainer != null) loadCart(); // populate cart immediately if FXML loaded
+        if (cartItemsContainer != null) loadCart();
     }
 
     @Override
@@ -89,10 +89,10 @@ public class PaymentController extends ScenesController implements Initializable
             return;
         }
 
-        savePaymentToDatabase(); // save payment details to MongoDB
+        savePaymentToDatabase();
 
         if (application != null) application.getCart().clear();
-        loadCart(); // refresh cart display
+        loadCart();
 
         showConfirmationPopup();
     }
@@ -132,15 +132,13 @@ public class PaymentController extends ScenesController implements Initializable
                 .append("tax", tax)
                 .append("total", total);
 
-        // Add cart items as a list of documents
-        var items = application.getCart().stream().map(product -> new Document()
-                        .append("brand", product.getBrand())
-                        .append("model", product.getModel())
-                        .append("price", product.getPrice())
-                        .append("imageName", product.getImageName()))
-                .toList();
-
-        paymentDoc.append("items", items);
+        for (Product product : application.getCart()) {
+            Document item = new Document()
+                    .append("brand", product.getBrand())
+                    .append("model", product.getModel())
+                    .append("price", product.getPrice());
+            paymentDoc.append("items", item);
+        }
 
         collection.insertOne(paymentDoc);
         System.out.println("Payment saved to MongoDB for user: " + application.getLoggedInUser().getEmail());
