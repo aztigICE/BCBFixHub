@@ -36,14 +36,14 @@ public class ProductController extends ScenesController {
 
     @FXML
     public void initialize() {
-        // Map TableViews
+        // tabs per category
         tables.put("keyboard", tableView);
         tables.put("mouse", tableView1);
         tables.put("storage", tableView21);
         tables.put("memory", tableView211);
         tables.put("monitor", tableView2111);
 
-        // Map TextFields (added imageField)
+        // sets up the fields for the information
         fields.put("keyboard", new TextField[]{stockField, brandField, modelField, priceField, imageField});
         fields.put("mouse", new TextField[]{stockField1, brandField1, modelField1, priceField1, imageField1});
         fields.put("storage", new TextField[]{stockField2, brandField2, modelField2, priceField2, imageField2});
@@ -65,7 +65,7 @@ public class ProductController extends ScenesController {
         table.getItems().setAll(fetchProducts(collectionName));
     }
 
-    // === Fetch Products from MongoDB ===
+    // fetches the products from mongoDB
     private List<Product> fetchProducts(String collectionName) {
         List<Product> products = new ArrayList<>();
         MongoDatabase db = MongoDBConnectionManager.getDatabase("Product-Details");
@@ -83,7 +83,7 @@ public class ProductController extends ScenesController {
         return products;
     }
 
-    // === Add Product ===
+    // adds product
     @FXML
     private void handleAddProduct() {
         String activeTab = getActiveCollectionName();
@@ -123,7 +123,7 @@ public class ProductController extends ScenesController {
         showAlert(Alert.AlertType.INFORMATION, "Product added to " + activeTab + "!");
     }
 
-    // === Edit Product ===
+    // edits the product
     @FXML
     private void handleEditProduct() {
         Product selected = getSelectedProduct();
@@ -189,7 +189,7 @@ public class ProductController extends ScenesController {
         });
     }
 
-    // === Delete Product ===
+    // deletes the product
     @FXML
     private void handleDeleteProduct() {
         Product selected = getSelectedProduct();
@@ -215,19 +215,21 @@ public class ProductController extends ScenesController {
         });
     }
 
-    // === Helpers ===
+    // gets the selected product to edit or delete
     private Product getSelectedProduct() {
         String activeTab = getActiveCollectionName();
         TableView<Product> table = tables.get(activeTab);
         return table == null ? null : table.getSelectionModel().getSelectedItem();
     }
 
+    // gets the active collection name from mongodb
     private String getActiveCollectionName() {
         if (tabPane == null || tabPane.getSelectionModel().getSelectedItem() == null)
             return "keyboard"; // default fallback
         return tabPane.getSelectionModel().getSelectedItem().getText().toLowerCase();
     }
 
+    // shows alerts
     private void showAlert(Alert.AlertType type, String message) {
         Alert alert = new Alert(type);
         alert.setHeaderText(null);
@@ -235,6 +237,7 @@ public class ProductController extends ScenesController {
         alert.showAndWait();
     }
 
+    // goes back to admin tools
     public void backAdmin(ActionEvent event) {
         app.switchTo("admin");
     }
