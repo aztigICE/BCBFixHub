@@ -4,7 +4,10 @@ import bcbfixhub.bcbfixhub.ScenesApplication;
 import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -17,10 +20,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import org.bson.Document;
 
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainController extends ScenesController implements Initializable {
 
@@ -33,6 +37,9 @@ public class MainController extends ScenesController implements Initializable {
     private ScenesApplication application;
     private static final String DATABASE_NAME = "Product-Details";
 
+    private final Map<String, Image> imageCache = new HashMap<>();
+    private final PauseTransition searchDelay = new PauseTransition(Duration.millis(400)); // debounce delay
+
     @Override
     public void setApplication(ScenesApplication application) {
         super.setApplication(application);
@@ -41,58 +48,86 @@ public class MainController extends ScenesController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Hardcoded category list — corresponds to MongoDB collection names
         var collections = FXCollections.observableArrayList(
                 "All", "keyboard", "mouse", "memory", "storage", "monitor"
         );
         categoryChoiceBox.setItems(collections);
         categoryChoiceBox.setValue("All");
+        categoryChoiceBox.setStyle("-fx-mark-color: black; -fx-text-fill: black;");
 
         categoryChoiceBox.setOnAction(e -> {
             String selected = categoryChoiceBox.getValue();
             if ("All".equals(selected)) {
-                loadAllProducts();
+                loadAllProductsAsync();
             } else {
-                loadProductsFromMongoDB(selected);
+                loadProductsFromMongoDBAsync(selected);
             }
         });
 
+        // Debounced search
+        searchBar.textProperty().addListener((obs, oldValue, newValue) -> {
+            searchDelay.setOnFinished(e -> handleSearchAsync(newValue));
+            searchDelay.playFromStart();
+        });
+
         updateCartButtonText();
-        loadAllProducts();
+        loadAllProductsAsync();
     }
 
-    private void loadAllProducts() {
-        catalogTilePane.getChildren().clear(); // keep this here to start fresh
+    // ✅ Async load for all categories
+    private void loadAllProductsAsync() {
+        catalogTilePane.getChildren().clear();
         String[] categories = {"keyboard", "mouse", "memory", "storage", "monitor"};
         for (String category : categories) {
-            loadProductsFromMongoDB(category);
+            loadProductsFromMongoDBAsync(category);
         }
     }
 
-    private void loadProductsFromMongoDB(String collectionName) {
-        try {
-            // ✅ clear only when switching individual category
-            catalogTilePane.getChildren().clear();
+    // ✅ Async load single category
+    private void loadProductsFromMongoDBAsync(String collectionName) {
+        Task<List<Product>> task = new Task<>() {
+            @Override
+            protected List<Product> call() {
+                return fetchProducts(collectionName);
+            }
+        };
 
+        task.setOnSucceeded(e -> Platform.runLater(() -> {
+            if (!"All".equals(categoryChoiceBox.getValue())) {
+                catalogTilePane.getChildren().clear(); // Clear only for single category
+            }
+            for (Product product : task.getValue()) {
+                catalogTilePane.getChildren().add(createProductCard(product));
+            }
+        }));
+
+        new Thread(task, "ProductLoader-" + collectionName).start();
+    }
+
+    // ✅ Background fetch products
+    private List<Product> fetchProducts(String collectionName) {
+        List<Product> products = new ArrayList<>();
+        try {
             MongoCollection<Document> collection = MongoDBConnectionManager
                     .getDatabase(DATABASE_NAME)
                     .getCollection(collectionName);
 
             for (Document doc : collection.find()) {
-                String stock = doc.getString("stock");
-                String brand = doc.getString("brand");
-                String model = doc.getString("model");
-                Double price = doc.getDouble("price");
-                String imageName = doc.getString("imageName");
-
-                Product product = new Product(stock, brand, model, price, imageName);
-                catalogTilePane.getChildren().add(createProductCard(product));
+                products.add(new Product(
+                        doc.getString("stock"),
+                        doc.getString("brand"),
+                        doc.getString("model"),
+                        doc.getDouble("price"),
+                        doc.getString("imageName")
+                ));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return products;
     }
 
+    // ✅ UI product card creation
     private VBox createProductCard(Product product) {
         VBox card = new VBox(10);
         card.setAlignment(Pos.CENTER);
@@ -104,35 +139,12 @@ public class MainController extends ScenesController implements Initializable {
             -fx-border-radius: 8;
         """);
 
-        // --- Image ---
-        if (product.getImageName() != null && !product.getImageName().isEmpty()) {
-            ImageView imageView = new ImageView();
-            imageView.setFitWidth(180);
-            imageView.setFitHeight(150);
-            imageView.setPreserveRatio(true);
-            imageView.setSmooth(true);
-
-            String[] folders = {"keyboard", "mouse", "memory", "storage", "monitor"};
-            String[] extensions = {".jpg", ".png"};
-
-            boolean imageLoaded = false;
-            for (String folder : folders) {
-                for (String ext : extensions) {
-                    String path = "bcbfixhub/bcbfixhub/product_images/" + folder + "/" + product.getImageName() + ext;
-                    try (var stream = getClass().getClassLoader().getResourceAsStream(path)) {
-                        if (stream != null) {
-                            imageView.setImage(new Image(stream));
-                            card.getChildren().add(imageView);
-                            imageLoaded = true;
-                            break; // stop after finding first valid image
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (imageLoaded) break;
-            }
-        }
+        ImageView imageView = new ImageView(getCachedImage(product.getImageName()));
+        imageView.setFitWidth(180);
+        imageView.setFitHeight(150);
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+        card.getChildren().add(imageView);
 
         Label nameLabel = new Label(product.getBrand() + " " + product.getModel());
         Label stockLabel = new Label("Stock: " + product.getStock());
@@ -140,11 +152,45 @@ public class MainController extends ScenesController implements Initializable {
 
         Button addToCartButton = new Button("Add to Cart");
         addToCartButton.setOnAction(e -> handleAddToCart(product));
-
-        card.getChildren().addAll(nameLabel, stockLabel, priceLabel, addToCartButton);
         VBox.setMargin(addToCartButton, new Insets(10, 0, 0, 0));
 
+        card.getChildren().addAll(nameLabel, stockLabel, priceLabel, addToCartButton);
         return card;
+    }
+
+    // ✅ Cached image loading
+    private Image getCachedImage(String imageName) {
+        if (imageName == null || imageName.isEmpty()) return getPlaceholderImage();
+
+        if (imageCache.containsKey(imageName)) {
+            return imageCache.get(imageName);
+        }
+
+        String[] folders = {"keyboard", "mouse", "memory", "storage", "monitor"};
+        String[] extensions = {".jpg", ".png"};
+
+        for (String folder : folders) {
+            for (String ext : extensions) {
+                String path = "bcbfixhub/bcbfixhub/product_images/" + folder + "/" + imageName + ext;
+                try (var stream = getClass().getClassLoader().getResourceAsStream(path)) {
+                    if (stream != null) {
+                        Image img = new Image(stream);
+                        imageCache.put(imageName, img);
+                        return img;
+                    }
+                } catch (Exception ignored) {}
+            }
+        }
+        return getPlaceholderImage();
+    }
+
+    private Image getPlaceholderImage() {
+        try (var stream = getClass().getClassLoader()
+                .getResourceAsStream("bcbfixhub/bcbfixhub/product_images/placeholder.png")) {
+            return (stream != null) ? new Image(stream) : new Image("https://via.placeholder.com/180");
+        } catch (Exception e) {
+            return new Image("https://via.placeholder.com/180");
+        }
     }
 
     private void handleAddToCart(Product product) {
@@ -155,12 +201,14 @@ public class MainController extends ScenesController implements Initializable {
     }
 
     private void updateCartButtonText() {
-        if (application != null) {
-            int count = application.getCart().size();
-            cartButton.setText("Cart (" + count + ")");
-        } else {
-            cartButton.setText("Cart (0)");
-        }
+        Platform.runLater(() -> {
+            if (application != null) {
+                int count = application.getCart().size();
+                cartButton.setText("Cart (" + count + ")");
+            } else {
+                cartButton.setText("Cart (0)");
+            }
+        });
     }
 
     @FXML private void handleGoToCart() {
@@ -171,6 +219,7 @@ public class MainController extends ScenesController implements Initializable {
         if (application != null) application.switchTo("account");
     }
 
+    // ✅ Product class
     public static class Product {
         private final String stock, brand, model, imageName;
         private final Double price;
@@ -188,5 +237,68 @@ public class MainController extends ScenesController implements Initializable {
         public String getModel() { return model; }
         public Double getPrice() { return price; }
         public String getImageName() { return imageName; }
+    }
+
+    // ✅ Async search
+    private void handleSearchAsync(String query) {
+        Task<List<Product>> task = new Task<>() {
+            @Override
+            protected List<Product> call() {
+                return performSearch(query);
+            }
+        };
+
+        task.setOnSucceeded(e -> Platform.runLater(() -> {
+            catalogTilePane.getChildren().clear();
+            for (Product product : task.getValue()) {
+                catalogTilePane.getChildren().add(createProductCard(product));
+            }
+        }));
+
+        new Thread(task, "SearchThread").start();
+    }
+
+    // Background search logic
+    private List<Product> performSearch(String query) {
+        List<Product> results = new ArrayList<>();
+        if (query == null || query.trim().isEmpty()) {
+            if ("All".equals(categoryChoiceBox.getValue())) {
+                for (String cat : new String[]{"keyboard", "mouse", "memory", "storage", "monitor"})
+                    results.addAll(fetchProducts(cat));
+            } else {
+                results.addAll(fetchProducts(categoryChoiceBox.getValue()));
+            }
+            return results;
+        }
+
+        query = query.toLowerCase();
+        String[] categories = "All".equals(categoryChoiceBox.getValue())
+                ? new String[]{"keyboard", "mouse", "memory", "storage", "monitor"}
+                : new String[]{categoryChoiceBox.getValue()};
+
+        try {
+            MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
+            for (String cat : categories) {
+                MongoCollection<Document> collection = db.getCollection(cat);
+                for (Document doc : collection.find()) {
+                    String brand = doc.getString("brand");
+                    String model = doc.getString("model");
+                    if (brand != null && model != null &&
+                            (brand.toLowerCase().contains(query) || model.toLowerCase().contains(query))) {
+                        results.add(new Product(
+                                doc.getString("stock"),
+                                brand,
+                                model,
+                                doc.getDouble("price"),
+                                doc.getString("imageName")
+                        ));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return results;
     }
 }

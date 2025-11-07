@@ -139,24 +139,30 @@
 }
 
 /* ChoiceBox Styling */
-.choice-box {
-    -fx-background-radius: 5;
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #AAAAAA;
-    -fx-padding: 3 5 3 5;
-    -fx-text-fill: #363636; /* text inside box */
+/* Fix white-on-white selected item */
+.choice-box .label {
+    -fx-text-fill: #363636; /* text color when not focused */
 }
 
-/* Dropdown (popup) styling */
+.choice-box:focused .label {
+    -fx-text-fill: #363636; /* text color when focused */
+}
+
+/* Dropdown fix: white bg, dark text always */
 .choice-box .context-menu {
-    -fx-background-color: #FFFFFF; /* dropdown background */
+    -fx-background-color: #FFFFFF;
 }
 
 .choice-box .menu-item > .label {
-    -fx-text-fill: #363636; /* dropdown text color */
+    -fx-text-fill: #363636;
+}
+
+.choice-box .menu-item:focused {
+    -fx-background-color: #FFD000;
 }
 
 .choice-box .menu-item:focused > .label {
-    -fx-text-fill: #000000; /* highlight color on hover */
+    -fx-text-fill: #000000;
 }
+
 
