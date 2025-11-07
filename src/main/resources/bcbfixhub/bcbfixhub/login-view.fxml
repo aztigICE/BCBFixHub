@@ -28,7 +28,6 @@
     <TextField fx:id="emailField" promptText="Email" />
     <PasswordField fx:id="passwordField" promptText="Password" />
 
-    <!-- EDITED: Replaced ButtonBar with HBox for centering -->
     <HBox styleClass="button-bar">
         <children>
             <Button onAction="#onLogin" text="Login" styleClass="auth-primary-button" />

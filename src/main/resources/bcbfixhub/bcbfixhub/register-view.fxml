@@ -8,9 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-  Root VBox, applies the auth-root style and links the register.css stylesheet.
--->
+
 <VBox fx:id="register"
       alignment="CENTER"
       prefHeight="600.0" prefWidth="500.0"
@@ -21,7 +19,6 @@
       fx:controller="bcbfixhub.bcbfixhub.controllers.RegisterController">
 
     <padding>
-        <!-- Padding is handled by .auth-root in CSS, but this is a fallback -->
         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
     </padding>
 
@@ -38,14 +35,9 @@
     <!-- Button Bar -->
     <HBox styleClass="button-bar">
         <children>
-            <!--
-              EDITED: Changed onAction to #onHome and text to "Home"
-              This button now uses the auth-secondary-button style.
-            -->
+
             <Button onAction="#onHome" styleClass="auth-secondary-button" text="Home" />
-            <!--
-              EDITED: This button now uses the auth-primary-button style.
-            -->
+
             <Button  fx:id="registerButton" onAction="#onRegister" styleClass="auth-primary-button" text="Register" />
         </children>
         <VBox.margin>
