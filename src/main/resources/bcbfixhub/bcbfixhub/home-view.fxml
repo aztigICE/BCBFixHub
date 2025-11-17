@@ -8,40 +8,36 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-
-<BorderPane prefHeight="600.0" prefWidth="500.0" styleClass="home-root"
-            stylesheets="@css/home.css"
-            xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="bcbfixhub.bcbfixhub.controllers.HomeController">
+<BorderPane prefHeight="600.0" prefWidth="500.0" styleClass="home-root" stylesheets="@css/home.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bcbfixhub.bcbfixhub.controllers.HomeController">
 
 
     <center>
         <VBox alignment="CENTER" spacing="10.0">
-            <children>
-                <!-- EDITED: Set fitHeight to 300.0 -->
-                <ImageView fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                        <Image url="@/images/BCBLOGO.png" />
-                    </image>
-                </ImageView>
-                <Label styleClass="home-title" text="BCB FixHub" />
-            </children>
             <padding>
                 <Insets bottom="40.0" />
             </padding>
+            <!-- EDITED: Set fitHeight to 300.0 -->
+            <ImageView fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
+                <Image url="@images/BCBLOGO.png" />
+            </ImageView>
+            <Label styleClass="home-title" text="BCB FixHub" textAlignment="CENTER">
+            <font>
+               <Font name="Bauhaus 93" size="12.0" />
+            </font></Label>
         </VBox>
     </center>
 
     <!-- Bottom Navigation Buttons -->
     <bottom>
         <HBox styleClass="button-bar">
-            <children>
-                <Button onAction="#onLogin" styleClass="home-primary-button" text="Login" />
-                <Button onAction="#onRegister" styleClass="home-secondary-button" text="Register" />
-                <Button fx:id="exitButton" onAction="#onExit" styleClass="home-secondary-button" text="Exit" />
-            </children>
+            <Button onAction="#onLogin" styleClass="home-primary-button" text="Login" />
+            <Button onAction="#onRegister" styleClass="home-secondary-button" text="Register">
+            <font>
+               <Font name="Bauhaus 93" size="12.0" />
+            </font></Button>
+            <Button fx:id="exitButton" onAction="#onExit" styleClass="home-secondary-button" text="Exit" />
         </HBox>
     </bottom>
 </BorderPane>

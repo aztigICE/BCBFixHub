@@ -1,20 +1,17 @@
 package bcbfixhub.bcbfixhub.controllers;
 
-import bcbfixhub.bcbfixhub.ScenesApplication;
+import bcbfixhub.bcbfixhub.BcbfixhubApplication;
 import bcbfixhub.bcbfixhub.controllers.MainController.Product;
-import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager;
+import bcbfixhub.bcbfixhub.utils.DBConnectionHelper;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import org.bson.Document;
 
 import java.net.URL;
@@ -50,13 +47,13 @@ public class PaymentController extends ScenesController implements Initializable
     @FXML private Label totalLabel;
 
     private ToggleGroup paymentToggleGroup;
-    private ScenesApplication application;
+    private BcbfixhubApplication application;
 
     private static final double TAX_RATE = 0.08;
     private static final String PAYMENT_DB = "Payment-Details";
 
     @Override
-    public void setApplication(ScenesApplication application) {
+    public void setApplication(BcbfixhubApplication application) {
         super.setApplication(application);
         this.application = application;
 
@@ -157,7 +154,7 @@ public class PaymentController extends ScenesController implements Initializable
         if (application == null || application.getLoggedInUser() == null) return;
 
         try {
-            MongoDatabase db = MongoDBConnectionManager.getDatabase(PAYMENT_DB);
+            MongoDatabase db = DBConnectionHelper.getDatabase(PAYMENT_DB);
             MongoCollection<Document> collection = db.getCollection("payments");
 
             double subtotal = application.getCart().stream().mapToDouble(Product::getPrice).sum();
@@ -193,7 +190,7 @@ public class PaymentController extends ScenesController implements Initializable
 
     private void updateProductStockSafely() {
         try {
-            MongoDatabase db = MongoDBConnectionManager.getDatabase("Product-Details");
+            MongoDatabase db = DBConnectionHelper.getDatabase("Product-Details");
             String[] categories = {"keyboard", "mouse", "memory", "storage", "monitor"};
 
             for (Product product : application.getCart()) {

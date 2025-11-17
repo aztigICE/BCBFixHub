@@ -1,8 +1,8 @@
 package bcbfixhub.bcbfixhub.controllers;
 
-import bcbfixhub.bcbfixhub.ScenesApplication;
+import bcbfixhub.bcbfixhub.BcbfixhubApplication;
 import bcbfixhub.bcbfixhub.controllers.MainController.Product;
-import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager;
+import bcbfixhub.bcbfixhub.utils.DBConnectionHelper;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import javafx.fxml.FXML;
@@ -32,11 +32,11 @@ public class AccountController extends ScenesController implements Initializable
     @FXML private Button storeButton;
     @FXML private Button logoutButton;
 
-    private ScenesApplication application;
+    private BcbfixhubApplication application;
     private static final String PAYMENT_DB = "Payment-Details";
 
     @Override
-    public void setApplication(ScenesApplication application) {
+    public void setApplication(BcbfixhubApplication application) {
         super.setApplication(application);
         this.application = application;
 
@@ -63,7 +63,7 @@ public class AccountController extends ScenesController implements Initializable
             return;
         }
 
-        MongoDatabase db = MongoDBConnectionManager.getDatabase(PAYMENT_DB);
+        MongoDatabase db = DBConnectionHelper.getDatabase(PAYMENT_DB);
         MongoCollection<Document> collection = db.getCollection("payments");
 
         String userEmail = application.getLoggedInUser().getEmail();
@@ -98,7 +98,7 @@ public class AccountController extends ScenesController implements Initializable
         }
     }
 
-    /** Populate cart from shared cart list in ScenesApplication */
+    /** Populate cart from shared cart list in BcbfixhubApplication */
     public void populateCart() {
         cartItemsContainer.getChildren().clear();
 

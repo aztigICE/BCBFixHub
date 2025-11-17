@@ -1,8 +1,7 @@
 package bcbfixhub.bcbfixhub.controllers;
 
-import bcbfixhub.bcbfixhub.ScenesApplication;
+import bcbfixhub.bcbfixhub.BcbfixhubApplication;
 import bcbfixhub.bcbfixhub.models.User;
-import bcbfixhub.bcbfixhub.models.UserDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
@@ -33,7 +32,7 @@ public class LoginController extends ScenesController {
 
         if (isAuthenticated) {
             // Save logged-in user in application
-            if (app instanceof ScenesApplication sa) {
+            if (app instanceof BcbfixhubApplication sa) {
                 sa.setLoggedInUser(new User(enteredEmail)); // store username/email
             }
 

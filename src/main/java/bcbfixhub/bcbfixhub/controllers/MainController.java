@@ -1,7 +1,7 @@
 package bcbfixhub.bcbfixhub.controllers;
 
-import bcbfixhub.bcbfixhub.ScenesApplication;
-import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager;
+import bcbfixhub.bcbfixhub.BcbfixhubApplication;
+import bcbfixhub.bcbfixhub.utils.DBConnectionHelper;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import javafx.animation.PauseTransition;
@@ -34,14 +34,14 @@ public class MainController extends ScenesController implements Initializable {
     @FXML private Button cartButton;
     @FXML private Button accountButton;
 
-    private ScenesApplication application;
+    private BcbfixhubApplication application;
     private static final String DATABASE_NAME = "Product-Details";
 
     private final Map<String, Image> imageCache = new HashMap<>();
     private final PauseTransition searchDelay = new PauseTransition(Duration.millis(400)); // debounce delay
 
     @Override
-    public void setApplication(ScenesApplication application) {
+    public void setApplication(BcbfixhubApplication application) {
         super.setApplication(application);
         this.application = application;
 
@@ -115,7 +115,7 @@ public class MainController extends ScenesController implements Initializable {
     private List<Product> fetchProducts(String collectionName) {
         List<Product> products = new ArrayList<>();
         try {
-            MongoCollection<Document> collection = MongoDBConnectionManager
+            MongoCollection<Document> collection = DBConnectionHelper
                     .getDatabase(DATABASE_NAME)
                     .getCollection(collectionName);
 
@@ -284,7 +284,7 @@ public class MainController extends ScenesController implements Initializable {
                 : new String[]{categoryChoiceBox.getValue()};
 
         try {
-            MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
+            MongoDatabase db = DBConnectionHelper.getDatabase(DATABASE_NAME);
             for (String cat : categories) {
                 MongoCollection<Document> collection = db.getCollection(cat);
                 for (Document doc : collection.find()) {

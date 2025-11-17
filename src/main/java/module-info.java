@@ -16,4 +16,5 @@ module bcbfixhub.bcbfixhub {
     opens bcbfixhub.bcbfixhub to javafx.fxml;
     opens bcbfixhub.bcbfixhub.controllers to javafx.fxml;
     exports bcbfixhub.bcbfixhub;
+    exports bcbfixhub.bcbfixhub.models;
 }

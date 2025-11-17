@@ -1,77 +1,65 @@
 package bcbfixhub.bcbfixhub.models;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import org.bson.Document;
 
-public class User {
-    private final StringProperty username = new SimpleStringProperty();
-    private final StringProperty email = new SimpleStringProperty();
-    private final StringProperty password = new SimpleStringProperty();
-    private final StringProperty phone = new SimpleStringProperty();
+// User model, first model in the chain. Will try to not repeat comments.
+/*
+* Create a new model, name it as User, and it must extend the BaseModel class. This class will now
+* represent the user in the database.
+* */
+public class User extends BaseModel {
 
-    // Default constructor
-    public User() {}
+    // Declare our needed variables, this is based on our ERD.
+    private String username;
+    private String email;
+    private String password;
+    private String phone;
 
-    // Constructor with email
-    public User(String email) {
-        this.email.set(email);
+    // Default Constructor
+    public User() {
     }
 
-    // Constructor with username and email
-    public User(String username, String email) {
-        this.username.set(username);
-        this.email.set(email);
-    }
-
-    // Getters and Setters for username
+    // Getters and Setters
     public String getUsername() {
-        return username.get();
-    }
-
-    public StringProperty usernameProperty() {
         return username;
     }
 
     public void setUsername(String username) {
-        this.username.set(username);
+        this.username = username;
     }
 
-    // Getters and Setters for email
     public String getEmail() {
-        return email.get();
-    }
-
-    public StringProperty emailProperty() {
         return email;
     }
 
     public void setEmail(String email) {
-        this.email.set(email);
+        this.email = email;
     }
 
-    // Getters and Setters for password
     public String getPassword() {
-        return password.get();
-    }
-
-    public StringProperty passwordProperty() {
         return password;
     }
 
     public void setPassword(String password) {
-        this.password.set(password);
+        this.password = password;
     }
 
-    // Getters and Setters for phone
     public String getPhone() {
-        return phone.get();
-    }
-
-    public StringProperty phoneProperty() {
         return phone;
     }
 
     public void setPhone(String phone) {
-        this.phone.set(phone);
+        this.phone = phone;
+    }
+
+    // This is where we use that abstract method from earlier.
+    @Override
+    public Document toDocument() {
+        Document doc = new Document(); // Instantiate
+        doc.append("username", this.username); // "append" method add to the document.
+        doc.append("email", this.email);
+        doc.append("password", this.password);
+        doc.append("phone", this.phone);
+        return doc; // Return the document created.
     }
 }
