@@ -3,6 +3,6 @@ package bcbfixhub.bcbfixhub;
 import javafx.application.Application;
 
 public class AppLauncher {
-    public static void main(String[] args) {
-        Application.launch(ScenesApplication.class, args);}
+    static void main(String[] args) {
+        Application.launch(BcbfixhubApplication.class, args);}
 }

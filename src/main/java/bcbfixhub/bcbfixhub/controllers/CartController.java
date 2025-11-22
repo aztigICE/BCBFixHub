@@ -1,10 +1,9 @@
 package bcbfixhub.bcbfixhub.controllers;
 
-import bcbfixhub.bcbfixhub.ScenesApplication;
+import bcbfixhub.bcbfixhub.BcbfixhubApplication;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -24,11 +23,11 @@ public class CartController extends ScenesController implements Initializable {
     @FXML private Button backButton;
     @FXML private Button checkoutButton;
 
-    private ScenesApplication application;
+    private BcbfixhubApplication application;
     private static final double TAX_RATE = 0.08;
 
     @Override
-    public void setApplication(ScenesApplication application) {
+    public void setApplication(BcbfixhubApplication application) {
         super.setApplication(application);
         this.application = application;
         loadCart();

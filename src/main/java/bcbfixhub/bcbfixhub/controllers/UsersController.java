@@ -1,6 +1,6 @@
 package bcbfixhub.bcbfixhub.controllers;
 
-import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager;
+import bcbfixhub.bcbfixhub.utils.DBConnectionHelper;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import javafx.collections.FXCollections;
@@ -9,8 +9,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -53,7 +51,7 @@ public class UsersController extends ScenesController {
     // fetches the user's information from the database
     private List<User> fetchUsers() {
         List<User> usersList = new ArrayList<>();
-        MongoDatabase db = MongoDBConnectionManager.getDatabase(DATABASE_NAME);
+        MongoDatabase db = DBConnectionHelper.getDatabase(DATABASE_NAME);
         MongoCollection<Document> collection = db.getCollection(COLLECTION_NAME);
 
         for (Document doc : collection.find()) {
@@ -101,7 +99,7 @@ public class UsersController extends ScenesController {
         dialog.showAndWait().ifPresent(newEmail -> {
             user.setEmail(newEmail);
             // updates MongoDB
-            MongoCollection<Document> collection = MongoDBConnectionManager
+            MongoCollection<Document> collection = DBConnectionHelper
                     .getDatabase(DATABASE_NAME)
                     .getCollection(COLLECTION_NAME);
             collection.updateOne(eq("username", user.getUsername()), new Document("$set", new Document("email", newEmail)));
@@ -116,7 +114,7 @@ public class UsersController extends ScenesController {
         confirm.setContentText("Delete user \"" + user.getUsername() + "\"?");
         confirm.showAndWait().ifPresent(resp -> {
             if (resp == ButtonType.OK) {
-                MongoCollection<Document> collection = MongoDBConnectionManager
+                MongoCollection<Document> collection = DBConnectionHelper
                         .getDatabase(DATABASE_NAME)
                         .getCollection(COLLECTION_NAME);
                 collection.deleteOne(eq("username", user.getUsername()));

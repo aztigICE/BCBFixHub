@@ -1,6 +1,6 @@
 package bcbfixhub.bcbfixhub.controllers;
 
-import bcbfixhub.bcbfixhub.utils.MongoDBConnectionManager;
+import bcbfixhub.bcbfixhub.utils.DBConnectionHelper;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import javafx.event.ActionEvent;
@@ -68,7 +68,7 @@ public class ProductController extends ScenesController {
     // fetches the products from mongoDB
     private List<Product> fetchProducts(String collectionName) {
         List<Product> products = new ArrayList<>();
-        MongoDatabase db = MongoDBConnectionManager.getDatabase("Product-Details");
+        MongoDatabase db = DBConnectionHelper.getDatabase("Product-Details");
         MongoCollection<Document> collection = db.getCollection(collectionName);
 
         for (Document doc : collection.find()) {
@@ -109,7 +109,7 @@ public class ProductController extends ScenesController {
             return;
         }
 
-        MongoCollection<Document> collection = MongoDBConnectionManager.getDatabase("Product-Details")
+        MongoCollection<Document> collection = DBConnectionHelper.getDatabase("Product-Details")
                 .getCollection(activeTab);
         Document newProduct = new Document("stock", stock)
                 .append("brand", brand)
@@ -168,7 +168,7 @@ public class ProductController extends ScenesController {
                         return;
                     }
 
-                    MongoCollection<Document> collection = MongoDBConnectionManager.getDatabase("Product-Details")
+                    MongoCollection<Document> collection = DBConnectionHelper.getDatabase("Product-Details")
                             .getCollection(activeTab);
                     collection.updateOne(new Document("model", selected.getModel()),
                             new Document("$set", new Document("stock", stock)
@@ -206,7 +206,7 @@ public class ProductController extends ScenesController {
         confirm.setContentText("Delete \"" + selected.getModel() + "\"?");
         confirm.showAndWait().ifPresent(resp -> {
             if (resp == ButtonType.OK) {
-                MongoCollection<Document> collection = MongoDBConnectionManager.getDatabase("Product-Details")
+                MongoCollection<Document> collection = DBConnectionHelper.getDatabase("Product-Details")
                         .getCollection(activeTab);
                 collection.deleteOne(new Document("model", selected.getModel()));
                 table.getItems().remove(selected);

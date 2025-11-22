@@ -1,7 +1,6 @@
 package bcbfixhub.bcbfixhub.controllers;
 
 import bcbfixhub.bcbfixhub.models.User;
-import bcbfixhub.bcbfixhub.models.UserDAO;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
