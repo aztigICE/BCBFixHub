@@ -4,19 +4,19 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
-public class HomeController extends ScenesController {
+public class HomeController extends BaseController {
 
     @FXML
     private Button exitButton; // Need to get a reference to the stage
 
     @FXML
-    protected void onLogin() {
-        app.switchTo("login");
+    protected void onLoginHandle() {
+        app.switchScene("login");
     }
 
     @FXML
-    protected void onRegister() {
-        app.switchTo("register");
+    protected void onRegisterHandle() {
+        app.switchScene("register");
     }
 
     @FXML

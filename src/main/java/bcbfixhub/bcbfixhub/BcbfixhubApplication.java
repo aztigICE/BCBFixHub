@@ -2,9 +2,7 @@ package bcbfixhub.bcbfixhub;
 
 import bcbfixhub.bcbfixhub.controllers.*;
 import bcbfixhub.bcbfixhub.models.User;
-import bcbfixhub.bcbfixhub.controllers.MainController.Product;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -45,8 +43,9 @@ public class BcbfixhubApplication extends Application {
             this.primaryStage = primaryStage;
 
             // Preload each scene
-            preloadScene("home", "home-view.fxml");
+            preloadScene("home", "home_view.fxml");
             preloadScene("login", "login-view.fxml");
+            preloadScene("register", "register-view.fxml");
 
             switchScene("home");
 
@@ -92,10 +91,10 @@ public class BcbfixhubApplication extends Application {
         }
 
     /**
-     * Gets controller.
+     * Gets app controller.
      *
-     * @param sceneName the scene name
-     * @return the controller
+     * @param sceneName the scene name in the hashmap.
+     * @return the controller i.e login or register controller.
      */
     public Object getController(String sceneName) {
         Scene scene = sceneMap.get(sceneName);
@@ -140,7 +139,7 @@ public class BcbfixhubApplication extends Application {
     /**
      * Overload to switch scenes using the currently stored 'currentUser'.
      *
-     * @param name the name
+     * @param name the username
      */
     public void switchScene(String name) {
         switchScene(name, currentUser);

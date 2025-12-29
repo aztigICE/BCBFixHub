@@ -7,7 +7,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-public class LoginController extends ScenesController {
+public class LoginController extends BaseController {
 
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;

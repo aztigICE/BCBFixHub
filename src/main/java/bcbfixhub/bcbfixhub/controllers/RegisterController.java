@@ -7,7 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import net.synedra.validatorfx.Validator;
 
-public class RegisterController extends ScenesController {
+public class RegisterController extends BaseController {
 
     @FXML private PasswordField confirmPasswordField;
     @FXML private TextField usernameField;

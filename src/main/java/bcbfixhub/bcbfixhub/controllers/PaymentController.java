@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class PaymentController extends ScenesController implements Initializable {
+public class PaymentController extends BaseController {
 
     @FXML private ToggleButton gcashToggle;
     @FXML private ToggleButton paypalToggle;

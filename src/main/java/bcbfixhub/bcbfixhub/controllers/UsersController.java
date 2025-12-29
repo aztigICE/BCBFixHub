@@ -16,7 +16,7 @@ import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class UsersController extends ScenesController {
+public class UsersController extends BaseController {
 
     @FXML private TableView<User> usersTable;
     @FXML private TableColumn<User, String> usernameColumn;

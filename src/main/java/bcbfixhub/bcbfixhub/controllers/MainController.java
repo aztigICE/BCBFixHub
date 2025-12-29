@@ -26,7 +26,7 @@ import org.bson.Document;
 import java.net.URL;
 import java.util.*;
 
-public class MainController extends ScenesController implements Initializable {
+public class MainController extends BaseController {
 
     @FXML private ChoiceBox<String> categoryChoiceBox;
     @FXML private TextField searchBar;
