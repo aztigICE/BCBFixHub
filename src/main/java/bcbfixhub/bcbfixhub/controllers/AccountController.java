@@ -22,7 +22,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ResourceBundle;
 
-public class AccountController extends ScenesController implements Initializable {
+public class AccountController extends BaseController{
 
     @FXML private VBox ordersContainer;
     @FXML private VBox cartItemsContainer;

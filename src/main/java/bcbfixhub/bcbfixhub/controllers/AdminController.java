@@ -3,8 +3,7 @@ package bcbfixhub.bcbfixhub.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
 
-public class AdminController extends ScenesController
-{
+public class AdminController extends BaseController{
     public VBox register;
 
     @FXML

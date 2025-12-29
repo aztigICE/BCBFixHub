@@ -14,7 +14,7 @@ import java.util.ResourceBundle;
 
 import bcbfixhub.bcbfixhub.controllers.MainController.Product;
 
-public class CartController extends ScenesController implements Initializable {
+public class CartController extends BaseController {
 
     @FXML private VBox cartItemsContainer;
     @FXML private Label subtotalLabel;
