@@ -10,5 +10,6 @@ public class AppLauncher {
    - Disable Controllers that arent being used for now.
    - Create Repositories for other models. Modify models if necessary.
    - Comment along the way.
-   - Rework Each Controller to mesh well with the Application, and BaseController.
+   - Fix the error "Caused by: javafx.fxml.LoadException: Error resolving onAction='#onHome', either the event handler is not in the Namespace or there is an error in the script."
+
 */

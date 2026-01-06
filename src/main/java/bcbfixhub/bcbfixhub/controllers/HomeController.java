@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 public class HomeController extends BaseController {
 
     @FXML
-    private Button exitButton; // Need to get a reference to the stage
+    private Button exitButton;
 
     @FXML
     protected void onLoginHandle() {
@@ -21,7 +21,6 @@ public class HomeController extends BaseController {
 
     @FXML
     protected void onExit() {
-        // Get the stage from the button and close it
         Stage stage = (Stage) exitButton.getScene().getWindow();
         stage.close();
     }

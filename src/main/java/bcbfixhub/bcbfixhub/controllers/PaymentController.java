@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class PaymentController extends BaseController {
+public class PaymentController extends BaseController implements Initializable {
 
     @FXML private ToggleButton gcashToggle;
     @FXML private ToggleButton paypalToggle;
@@ -49,15 +49,20 @@ public class PaymentController extends BaseController {
     private ToggleGroup paymentToggleGroup;
     private BcbfixhubApplication application;
 
+    private List<Product> cart;
+
     private static final double TAX_RATE = 0.08;
-    private static final String PAYMENT_DB = "Payment-Details";
 
     @Override
-    public void setApplication(BcbfixhubApplication application) {
-        super.setApplication(application);
-        this.application = application;
+    public void setApp(BcbfixhubApplication app) {
+        super.setApp(app);
+        this.application = app;
+        loadCartSafely();
+    }
 
-        if (cartItemsContainer != null) loadCartSafely();
+    public void setCart(List<Product> cart) {
+        this.cart = cart;
+        loadCartSafely();
     }
 
     @Override
@@ -67,14 +72,13 @@ public class PaymentController extends BaseController {
         paypalToggle.setToggleGroup(paymentToggleGroup);
         creditDebitToggle.setToggleGroup(paymentToggleGroup);
 
-        // Toggle listener
-        paymentToggleGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) ->
-                handlePaymentMethodChange(newToggle));
+        paymentToggleGroup.selectedToggleProperty().addListener(
+                (obs, oldToggle, newToggle) -> handlePaymentMethodChange(newToggle)
+        );
 
-        checkoutButton.setOnAction(event -> handleCheckoutSafely());
+        checkoutButton.setOnAction(e -> handleCheckoutSafely());
     }
 
-    /* -------------------- PAYMENT METHOD VISIBILITY -------------------- */
     private void handlePaymentMethodChange(Toggle selectedToggle) {
         gcashBox.setVisible(false);
         paypalBox.setVisible(false);
@@ -85,218 +89,147 @@ public class PaymentController extends BaseController {
         else if (selectedToggle == creditDebitToggle) creditDebitBox.setVisible(true);
     }
 
-    /* -------------------- CHECKOUT -------------------- */
     private void handleCheckoutSafely() {
-        try {
-            String errorMessage = validateInputs();
-            if (errorMessage != null) {
-                showErrorPopup(errorMessage);
-                return;
-            }
-
-            if (application == null || application.getCart().isEmpty()) {
-                showErrorPopup("Your cart is empty.");
-                return;
-            }
-
-            savePaymentToDatabase();
-            updateProductStockSafely();
-
-            if (application != null) {
-                application.getCart().clear();
-
-                Object controller = application.getControllerForScene("cart");
-                if (controller instanceof CartController cartController) {
-                    cartController.loadCart();
-                }
-            }
-
-            showConfirmationPopup();
-        } catch (Exception e) {
-            e.printStackTrace();
-            showErrorPopup("An unexpected error occurred during checkout.");
+        String error = validateInputs();
+        if (error != null) {
+            showErrorPopup(error);
+            return;
         }
+
+        if (cart == null || cart.isEmpty()) {
+            showErrorPopup("Your cart is empty.");
+            return;
+        }
+
+        savePaymentToDatabase();
+        updateProductStockSafely();
+
+        cart.clear();
+        showConfirmationPopup();
     }
 
-    /* -------------------- INPUT VALIDATION -------------------- */
     private String validateInputs() {
         Toggle selected = paymentToggleGroup.getSelectedToggle();
-
         if (selected == null) return "Please select a payment method.";
 
         if (selected == gcashToggle) {
-            String number = gcashNumberField.getText().trim();
-            String name = gcashNameField.getText().trim();
-            if (number.isEmpty() || name.isEmpty()) return "Please fill in all GCash fields.";
-            if (!number.matches("\\d{11,13}")) return "Enter a valid GCash number.";
+            if (gcashNumberField.getText().isBlank() || gcashNameField.getText().isBlank())
+                return "Please fill in all GCash fields.";
         } else if (selected == paypalToggle) {
-            String email = paypalEmailField.getText().trim();
-            if (email.isEmpty()) return "Please enter your PayPal email.";
-            if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) return "Invalid email format.";
+            if (paypalEmailField.getText().isBlank())
+                return "Please enter your PayPal email.";
         } else if (selected == creditDebitToggle) {
-            String card = cardNumberField.getText().trim();
-            String expiry = expiryDateField.getText().trim();
-            String cvv = cvvField.getText().trim();
-
-            if (card.isEmpty() || expiry.isEmpty() || cvv.isEmpty())
-                return "Please fill in all credit/debit card fields.";
-
-            if (!card.matches("\\d{13,19}")) return "Invalid card number.";
-            if (!expiry.matches("^(0[1-9]|1[0-2])/\\d{2}$")) return "Invalid expiry format (MM/YY).";
-            if (!cvv.matches("\\d{3,4}")) return "Invalid CVV.";
+            if (cardNumberField.getText().isBlank()
+                    || expiryDateField.getText().isBlank()
+                    || cvvField.getText().isBlank())
+                return "Please fill in all card fields.";
         }
-
         return null;
     }
 
-    /* -------------------- DATABASE OPERATIONS -------------------- */
     private void savePaymentToDatabase() {
-        if (application == null || application.getLoggedInUser() == null) return;
+        if (currentUser == null) return;
 
         try {
-            MongoDatabase db = DBConnectionHelper.getDatabase(PAYMENT_DB);
+            MongoDatabase db = DBConnectionHelper.getInstance().getDatabase();
             MongoCollection<Document> collection = db.getCollection("payments");
 
-            double subtotal = application.getCart().stream().mapToDouble(Product::getPrice).sum();
+            double subtotal = cart.stream().mapToDouble(Product::getPrice).sum();
             double tax = subtotal * TAX_RATE;
             double total = subtotal + tax;
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String formattedDate = LocalDateTime.now().format(formatter);
+            String date = LocalDateTime.now()
+                    .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-            Document paymentDoc = new Document()
-                    .append("username", application.getLoggedInUser().getEmail())
-                    .append("date", formattedDate) //  add this line
+            Document doc = new Document()
+                    .append("username", currentUser.getUsername())
+                    .append("date", date)
                     .append("subtotal", subtotal)
                     .append("tax", tax)
                     .append("total", total);
 
-            List<Product> cart = application.getCart();
-            for (Product product : cart) {
-                Document item = new Document()
-                        .append("brand", product.getBrand())
-                        .append("model", product.getModel())
-                        .append("price", product.getPrice());
-                paymentDoc.append("item_" + product.getModel(), item);
-            }
-
-            collection.insertOne(paymentDoc);
-            System.out.println("[MongoDB] Payment recorded for user: " + application.getLoggedInUser().getEmail());
+            collection.insertOne(doc);
         } catch (MongoException e) {
-            e.printStackTrace();
-            showErrorPopup("Failed to save payment. Please try again later.");
+            showErrorPopup("Failed to save payment.");
         }
     }
 
     private void updateProductStockSafely() {
         try {
-            MongoDatabase db = DBConnectionHelper.getDatabase("Product-Details");
+            MongoDatabase db = DBConnectionHelper.getInstance().getDatabase();
             String[] categories = {"keyboard", "mouse", "memory", "storage", "monitor"};
 
-            for (Product product : application.getCart()) {
-                String brand = product.getBrand();
-                String model = product.getModel();
-
+            for (Product product : cart) {
                 for (String category : categories) {
-                    MongoCollection<Document> collection = db.getCollection(category);
-                    Document doc = collection.find(new Document("brand", brand).append("model", model)).first();
+                    MongoCollection<Document> col = db.getCollection(category);
+                    Document d = col.find(
+                            new Document("brand", product.getBrand())
+                                    .append("model", product.getModel())
+                    ).first();
 
-                    if (doc != null) {
-                        try {
-                            int currentStock = Integer.parseInt(doc.getString("stock"));
-                            int newStock = Math.max(currentStock - 1, 0);
-
-                            collection.updateOne(
-                                    new Document("brand", brand).append("model", model),
-                                    new Document("$set", new Document("stock", String.valueOf(newStock)))
-                            );
-                            System.out.println("[Stock] Updated " + brand + " " + model + " to " + newStock);
-                        } catch (NumberFormatException e) {
-                            System.err.println("[Stock] Invalid stock value for " + brand + " " + model);
-                        }
+                    if (d != null) {
+                        int stock = Integer.parseInt(d.getString("stock"));
+                        col.updateOne(
+                                new Document("_id", d.getObjectId("_id")),
+                                new Document("$set",
+                                        new Document("stock", String.valueOf(Math.max(stock - 1, 0))))
+                        );
                         break;
                     }
                 }
             }
-        } catch (MongoException e) {
-            System.err.println("[MongoDB] Error updating stock: " + e.getMessage());
-        }
+        } catch (Exception ignored) {}
     }
 
-    /* -------------------- POPUPS -------------------- */
     private void showErrorPopup(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Payment Error");
-        alert.setHeaderText("Something went wrong");
-        alert.setContentText(message);
-        alert.showAndWait();
+        Alert a = new Alert(Alert.AlertType.ERROR, message);
+        a.showAndWait();
     }
 
     private void showConfirmationPopup() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Order Confirmed");
-        alert.setHeaderText(null);
-        alert.setContentText("Your payment was successful!\nThank you for shopping with us.");
-        alert.showAndWait();
-
-        if (application != null) application.switchTo("user-dashboard");
+        Alert a = new Alert(Alert.AlertType.INFORMATION,
+                "Payment successful!\nThank you for shopping.");
+        a.showAndWait();
+        application.switchScene("home");
     }
 
-    /* -------------------- CART LOADING -------------------- */
     public void loadCartSafely() {
-        if (cartItemsContainer == null || application == null) return;
+        if (cartItemsContainer == null) return;
 
         cartItemsContainer.getChildren().clear();
         double subtotal = 0;
 
-        List<Product> cart = application.getCart();
         if (cart == null || cart.isEmpty()) {
-            Label emptyLabel = new Label("Your cart is empty.");
-            emptyLabel.setPadding(new Insets(10));
-            cartItemsContainer.getChildren().add(emptyLabel);
             subtotalLabel.setText("PHP 0.00");
             taxLabel.setText("PHP 0.00");
             totalLabel.setText("PHP 0.00");
             return;
         }
 
-        for (Product product : cart) {
-            HBox itemBox = new HBox(10);
-            itemBox.setPadding(new Insets(5));
-
-            Label nameLabel = new Label(product.getBrand() + " " + product.getModel());
-            nameLabel.setPrefWidth(200);
-
-            Label priceLabel = new Label("PHP " + String.format("%.2f", product.getPrice()));
-            priceLabel.setPrefWidth(80);
-
-            itemBox.getChildren().addAll(nameLabel, priceLabel);
-            cartItemsContainer.getChildren().add(itemBox);
-            subtotal += product.getPrice();
+        for (Product p : cart) {
+            HBox row = new HBox(10);
+            row.setPadding(new Insets(5));
+            row.getChildren().addAll(
+                    new Label(p.getBrand() + " " + p.getModel()),
+                    new Label("PHP " + String.format("%.2f", p.getPrice()))
+            );
+            cartItemsContainer.getChildren().add(row);
+            subtotal += p.getPrice();
         }
 
         double tax = subtotal * TAX_RATE;
-        double total = subtotal + tax;
-
         subtotalLabel.setText("PHP " + String.format("%.2f", subtotal));
         taxLabel.setText("PHP " + String.format("%.2f", tax));
-        totalLabel.setText("PHP " + String.format("%.2f", total));
+        totalLabel.setText("PHP " + String.format("%.2f", subtotal + tax));
     }
 
-    /* -------------------- CANCEL HANDLER -------------------- */
+    @FXML
     public void onBackToStore() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Cancel Order");
-        alert.setHeaderText("Are you sure you want to cancel?");
-        alert.setContentText("Your current order will not be saved.");
-
-        ButtonType yesButton = new ButtonType("Yes", ButtonBar.ButtonData.OK_DONE);
-        ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
-        alert.getButtonTypes().setAll(yesButton, noButton);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == yesButton && application != null) {
-            application.switchTo("user-dashboard");
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Cancel order?");
+        Optional<ButtonType> res = alert.showAndWait();
+        if (res.isPresent() && res.get() == ButtonType.OK) {
+            application.switchScene("home");
         }
     }
 }

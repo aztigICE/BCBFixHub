@@ -51,16 +51,16 @@ public class ProductController extends BaseController {
         fields.put("monitor", new TextField[]{stockField2111, brandField2111, modelField2111, priceField2111, imageField2111});
 
         // Setup tables dynamically
-        tables.forEach((tabName, table) -> setupTable(table, tabName));
+        tables.forEach(this::setupTable);
     }
 
     // === Setup Table Columns and Load Data ===
-    private void setupTable(TableView<Product> table, String collectionName) {
+    private void setupTable(String collectionName, TableView<Product> table) {
         table.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("stock"));
         table.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("brand"));
         table.getColumns().get(2).setCellValueFactory(new PropertyValueFactory<>("model"));
         table.getColumns().get(3).setCellValueFactory(new PropertyValueFactory<>("price"));
-        table.getColumns().get(4).setCellValueFactory(new PropertyValueFactory<>("imageName")); // new column
+        table.getColumns().get(4).setCellValueFactory(new PropertyValueFactory<>("imageName"));
 
         table.getItems().setAll(fetchProducts(collectionName));
     }
@@ -68,7 +68,8 @@ public class ProductController extends BaseController {
     // fetches the products from mongoDB
     private List<Product> fetchProducts(String collectionName) {
         List<Product> products = new ArrayList<>();
-        MongoDatabase db = DBConnectionHelper.getDatabase("Product-Details");
+
+        MongoDatabase db = DBConnectionHelper.getInstance().getDatabase();
         MongoCollection<Document> collection = db.getCollection(collectionName);
 
         for (Document doc : collection.find()) {
@@ -77,7 +78,7 @@ public class ProductController extends BaseController {
                     doc.getString("brand"),
                     doc.getString("model"),
                     doc.getDouble("price"),
-                    doc.getString("imageName") // fetch imageName
+                    doc.getString("imageName")
             ));
         }
         return products;
@@ -95,7 +96,7 @@ public class ProductController extends BaseController {
         String brand = f[1].getText().trim();
         String model = f[2].getText().trim();
         String priceText = f[3].getText().trim();
-        String imageName = f[4].getText().trim(); // get imageName
+        String imageName = f[4].getText().trim();
 
         if (stock.isEmpty() || brand.isEmpty() || model.isEmpty() || priceText.isEmpty() || imageName.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Please fill in all fields!");
@@ -103,19 +104,22 @@ public class ProductController extends BaseController {
         }
 
         double price;
-        try { price = Double.parseDouble(priceText); }
-        catch (NumberFormatException e) {
+        try {
+            price = Double.parseDouble(priceText);
+        } catch (NumberFormatException e) {
             showAlert(Alert.AlertType.ERROR, "Price must be a valid number!");
             return;
         }
 
-        MongoCollection<Document> collection = DBConnectionHelper.getDatabase("Product-Details")
-                .getCollection(activeTab);
+        MongoCollection<Document> collection =
+                DBConnectionHelper.getInstance().getDatabase().getCollection(activeTab);
+
         Document newProduct = new Document("stock", stock)
                 .append("brand", brand)
                 .append("model", model)
                 .append("price", price)
                 .append("imageName", imageName);
+
         collection.insertOne(newProduct);
 
         table.getItems().add(new Product(stock, brand, model, price, imageName));
@@ -133,7 +137,6 @@ public class ProductController extends BaseController {
         }
 
         String activeTab = getActiveCollectionName();
-        TextField[] f = fields.get(activeTab);
 
         TextField stockField = new TextField(selected.getStock());
         TextField brandField = new TextField(selected.getBrand());
@@ -142,7 +145,8 @@ public class ProductController extends BaseController {
         TextField imageField = new TextField(selected.getImageName());
 
         GridPane grid = new GridPane();
-        grid.setHgap(10); grid.setVgap(10);
+        grid.setHgap(10);
+        grid.setVgap(10);
         grid.addRow(0, new Label("Stock:"), stockField);
         grid.addRow(1, new Label("Brand:"), brandField);
         grid.addRow(2, new Label("Model:"), modelField);
@@ -163,23 +167,24 @@ public class ProductController extends BaseController {
                     double price = Double.parseDouble(priceField.getText().trim());
                     String imageName = imageField.getText().trim();
 
-                    if (stock.isEmpty() || brand.isEmpty() || model.isEmpty() || imageName.isEmpty()) {
-                        showAlert(Alert.AlertType.WARNING, "All fields must be filled!");
-                        return;
-                    }
+                    MongoCollection<Document> collection =
+                            DBConnectionHelper.getInstance().getDatabase().getCollection(activeTab);
 
-                    MongoCollection<Document> collection = DBConnectionHelper.getDatabase("Product-Details")
-                            .getCollection(activeTab);
-                    collection.updateOne(new Document("model", selected.getModel()),
+                    collection.updateOne(
+                            new Document("model", selected.getModel()),
                             new Document("$set", new Document("stock", stock)
                                     .append("brand", brand)
                                     .append("model", model)
                                     .append("price", price)
-                                    .append("imageName", imageName)));
+                                    .append("imageName", imageName))
+                    );
 
-                    selected.setStock(stock); selected.setBrand(brand);
-                    selected.setModel(model); selected.setPrice(price);
+                    selected.setStock(stock);
+                    selected.setBrand(brand);
+                    selected.setModel(model);
+                    selected.setPrice(price);
                     selected.setImageName(imageName);
+
                     tables.get(activeTab).refresh();
                     showAlert(Alert.AlertType.INFORMATION, "Product updated!");
                 } catch (NumberFormatException e) {
@@ -202,12 +207,11 @@ public class ProductController extends BaseController {
         TableView<Product> table = tables.get(activeTab);
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setHeaderText(null);
         confirm.setContentText("Delete \"" + selected.getModel() + "\"?");
         confirm.showAndWait().ifPresent(resp -> {
             if (resp == ButtonType.OK) {
-                MongoCollection<Document> collection = DBConnectionHelper.getDatabase("Product-Details")
-                        .getCollection(activeTab);
+                MongoCollection<Document> collection =
+                        DBConnectionHelper.getInstance().getDatabase().getCollection(activeTab);
                 collection.deleteOne(new Document("model", selected.getModel()));
                 table.getItems().remove(selected);
                 showAlert(Alert.AlertType.INFORMATION, "Product deleted!");
@@ -215,17 +219,16 @@ public class ProductController extends BaseController {
         });
     }
 
-    // gets the selected product to edit or delete
+    // gets the selected product
     private Product getSelectedProduct() {
-        String activeTab = getActiveCollectionName();
-        TableView<Product> table = tables.get(activeTab);
+        TableView<Product> table = tables.get(getActiveCollectionName());
         return table == null ? null : table.getSelectionModel().getSelectedItem();
     }
 
-    // gets the active collection name from mongodb
+    // gets active tab name
     private String getActiveCollectionName() {
         if (tabPane == null || tabPane.getSelectionModel().getSelectedItem() == null)
-            return "keyboard"; // default fallback
+            return "keyboard";
         return tabPane.getSelectionModel().getSelectedItem().getText().toLowerCase();
     }
 
@@ -239,7 +242,7 @@ public class ProductController extends BaseController {
 
     // goes back to admin tools
     public void backAdmin(ActionEvent event) {
-        app.switchTo("admin");
+        app.switchScene("admin");
     }
 
     // === Inner Product Class ===
@@ -248,7 +251,10 @@ public class ProductController extends BaseController {
         private Double price;
 
         public Product(String stock, String brand, String model, Double price, String imageName) {
-            this.stock = stock; this.brand = brand; this.model = model; this.price = price;
+            this.stock = stock;
+            this.brand = brand;
+            this.model = model;
+            this.price = price;
             this.imageName = imageName;
         }
 

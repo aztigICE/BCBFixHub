@@ -1,27 +1,27 @@
 package bcbfixhub.bcbfixhub.controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.layout.VBox;
 
-public class AdminController extends BaseController{
-    public VBox register;
+public class AdminController extends BaseController {
 
     @FXML
-    public void onProducts() {
-        app.switchTo("product");
+    private void onProducts(ActionEvent event) {
+        app.switchScene("admin-products");
     }
 
     @FXML
-    public void onOrder() { app.switchTo("orders"); }
-
-    @FXML
-    public void onLogOut() {
-        app.switchTo("login");
+    private void onOrder(ActionEvent event) {
+        app.switchScene("admin-orders");
     }
 
     @FXML
-    public void onUser() {
-        app.switchTo("users");
+    private void onUser(ActionEvent event) {
+        app.switchScene("admin-users");
     }
 
+    @FXML
+    private void onLogOut(ActionEvent event) {
+        app.switchScene("login");
+    }
 }

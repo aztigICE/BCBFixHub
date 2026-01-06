@@ -24,7 +24,6 @@ public class UsersController extends BaseController {
     @FXML private TableColumn<User, String> phoneColumn;
     @FXML private TableColumn<User, Void> actionColumn;
 
-    private static final String DATABASE_NAME = "User-Details";
     private static final String COLLECTION_NAME = "users";
 
     // initializes the columns of info
@@ -51,7 +50,8 @@ public class UsersController extends BaseController {
     // fetches the user's information from the database
     private List<User> fetchUsers() {
         List<User> usersList = new ArrayList<>();
-        MongoDatabase db = DBConnectionHelper.getDatabase(DATABASE_NAME);
+
+        MongoDatabase db = DBConnectionHelper.getInstance().getDatabase();
         MongoCollection<Document> collection = db.getCollection(COLLECTION_NAME);
 
         for (Document doc : collection.find()) {
@@ -72,19 +72,16 @@ public class UsersController extends BaseController {
             private final HBox container = new HBox(10, editButton, deleteButton);
 
             {
-                editButton.setOnAction(e -> handleEdit(getTableView().getItems().get(getIndex())));
-                deleteButton.setOnAction(e -> handleDelete(getTableView().getItems().get(getIndex())));
+                editButton.setOnAction(e ->
+                        handleEdit(getTableView().getItems().get(getIndex())));
+                deleteButton.setOnAction(e ->
+                        handleDelete(getTableView().getItems().get(getIndex())));
             }
 
-            // updates the cell and displays custom container
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(container);
-                }
+                setGraphic(empty ? null : container);
             }
         });
     }
@@ -98,11 +95,17 @@ public class UsersController extends BaseController {
 
         dialog.showAndWait().ifPresent(newEmail -> {
             user.setEmail(newEmail);
-            // updates MongoDB
-            MongoCollection<Document> collection = DBConnectionHelper
-                    .getDatabase(DATABASE_NAME)
-                    .getCollection(COLLECTION_NAME);
-            collection.updateOne(eq("username", user.getUsername()), new Document("$set", new Document("email", newEmail)));
+
+            MongoCollection<Document> collection =
+                    DBConnectionHelper.getInstance()
+                            .getDatabase()
+                            .getCollection(COLLECTION_NAME);
+
+            collection.updateOne(
+                    eq("username", user.getUsername()),
+                    new Document("$set", new Document("email", newEmail))
+            );
+
             usersTable.refresh();
         });
     }
@@ -114,9 +117,11 @@ public class UsersController extends BaseController {
         confirm.setContentText("Delete user \"" + user.getUsername() + "\"?");
         confirm.showAndWait().ifPresent(resp -> {
             if (resp == ButtonType.OK) {
-                MongoCollection<Document> collection = DBConnectionHelper
-                        .getDatabase(DATABASE_NAME)
-                        .getCollection(COLLECTION_NAME);
+                MongoCollection<Document> collection =
+                        DBConnectionHelper.getInstance()
+                                .getDatabase()
+                                .getCollection(COLLECTION_NAME);
+
                 collection.deleteOne(eq("username", user.getUsername()));
                 usersTable.getItems().remove(user);
             }
@@ -125,7 +130,7 @@ public class UsersController extends BaseController {
 
     // goes back to the admin tools
     public void backAdmin(ActionEvent event) {
-        app.switchTo("admin");
+        app.switchScene("admin");
     }
 
     // Inner User class

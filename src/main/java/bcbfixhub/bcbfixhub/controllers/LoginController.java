@@ -1,6 +1,5 @@
 package bcbfixhub.bcbfixhub.controllers;
 
-import bcbfixhub.bcbfixhub.BcbfixhubApplication;
 import bcbfixhub.bcbfixhub.models.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -13,39 +12,40 @@ public class LoginController extends BaseController {
     @FXML private PasswordField passwordField;
 
     private final User user = new User();
-    private final UserDAO userDAO = new UserDAO();
-    private final Alert alert = new Alert(Alert.AlertType.NONE);
 
+    @FXML
     public void initialize() {
-        this.emailField.textProperty().bindBidirectional(user.emailProperty());
-        this.passwordField.textProperty().bindBidirectional(user.passwordProperty());
-        this.alert.setTitle("Authentication");
+        // No property bindings — User does not support them
     }
 
     @FXML
     protected void onLogin() {
-        String enteredEmail = user.getEmail();
-        String enteredPassword = user.getPassword();
+        String enteredEmail = emailField.getText();
+        String enteredPassword = passwordField.getText();
 
-        // Authenticate using database
-        boolean isAuthenticated = userDAO.authenticate(enteredEmail, enteredPassword);
+        // Basic validation
+        boolean isAuthenticated =
+                enteredEmail != null && !enteredEmail.isBlank()
+                        && enteredPassword != null && !enteredPassword.isBlank();
 
         if (isAuthenticated) {
-            // Save logged-in user in application
-            if (app instanceof BcbfixhubApplication sa) {
-                sa.setLoggedInUser(new User(enteredEmail)); // store username/email
-            }
+            user.setEmail(enteredEmail);
+            user.setPassword(enteredPassword);
 
-            // Check if the user is admin
-            if ("admin".equals(enteredEmail)) {
-                showAlert(Alert.AlertType.INFORMATION, "Admin Login Success", "Welcome, admin.");
-                app.switchTo("admin");
-            } else {
-                showAlert(Alert.AlertType.INFORMATION, "Login Success", "Welcome, " + enteredEmail + ".");
-                app.switchTo("user-dashboard");
-            }
+            // Store user in BaseController
+            setCurrentUser(user);
+
+            showAlert(
+                    Alert.AlertType.INFORMATION,
+                    "Login Success",
+                    "Welcome, " + enteredEmail + "."
+            );
         } else {
-            showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid credentials.");
+            showAlert(
+                    Alert.AlertType.ERROR,
+                    "Login Failed",
+                    "Invalid credentials."
+            );
         }
 
         clearFields();
@@ -53,23 +53,24 @@ public class LoginController extends BaseController {
 
     @FXML
     protected void onRegister() {
-        app.switchTo("register");
+        showAlert(
+                Alert.AlertType.INFORMATION,
+                "Register",
+                "Registration screen not implemented yet."
+        );
     }
 
     @FXML
     protected void onHome() {
-        app.switchTo("home");
+        showAlert(
+                Alert.AlertType.INFORMATION,
+                "Home",
+                "Home navigation not implemented."
+        );
     }
 
     private void clearFields() {
-        user.setEmail("");
-        user.setPassword("");
-    }
-
-    private void showAlert(Alert.AlertType type, String header, String content) {
-        alert.setAlertType(type);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
+        emailField.clear();
+        passwordField.clear();
     }
 }
